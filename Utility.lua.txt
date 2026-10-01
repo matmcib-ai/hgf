@@ -1,0 +1,413 @@
+-- Utility - Made By Kinicki
+local Players=game:GetService("Players")
+local Http=game:GetService("HttpService")
+local Input=game:GetService("UserInputService")
+while not Players.LocalPlayer do task.wait() end
+local LP=Players.LocalPlayer
+local CFG_FILE="BPVPRIV_Utility.json"
+local cfg={}
+if readfile then
+    local ok,v=pcall(function() return Http:JSONDecode(readfile(CFG_FILE)) end)
+    if ok and type(v)=="table" then cfg=v end
+end
+local Store={get=function() return cfg end,save=function()
+    if writefile then pcall(function() writefile(CFG_FILE,Http:JSONEncode(cfg)) end) end
+end}
+local UI={PAD=16,BTN_H=28,FONT=Enum.Font.Gotham,C={
+    PANEL=Color3.fromRGB(23,25,27),BG=Color3.fromRGB(32,34,37),
+    BTN=Color3.fromRGB(32,34,37),BTN_ON=Color3.fromRGB(64,67,72),
+    TEXT=Color3.fromRGB(202,204,208),MUTED=Color3.fromRGB(155,158,164),
+    DANGER=Color3.fromRGB(178,45,46),STROKE=Color3.fromRGB(50,53,57),
+    ACCENT=Color3.fromRGB(55,138,54)}}
+function UI.corner(o,r) local c=Instance.new("UICorner",o); c.CornerRadius=UDim.new(0,r or 0);return c end
+function UI.stroke(o,color,t)
+    local st=Instance.new("UIStroke",o);st.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+    st.Color=color or UI.C.STROKE;st.Thickness=t or 1;return st
+end
+function UI.setEnabled(b,on)
+    b.BackgroundColor3=on and UI.C.BTN_ON or UI.C.BTN
+    local st=b:FindFirstChildOfClass("UIStroke") or UI.stroke(b)
+    st.Color=on and Color3.fromRGB(210,212,216) or UI.C.STROKE
+    st.Thickness=on and 1.5 or 1
+end
+function UI.panel(o)
+    local f=Instance.new("Frame",o.parent);f.Name=o.name;f.Size=UDim2.fromOffset(o.w,o.h)
+    f.Position=UDim2.fromOffset(o.x,o.y);f.BackgroundColor3=UI.C.PANEL;f.BorderSizePixel=0;f.Active=true
+    local title=Instance.new("TextLabel",f);title.BackgroundTransparency=1
+    title.Position=UDim2.fromOffset(16,0);title.Size=UDim2.new(1,-32,0,40)
+    title.Text=o.title;title.TextColor3=UI.C.TEXT;title.Font=Enum.Font.GothamBold
+    title.TextSize=13;title.TextXAlignment=Enum.TextXAlignment.Left;title.Active=true
+    local line=Instance.new("Frame",f);line.BorderSizePixel=0;line.BackgroundColor3=UI.C.STROKE
+    line.Position=UDim2.fromOffset(12,40);line.Size=UDim2.new(1,-24,0,1)
+    local body=Instance.new("Frame",f);body.BackgroundTransparency=1
+    body.Position=UDim2.fromOffset(0,46);body.Size=UDim2.new(1,0,1,-46)
+    local dragging,start,pos
+    title.InputBegan:Connect(function(i)
+        if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+            dragging=true;start=i.Position;pos=f.Position
+            local conn;conn=i.Changed:Connect(function()
+                if i.UserInputState==Enum.UserInputState.End then
+                    dragging=false;if o.onDrop then o.onDrop(f) end;conn:Disconnect()
+                end
+            end)
+        end
+    end)
+    Input.InputChanged:Connect(function(i)
+        if dragging and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+            local d=i.Position-start;f.Position=UDim2.new(pos.X.Scale,pos.X.Offset+d.X,pos.Y.Scale,pos.Y.Offset+d.Y)
+        end
+    end)
+    return f,body,title
+end
+function UI.button(o)
+    local b=Instance.new("TextButton",o.parent);b.Size=UDim2.new(1,-32,0,28)
+    b.Position=UDim2.fromOffset(16,o.y or 0);b.BackgroundColor3=UI.C.BTN;b.BorderSizePixel=0
+    b.Text=o.text or "";b.Font=UI.FONT;b.TextSize=12;b.TextColor3=UI.C.TEXT;b.AutoButtonColor=false
+    b.TextXAlignment=Enum.TextXAlignment.Center;b.TextYAlignment=Enum.TextYAlignment.Center
+    UI.stroke(b)
+    if o.onClick then b.MouseButton1Click:Connect(o.onClick) end
+    return b,function(on)UI.setEnabled(b,on)end
+end
+function UI.smallButton(o)
+    local b=UI.button(o);b.Size=UDim2.fromOffset(o.w,o.h);b.Position=UDim2.fromOffset(o.x,o.y)
+    b.TextSize=o.textSize or 12;return b
+end
+function UI.label(o)
+    local t=Instance.new("TextLabel",o.parent);t.BackgroundTransparency=1;t.Text=o.text or ""
+    t.Position=UDim2.fromOffset(o.x or 0,o.y or 0);t.Size=UDim2.new(1,0,0,o.h or 20)
+    t.TextColor3=UI.C.TEXT;t.Font=UI.FONT;t.TextSize=o.size or 12;t.TextXAlignment=o.align or Enum.TextXAlignment.Left
+    return t
+end
+function UI.textbox(o)
+    local t=Instance.new("TextBox",o.parent);t.Position=UDim2.fromOffset(o.x or 0,o.y or 0)
+    t.Size=UDim2.new(1,-16,0,o.h or 24);t.Text=o.text or "";t.PlaceholderText=o.placeholder or ""
+    t.ClearTextOnFocus=false;t.BackgroundColor3=UI.C.BG;t.TextColor3=UI.C.TEXT;t.Font=UI.FONT;t.TextSize=11
+    t.BorderSizePixel=0;UI.stroke(t);return t
+end
+function UI.notify(title,msg,isError)
+    pcall(function() game:GetService("StarterGui"):SetCore("SendNotification",{Title=title,Text=tostring(msg),Duration=4})end)
+end
+
+local okAK, errAK = pcall(function()
+    local Players         = game:GetService("Players")
+    local TeleportService = game:GetService("TeleportService")
+    local HS              = game:GetService("HttpService")
+    local LP              = Players.LocalPlayer
+    local PG              = LP:WaitForChild("PlayerGui")
+    local guiParent       = (gethui and gethui()) or game:GetService("CoreGui") or PG
+
+    local cfg = Store.get("autokick")
+    if _G.AutoKickOnSteal == nil then _G.AutoKickOnSteal = false end
+    if _G.AutoKickKeyword == nil then _G.AutoKickKeyword = "you stole" end
+    if _G.MynxxPrivateCode == nil then _G.MynxxPrivateCode = "" end
+
+    _G.MynxxKickAfterBuy = true
+    local panelX, panelY = 240, 300
+    do
+        if type(cfg.on) == "boolean" then _G.AutoKickOnSteal = cfg.on end
+        if tonumber(cfg.x) then panelX = tonumber(cfg.x) end
+        if tonumber(cfg.y) then panelY = tonumber(cfg.y) end
+        if type(cfg.psCode) == "string" then _G.MynxxPrivateCode = cfg.psCode end
+    end
+    local function saveCfg()
+        cfg.on = _G.AutoKickOnSteal; cfg.x = panelX; cfg.y = panelY
+        cfg.psCode = _G.MynxxPrivateCode
+        Store.save()
+
+    end
+
+    local fired = false
+    local function doKick()
+        if fired then return end
+        fired = true
+
+        local code = _G.MynxxPrivateCode
+        if type(code) == "string" and code ~= "" then
+            task.delay(0.2, function()
+                pcall(function()
+                    game:GetService("ExperienceService"):LaunchExperience({
+                        placeId = game.PlaceId,
+                        linkCode = code,
+                    })
+                end)
+            end)
+            return
+        end
+        pcall(function() game:Shutdown() end)
+        pcall(function() LP:Kick("\nAuto Kick") end)
+    end
+
+    _G.MynxxDoAutoKick = doKick
+
+    local function check(txt)
+        if not _G.AutoKickOnSteal then return end
+        if type(txt) ~= "string" or txt == "" then return end
+        local kw = string.lower(tostring(_G.AutoKickKeyword or "you stole"))
+        if string.find(string.lower(txt), kw, 1, true) then doKick() end
+    end
+
+    local hooked = setmetatable({}, { __mode = "k" })
+    local function hookObj(obj)
+        if obj:FindFirstAncestor("AutoKickUI") then return end
+        if hooked[obj] then return end
+        hooked[obj] = true
+        check(obj.Text)
+        obj:GetPropertyChangedSignal("Text"):Connect(function() check(obj.Text) end)
+    end
+
+    local function isText(o)
+        return o:IsA("TextLabel") or o:IsA("TextButton") or o:IsA("TextBox")
+    end
+
+    local function watchRoot(root)
+        for _, obj in ipairs(root:GetDescendants()) do
+            if isText(obj) then hookObj(obj) end
+        end
+        root.DescendantAdded:Connect(function(desc)
+            if isText(desc) then hookObj(desc) end
+        end)
+    end
+
+    for _, g in ipairs(PG:GetChildren()) do pcall(watchRoot, g) end
+    PG.ChildAdded:Connect(function(g) pcall(watchRoot, g) end)
+
+    local function rejoin()
+        local jobId = game.JobId
+        task.spawn(function()
+            if not jobId or jobId == "" then return end
+            for _ = 1, 4 do
+                local ok = pcall(function()
+                    TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LP)
+                end)
+                if ok then break end
+                task.wait(1.5)
+            end
+        end)
+    end
+    _G.Rejoin = rejoin
+
+    pcall(function()
+        local old = guiParent:FindFirstChild("AutoKickUI")
+        if old then old:Destroy() end
+    end)
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "AutoKickUI"; sg.ResetOnSpawn = false; sg.DisplayOrder = 131
+    pcall(function() sg.Parent = guiParent end)
+    if not sg.Parent then sg.Parent = PG end
+
+    local f, body = UI.panel({
+        name = "Panel", title = "Utility - made by kinicki", w = 246, h = 151,
+        x = panelX, y = panelY, parent = sg,
+        onDrop = function(fr)
+            panelX, panelY = fr.AbsolutePosition.X, fr.AbsolutePosition.Y
+            saveCfg()
+        end,
+    })
+
+    for _, obj in ipairs(f:GetDescendants()) do
+        if obj:IsA("UICorner") then obj.CornerRadius = UDim.new(0, 0) end
+    end
+    local outerCorner = f:FindFirstChildOfClass("UICorner")
+    if outerCorner then outerCorner.CornerRadius = UDim.new(0, 0) end
+    local border = f:FindFirstChildOfClass("UIStroke")
+    if border then border:Destroy() end
+
+    local b, setOnAK = UI.button({ parent = body, y = 0 })
+    b.Size = UDim2.new(1, -60, 0, UI.BTN_H)
+    b.TextXAlignment = Enum.TextXAlignment.Left
+    local pad = Instance.new("UIPadding", b)
+    pad.PaddingLeft = UDim.new(0, 12)
+    local stateLabel = Instance.new("TextLabel", b)
+    stateLabel.BackgroundTransparency = 1
+    stateLabel.Size = UDim2.fromOffset(36, 28)
+    stateLabel.Position = UDim2.new(1, -46, 0, 0)
+    stateLabel.Font = Enum.Font.Gotham
+    stateLabel.TextSize = 12
+    stateLabel.TextColor3 = UI.C.MUTED
+    local function refresh()
+        b.Text = "Auto kick"
+        stateLabel.Text = _G.AutoKickOnSteal and "ON" or "OFF"
+        setOnAK(_G.AutoKickOnSteal)
+    end
+    b.MouseButton1Click:Connect(function()
+        _G.AutoKickOnSteal = not _G.AutoKickOnSteal
+        refresh(); saveCfg()
+    end)
+    refresh()
+
+    local rb
+    rb = UI.button({ parent = body, y = 32, text = "Rejoin", onClick = function()
+        rb.Text = "REJOIN..."
+        rejoin()
+    end })
+
+    local kb = UI.button({ parent = body, y = 64, text = "Kick", onClick = function()
+        pcall(function() LP:Kick("\nUtility") end)
+    end })
+    kb.Size = UDim2.new(0.5, -UI.PAD - 2, 0, UI.BTN_H)
+    kb.TextColor3 = UI.C.DANGER
+    kb.BackgroundColor3 = UI.C.BG
+
+    local AJ_FILE = "EXEC_AJ_SCRIPT.txt"
+    local function ajLoad()
+        if readfile then
+            local ok, src = pcall(readfile, AJ_FILE)
+            if ok and type(src) == "string" and src:match("%S") then return src end
+        end
+        return ""
+    end
+    local function ajSave(src)
+        if not writefile then return false end
+        return pcall(writefile, AJ_FILE, src)
+    end
+    local ajScript = ajLoad()
+    local ajBusy, ajActive = false, false
+    local aj
+    aj = UI.button({ parent = body, y = 64, text = "AJ", onClick = function()
+        if ajBusy or ajActive then return end
+        ajBusy = true
+        aj.Text = "LOADING..."
+        task.spawn(function()
+            local ok, err = pcall(function()
+                if type(ajScript) ~= "string" or not ajScript:match("%S") then
+                    error("no saved script (gear -> AJ SCRIPT)")
+                end
+                local chunk, cerr = loadstring(ajScript)
+                if not chunk then error(cerr or "compile error") end
+                ajActive = true
+                aj.Text = "AJ Active"
+                UI.setEnabled(aj, true)
+                chunk()
+            end)
+            ajBusy = false
+            if ok then
+                ajActive = true
+                aj.Text = "AJ Active"
+                UI.setEnabled(aj, true)
+            else
+                ajActive = false
+                aj.Text = "AJ: RETRY"
+                UI.setEnabled(aj, false)
+                UI.notify("AJ", tostring(err), true)
+                task.delay(1.5, function()
+                    if not ajActive and aj.Parent then
+                        aj.Text = "AJ"; UI.setEnabled(aj, false)
+                    end
+                end)
+            end
+        end)
+    end })
+    aj.TextXAlignment = Enum.TextXAlignment.Center
+    aj.TextYAlignment = Enum.TextYAlignment.Center
+    aj.Size = UDim2.new(0.5, -UI.PAD - 1, 0, UI.BTN_H)
+    aj.Position = UDim2.new(0.5, 1, 0, 64)
+
+    local pop = Instance.new("Frame", f)
+    pop.Size = UDim2.fromOffset(246, 196)
+    pop.Position = UDim2.fromOffset(0, 155)
+    pop.BackgroundColor3 = UI.C.PANEL
+    pop.BorderSizePixel = 0; pop.Active = true; pop.Visible = false
+    UI.corner(pop, 10); UI.stroke(pop)
+
+    local pt = UI.label({ parent = pop, x = 0, y = 4, h = 20, bold = true, size = 11,
+        text = "PRIVATE SERVER CODE", align = Enum.TextXAlignment.Center })
+    pt.Size = UDim2.new(1, 0, 0, 20)
+
+    local tb = Instance.new("TextBox", pop)
+    tb.Size = UDim2.fromOffset(194, 24); tb.Position = UDim2.fromOffset(8, 26)
+    tb.BackgroundColor3 = UI.C.BG
+    tb.TextColor3 = UI.C.TEXT; tb.BorderSizePixel = 0
+    tb.Font = UI.FONT; tb.TextSize = 11
+    tb.ClearTextOnFocus = false
+    tb.TextXAlignment = Enum.TextXAlignment.Left
+    tb.PlaceholderText = "A219012DJF"
+    tb.PlaceholderColor3 = UI.C.MUTED
+    tb.Text = _G.MynxxPrivateCode or ""
+    UI.corner(tb, 6); UI.stroke(tb)
+    do
+        local p = Instance.new("UIPadding", tb)
+        p.PaddingLeft = UDim.new(0, 6); p.PaddingRight = UDim.new(0, 6)
+    end
+
+    local reveal = false
+    local dots = Instance.new("TextLabel", pop)
+    dots.Size = tb.Size; dots.Position = tb.Position
+    dots.BackgroundTransparency = 1
+    dots.Font = tb.Font; dots.TextSize = tb.TextSize
+    dots.TextColor3 = tb.TextColor3
+    dots.TextXAlignment = Enum.TextXAlignment.Left
+    dots.Text = ""
+    do
+        local p = Instance.new("UIPadding", dots)
+        p.PaddingLeft = UDim.new(0, 6); p.PaddingRight = UDim.new(0, 6)
+    end
+
+    local function renderMask()
+        local has = #tb.Text > 0
+        if reveal or not has then
+            tb.TextTransparency = 0
+            dots.Visible = false
+        else
+            tb.TextTransparency = 1
+            dots.Visible = true
+            dots.Text = string.rep("\u{2022}", #tb.Text)
+        end
+    end
+    tb:GetPropertyChangedSignal("Text"):Connect(renderMask)
+    renderMask()
+
+    local eye = UI.smallButton({ parent = pop, x = 206, y = 26, w = 26, h = 24, text = "\u{1F441}", textSize = 13 })
+    eye.MouseButton1Click:Connect(function()
+        reveal = not reveal
+        eye.BackgroundColor3 = reveal and UI.C.BTN_ON or UI.C.BTN
+        renderMask()
+    end)
+
+    tb.FocusLost:Connect(function()
+        _G.MynxxPrivateCode = tb.Text
+        saveCfg()
+    end)
+
+    local sep = Instance.new("Frame", pop)
+    sep.Size = UDim2.new(1, -16, 0, 1); sep.Position = UDim2.fromOffset(8, 58)
+    sep.BackgroundColor3 = UI.C.STROKE; sep.BorderSizePixel = 0
+
+    local at = UI.label({ parent = pop, x = 0, y = 62, h = 20, bold = true, size = 11,
+        text = "AJ SCRIPT", align = Enum.TextXAlignment.Center })
+    at.Size = UDim2.new(1, 0, 0, 20)
+
+    local ajBox = UI.textbox({ parent = pop, x = 8, y = 84, h = 72, placeholder = "paste your script / key here...",
+        text = ajScript })
+    ajBox.Size = UDim2.fromOffset(224, 72)
+    ajBox.MultiLine = true; ajBox.TextWrapped = true
+    ajBox.TextYAlignment = Enum.TextYAlignment.Top
+    ajBox.Font = Enum.Font.Code; ajBox.TextSize = 10
+    do
+        local p = ajBox:FindFirstChildOfClass("UIPadding")
+        if p then p.PaddingTop = UDim.new(0, 5); p.PaddingRight = UDim.new(0, 6) end
+    end
+
+    UI.smallButton({ parent = pop, x = 8, y = 162, w = 224, h = 24, text = "SAVE", textSize = 11,
+        onClick = function()
+            local src = tostring(ajBox.Text or "")
+            if not src:match("%S") then
+                UI.notify("AJ", "script is empty", true)
+                return
+            end
+            if ajSave(src) then
+                ajScript = src
+                UI.notify("AJ", "saved")
+            else
+                UI.notify("AJ", "save error", true)
+            end
+        end })
+
+    UI.smallButton({ parent = body, x = 206, y = 0, w = 28, h = UI.BTN_H, text = "⚙️", textSize = 14,
+        onClick = function() pop.Visible = not pop.Visible end })
+    for _, obj in ipairs(f:GetDescendants()) do
+        if obj:IsA("UICorner") then obj.CornerRadius = UDim.new(0, 0) end
+    end
+end)
+
+if not okAK then warn("[AUTOKICK] BLOC EN ERREUR: " .. tostring(errAK)) end
+
