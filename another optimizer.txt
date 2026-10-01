@@ -1,0 +1,652 @@
+-- ========================================================================
+--                       Sxlvatore Optimizer v3.0
+-- ========================================================================
+
+local Players = game:GetService("Players")
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local ContentProvider = game:GetService("ContentProvider")
+
+-- Capture script start time so we can measure total load time
+local scriptStartTime = os.clock()
+local measuredLoadTime = nil -- filled in once loading finishes
+
+-- 1. Remove Default Loading Screen Instantly
+pcall(function()
+    ReplicatedFirst:RemoveDefaultLoadingScreen()
+end)
+
+-- ========================================================================
+-- 0. Black Loading Screen (shows immediately, fades out once fully loaded)
+-- ========================================================================
+local blackScreenGui
+
+local function showBlackLoadingScreen()
+    local localPlayer = Players.LocalPlayer
+    if not localPlayer then return end
+
+    local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+    if not playerGui then return end
+
+    local existing = playerGui:FindFirstChild("SxlvatoreBlackScreenGui")
+    if existing then existing:Destroy() end
+
+    blackScreenGui = Instance.new("ScreenGui")
+    blackScreenGui.Name = "SxlvatoreBlackScreenGui"
+    blackScreenGui.ResetOnSpawn = false
+    blackScreenGui.IgnoreGuiInset = true
+    blackScreenGui.DisplayOrder = 999998
+
+    local blackFrame = Instance.new("Frame")
+    blackFrame.Name = "BlackFrame"
+    blackFrame.Size = UDim2.new(1, 0, 1, 0)
+    blackFrame.Position = UDim2.new(0, 0, 0, 0)
+    blackFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    blackFrame.BackgroundTransparency = 0
+    blackFrame.BorderSizePixel = 0
+    blackFrame.Parent = blackScreenGui
+
+    local loadingLabel = Instance.new("TextLabel")
+    loadingLabel.Name = "LoadingLabel"
+    loadingLabel.Size = UDim2.new(1, 0, 0, 40)
+    loadingLabel.Position = UDim2.new(0, 0, 1, -80)
+    loadingLabel.BackgroundTransparency = 1
+    loadingLabel.Text = "Loading..."
+    loadingLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+    loadingLabel.Font = Enum.Font.Gotham
+    loadingLabel.TextSize = 14
+    loadingLabel.Parent = blackFrame
+
+    blackScreenGui.Parent = playerGui
+end
+
+local function hideBlackLoadingScreen()
+    if not blackScreenGui then return end
+    local blackFrame = blackScreenGui:FindFirstChild("BlackFrame")
+    if blackFrame then
+        local fadeInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local fadeTween = TweenService:Create(blackFrame, fadeInfo, {BackgroundTransparency = 1})
+        local labelTween
+        local loadingLabel = blackFrame:FindFirstChild("LoadingLabel")
+        if loadingLabel then
+            labelTween = TweenService:Create(loadingLabel, fadeInfo, {TextTransparency = 1})
+            labelTween:Play()
+        end
+        fadeTween:Play()
+        fadeTween.Completed:Connect(function()
+            blackScreenGui:Destroy()
+            blackScreenGui = nil
+        end)
+    else
+        blackScreenGui:Destroy()
+        blackScreenGui = nil
+    end
+end
+
+-- 2. Sxlvatore Notifier (now includes rainbow load-time readout)
+local function showTopNotifier(loadTimeSeconds)
+    local localPlayer = Players.LocalPlayer
+    if not localPlayer then return end
+
+    local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+    if not playerGui then return end
+
+    local existing = playerGui:FindFirstChild("SxlvatoreNotifierGui")
+    if existing then existing:Destroy() end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "SxlvatoreGui"
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.DisplayOrder = 999999
+
+    -- Slightly taller now to fit the extra line
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainFrame"
+    mainFrame.Size = UDim2.new(0, 340, 0, 66)
+    mainFrame.Position = UDim2.new(0.5, -170, 0, -80)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    mainFrame.BackgroundTransparency = 0.15
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = screenGui
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = mainFrame
+
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Color = Color3.fromRGB(120, 80, 255)
+    uiStroke.Thickness = 1.5
+    uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    uiStroke.Parent = mainFrame
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Name = "NotifyTitle"
+    textLabel.Size = UDim2.new(1, 0, 0, 22)
+    textLabel.Position = UDim2.new(0, 0, 0, 6)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = "Sxlvatore Optimizer"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextSize = 16
+    textLabel.Parent = mainFrame
+
+    local subLabel = Instance.new("TextLabel")
+    subLabel.Name = "NotifySubtitle"
+    subLabel.Size = UDim2.new(1, 0, 0, 14)
+    subLabel.Position = UDim2.new(0, 0, 0, 28)
+    subLabel.BackgroundTransparency = 1
+    subLabel.Text = "OPTIMIZATIONS & FFLAGS LOADED"
+    subLabel.TextColor3 = Color3.fromRGB(0, 255, 180)
+    subLabel.Font = Enum.Font.GothamBold
+    subLabel.TextSize = 10
+    subLabel.Parent = mainFrame
+
+    -- Rainbow load-time label, sits right under the subtitle
+    local loadTimeLabel = Instance.new("TextLabel")
+    loadTimeLabel.Name = "LoadTimeLabel"
+    loadTimeLabel.Size = UDim2.new(1, 0, 0, 16)
+    loadTimeLabel.Position = UDim2.new(0, 0, 0, 44)
+    loadTimeLabel.BackgroundTransparency = 1
+    loadTimeLabel.Text = string.format("Load Time: %.2fs", loadTimeSeconds or 0)
+    loadTimeLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- overwritten every frame below
+    loadTimeLabel.Font = Enum.Font.GothamBold
+    loadTimeLabel.TextSize = 12
+    loadTimeLabel.Parent = mainFrame
+
+    screenGui.Parent = playerGui
+
+    -- Rainbow color cycle on the load time text
+    local hue = 0
+    local rainbowConn
+    rainbowConn = RunService.Heartbeat:Connect(function(dt)
+        hue = (hue + dt * 0.5) % 1 -- full cycle every ~2 seconds
+        loadTimeLabel.TextColor3 = Color3.fromHSV(hue, 1, 1)
+    end)
+
+    local slideInInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local slideOutInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+
+    local tweenIn = TweenService:Create(mainFrame, slideInInfo, {Position = UDim2.new(0.5, -170, 0, 20)})
+    local tweenOut = TweenService:Create(mainFrame, slideOutInfo, {Position = UDim2.new(0.5, -170, 0, -80)})
+
+    tweenIn:Play()
+
+    task.delay(4, function()
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            if rainbowConn then
+                rainbowConn:Disconnect()
+                rainbowConn = nil
+            end
+            screenGui:Destroy()
+        end)
+    end)
+end
+
+-- ========================================================================
+-- Optimized Loading: Apply FFlags BEFORE waiting for game to load
+-- so Roblox can use them as early as possible
+-- ========================================================================
+
+local function waitUntilFullyLoadedThenHide()
+    if not game:IsLoaded() then
+        game.Loaded:Wait()
+    end
+
+    local localPlayer = Players.LocalPlayer
+    if localPlayer then
+        if not localPlayer.Character then
+            localPlayer.CharacterAdded:Wait()
+        end
+    end
+
+    -- Reduced wait: 0.1s instead of 0.5s for faster reveal
+    task.wait(0.1)
+
+    -- Stop the clock right before we reveal the game
+    measuredLoadTime = os.clock() - scriptStartTime
+
+    hideBlackLoadingScreen()
+    showTopNotifier(measuredLoadTime)
+end
+
+task.spawn(showBlackLoadingScreen)
+
+-- ========================
+-- FFLAGS Configuration
+-- ========================
+local fflags = {
+    -- ===== FPS / Scheduler =====
+    ["DFIntTaskSchedulerTargetFps"] = "9999",
+    ["FFlagTaskSchedulerLimitTargetFpsToDevice"] = "False",
+    ["FFlagTaskSchedulerLimitTargetFpsTo2402"] = "False",
+    ["FFlagGameBasicSettingsFramerateCap5"] = "False",
+    ["FIntTaskSchedulerAutoThreadLimit"] = "8",
+    ["DFIntTaskSchedulerJobInitThreads"] = "8",
+    ["DFIntTaskSchedulerJobInGameThreads"] = "8",
+    ["FIntRuntimeMaxNumOfThreads"] = "1000000",
+    ["DFIntRuntimeConcurrency"] = "16",
+    ["FIntRuntimeMaxNumOfMutexes"] = "1000000",
+    ["FIntRuntimeMaxNumOfSemaphores"] = "1000000",
+    ["FIntRuntimeMaxNumOfLatches"] = "1000000",
+    ["FIntSimWorldTaskQueueParallelTasks"] = "20",
+
+    -- ===== Preloading / Asset Loading =====
+    ["FFlagEnableTextureStreaming"] = "True",
+    ["FFlagPreloadAllFonts"] = "True",
+    ["DFFlagEnableSoundPreloading"] = "True",
+    ["DFFlagEnableMeshPreloading"] = "True",
+    ["DFFlagEnableMeshPreloading2"] = "True",
+    ["DFFlagEnableTexturePreloading"] = "True",
+    ["DFIntAssetPreloading"] = "2147483647",
+    ["DFIntNumAssetsMaxToPreload"] = "2147483647",
+    ["FFlagAssetPreloadingIXP"] = "True",
+    ["DFFlagEnablePreloadAvatarAssets"] = "True",
+    ["DFIntPreloadAvatarAssets"] = "2147483647",
+    ["DFFlagTeleportClientAssetPreloadingEnabledIXP"] = "True",
+    ["DFFlagTeleportClientAssetPreloadingEnabledIXP2"] = "True",
+    ["DFFlagTeleportClientAssetPreloadingEnabled9"] = "True",
+    ["DFIntTeleportClientAssetPreloadingHundredthsPercentage"] = "100000",
+    ["DFIntTeleportClientAssetPreloadingHundredthsPercentage2"] = "100000",
+    ["DFFlagTeleportClientAssetPreloadingDoingExperiment"] = "True",
+    ["DFFlagTeleportClientAssetPreloadingDoingExperiment2"] = "True",
+    ["DFFlagTeleportPreloadingMetrics5"] = "True",
+    ["DFFlagPreloadAsyncSupportTexturePack"] = "True",
+    ["FFlagPreloadTextureItemsOption4"] = "True",
+    ["FFlagUseNewLuaPreloadAssets"] = "True",
+    ["DFFlagEnableScriptPreloadOnJoin"] = "True",
+    ["FFlagLuaAppsScriptPreload"] = "True",
+    ["DFFlagRemoveUnusedKtxMetadata"] = "True",
+    ["FFlagKtx2Support3"] = "True",
+    ["FFlagSlimContentProvider"] = "True",
+
+    -- ===== Fast Startup / Join =====
+    ["DFFlagLuaAppFastGameStartup"] = "True",
+    ["FFlagFastLuaAppStartup"] = "True",
+    ["FFlagAppShellAlwaysSkipExperienceLoadingScreen"] = "True",
+    ["FFlagEnableQuickGameLaunch"] = "True",
+    ["DFFlagEnableJoinDataDownloadOptimization"] = "True",
+    ["FIntJoinDataAdditionalDataCacheTimeoutSeconds"] = "0",
+    ["DFIntJoinDataCompressionLevel"] = "0",
+    ["DFIntJoinDataItemEstimatedCompressionRatioHundreths"] = "0",
+    ["DFIntServerFramesBetweenJoins"] = "1",
+    ["DFIntClusterSenderMaxJoinBandwidthBps"] = "2100000000",
+    ["DFIntClusterSenderMaxUpdateBandwidthBps"] = "2100000000",
+    ["DFIntClusterCompressionLevel"] = "0",
+    ["DFFlagAllowPropertyDefaultSkip"] = "True",
+    ["FFlagSlimPropertySet3"] = "True",
+    ["FFlagSlimService9"] = "True",
+
+    -- ===== Download Concurrency =====
+    ["DFIntMaxConcurrentDownloads"] = "64",
+    ["FIntContentProviderConcurrentDownloadCount"] = "64",
+    ["DFIntContentProviderTaskMaxCount"] = "64",
+    ["DFIntHttpsTimeoutScaleNumerator"] = "1",
+    ["DFFlagEnableRequestAsyncCompression"] = "false",
+    ["DFFlagNetworkUseZstdWrapper"] = "False",
+
+    -- ===== Texture Streaming =====
+    ["FFlagEnableTextureStreamingForCSG"] = "True",
+    ["DFFlagTextureStreamingPrefetchEnabled"] = "True",
+    ["DFIntTextureStreamingPrefetchMaxRadius"] = "0",
+    ["FFlagAdjustableTextureStreamingTargetMemory"] = "True",
+    ["DFIntTextureStreamingTargetMemoryBudgetMb"] = "512",
+    ["FFlagTM2SkipMipsForUnstreamable2"] = "True",
+    ["DFFlagDoNotSkipMipsBasedOnSystemMemoryPS"] = "True",
+    ["FIntDebugTextureManagerSkipMips"] = "8",
+    ["DFIntDebugLimitMinTextureResolutionWhenSkipMips"] = "8",
+    ["DFFlagTextureQualityOverrideEnabled"] = "True",
+    ["DFIntTextureQualityOverride"] = "0",
+    ["FFlagRenderUseTextureManager224"] = "False",
+
+    -- ===== Avatar / Outfit Cache =====
+    ["DFFlagEnableAvatarOutfitCaching"] = "True",
+    ["FFlagUserAvatarFetchOptimization"] = "True",
+    ["DFIntAvatarOutfitCacheSize"] = "100",
+    ["FFlagAvatarPipelineUseCache"] = "True",
+    ["DFFlagLoadCharacterLayeredClothingProperty2"] = "False",
+    ["DFFlagEnableDynamicHeadByDefault"] = "False",
+    ["FFlagKeepZeroInfluenceBones"] = "False",
+
+    -- ===== Deferred / Lazy Loading =====
+    ["FFlagDeferredUILoading"] = "True",
+    ["DFFlagLazyLoadInGameMenu"] = "True",
+    ["FFlagLuaMenuPerfImprovements"] = "True",
+    ["FFlagFixIGMTabTransitions"] = "True",
+    ["FFlagEnableInGameMenuChrome"] = "False",
+    ["FFlagEnableInGameMenuChromeABTest2"] = "False",
+    ["FFlagEnableInGameMenuDurationLogger"] = "False",
+
+    -- ===== Network / Replication =====
+    ["DFIntReplicatorSeparateVarThresholds"] = "True",
+    ["DFIntNetworkClusterPacketCacheNumParallelTasks"] = "8",
+    ["DFIntReplicationDataCacheNumParallelTasks"] = "8",
+    ["DFIntMegaReplicatorNumParallelTasks"] = "19",
+    ["DFIntMegaReplicatorNetworkQualityProcessorUnit"] = "10",
+    ["FFlagNextGenReplicatorEnabledRead"] = "true",
+    ["FFlagNextGenReplicatorEnabledRead2"] = "True",
+    ["FFlagNextGenReplicatorEnabledWrite"] = "true",
+    ["FFlagNextGenReplicatorEnabledWrite2"] = "True",
+    ["FFlagDebugNextGenReplicatorEnabledWriteCFrameColor"] = "true",
+    ["DFFlagNextGenRepRollbackOverbudgetPackets"] = "True",
+    ["DFFlagCorrectServerReplicatorStatsIP"] = "True",
+    ["DFFlagDebugLargeReplicatorDisableCompression"] = "True",
+    ["DFFlagDebugLargeReplicatorForceFullSend"] = "True",
+    ["FFlagDebugLargeReplicatorEnabled"] = "True",
+    ["FFlagDebugLargeReplicatorWrite"] = "True",
+    ["FFlagDebugLargeReplicatorRead"] = "True",
+    ["DFFlagReplicatorCheckReadTableCollisions"] = "True",
+    ["FFlagOnlyDecrementCompletenessIfReplicating"] = "True",
+    ["DFFlagCanClientReplicateProp"] = "False",
+    ["DFIntNetworkCluster"] = "1",
+    ["DFIntNetworkQualityResponderUnit"] = "10",
+    ["DFIntPlayerNetworkUpdateQueueSize"] = "20",
+    ["DFIntMaxProcessPacketsStepsPerCyclic"] = "5000",
+    ["DFIntMaxProcessPacketsStepsAccumulated"] = "0",
+    ["DFIntMaxFrameBufferSize"] = "4",
+    ["DFIntOverrideISRReplicatorStepBandwidthBytes"] = "131072",
+    ["DFIntServerBandwidthPlayerSampleRateFacsOverride"] = "2147483647",
+    ["DFIntGameNetCompressionLodByteBudgetThresholdPct"] = "0",
+    ["DFIntBufferCompressionThreshold"] = "100",
+
+    -- ===== RakNet / Ping / Bandwidth =====
+    ["DFFlagRakNetDecoupleRecvAndUpdateLoopShutdown"] = "True",
+    ["DFFlagRakNetDetectNetUnreachable"] = "True",
+    ["DFFlagRakNetDetectRecvThreadOverload"] = "True",
+    ["DFFlagRakNetUnblockSelectOnShutdownByWritingToSocket"] = "True",
+    ["DFFlagRakNetDisconnectNotification"] = "True",
+    ["DFFlagRakNetCalculateApplicationFeedback2"] = "True",
+    ["DFFlagSampleAndRefreshRakPing"] = "True",
+    ["DFIntRakNetLoopMs"] = "1",
+    ["DFIntRakNetSelectTimeoutMs"] = "1",
+    ["DFIntRakNetApplicationFeedbackScaleUpThresholdPercent"] = "0",
+    ["DFIntRakNetApplicationFeedbackScaleUpFactorHundredthPercent"] = "0",
+    ["DFIntRakNetApplicationFeedbackMaxSpeedBPS"] = "0",
+    ["DFIntRakNetNakResendDelayMsMax"] = "1",
+    ["DFIntRakNetClockDriftAdjustmentPerPingMillisecond"] = "100",
+    ["DFIntRaknetBandwidthInfluxHundredthsPercentageV2"] = "10000",
+    ["DFIntSendRakNetStatsInterval"] = "2147483647",
+    ["DFIntClientPacketExcessMicroseconds"] = "1000",
+    ["DFIntClientPacketMaxDelayMs"] = "1",
+    ["DFIntClientPacketMaxFrameMicroseconds"] = "200",
+    ["DFIntTargetTimeDelayFacctorTenths"] = "25",
+    ["DFIntWaitOnUpdateNetworkLoopEndedMS"] = "100",
+    ["DFIntWaitOnRecvFromLoopEndedMS"] = "10",
+
+    -- ===== SignalR / Hub =====
+    ["DFIntSignalRCoreError"] = "1",
+    ["DFIntSignalRCore"] = "1",
+    ["DFIntSignalRCoreTimerMs"] = "50",
+    ["DFIntSignalRCoreRpcQueueSize"] = "4096",
+    ["DFIntSignalRCoreNetworkHandler"] = "1",
+    ["DFIntSignalRCoreHubConnectionDisconnectInfoHundredthsPercent"] = "10",
+    ["DFIntSignalRCoreHandshakeTimeoutMs"] = "1000",
+    ["DFIntSignalRCoreServerTimeoutMs"] = "5000",
+    ["DFIntSignalRCoreKeepAlivePingPeriodMs"] = "1000",
+    ["DFIntSignalRCoreHubMaxBackoffMs"] = "500",
+    ["DFIntSignalRCoreHubBaseRetryMs"] = "50",
+    ["DFIntSignalRHeartbeatIntervalSeconds"] = "1",
+    ["DFIntSignalRHubConnectionConnectTimeoutMs"] = "7000",
+    ["DFIntSignalRHubConnectionBaseRetryTimeMs"] = "50",
+    ["DFIntSignalRHubConnectionMaxRetryTimeMs"] = "1000",
+    ["DFIntSignalRHubConnectionHeartbeatTimerRateMs"] = "1000",
+
+    -- ===== Luau / Codegen =====
+    ["FFlagLuauCodegen"] = "True",
+    ["FFlagLuauCodegenFull"] = "True",
+    ["FFlagLuauCodegenEnableAll"] = "True",
+    ["FFlagLuauInstructionReordering"] = "True",
+    ["FFlagLuauVector3FastPath"] = "True",
+    ["FFlagDebugCodegenOptSize"] = "True",
+    ["FFlagFasterPreciseTime4"] = "True",
+    ["FFlagSortKeyOptimization"] = "True",
+    ["FFlagMessageBusCallOptimization"] = "True",
+    ["FFlagPushFrameTimeToHarmony"] = "True",
+    ["FFlagRenderCBRefactor2"] = "True",
+
+    -- ===== Graphics / Rendering =====
+    ["FIntDebugForceMSAASamples"] = "0",
+    ["FIntDebugFRMOptionalMSAALevelOverride"] = "0",
+    ["DFIntDebugFRMQualityLevelOverride"] = "0",
+    ["FFlagDisablePostProcess"] = "True",
+    ["FFlagDisablePostFx"] = "True",
+    ["DFFlagRenderBloomMakeResolutionIndependent"] = "False",
+    ["DFFlagRenderSunRaysMakeResolutionIndependent"] = "False",
+    ["FFlagDisableHQShadersLowEndDx112"] = "True",
+    ["FFlagGraphicsCheckComputeSupport"] = "False",
+    ["FFlagGraphicsEnableD3D10Compute"] = "True",
+    ["FFlagDebugGraphicsPreferD3D11"] = "True",
+    ["FFlagDebugGraphicsPreferD3D11FL10"] = "True",
+    ["FFlagDebugGraphicsDisableDirect3D11"] = "False",
+    ["FFlagHandleAltEnterFullscreenManually"] = "False",
+    ["FIntFullscreenTitleBarTriggerDelayMillis"] = "3600000",
+    ["FFlagFastGPULightCulling3"] = "True",
+    ["FFlagDebugForceFSMCPULightCulling"] = "True",
+    ["FFlagMSRendererLightGridOptimization"] = "True",
+    ["DFFlagLightGridSimdNew3"] = "True",
+    ["DFFlagProbesStaggerUpdateCalls"] = "True",
+    ["FFlagNewLightAttenuation"] = "True",
+    ["FFlagDebugForceFutureIsBrightPhase3"] = "True",
+    ["FFlagDebugForceFutureIsBrightPhase2"] = "True",
+    ["FFlagRenderDynamicResolutionScale11"] = "True",
+    ["FFlagFRMRefactor"] = "False",
+    ["FFlagDebugDisplayFPS"] = "True",
+    ["FIntSSAOMipLevels"] = "0",
+    ["FIntRenderShadowIntensity"] = "0",
+    ["FIntRenderShadowmapBias"] = "0",
+    ["FIntRenderLocalLightUpdatesMax"] = "1",
+    ["FIntRenderLocalLightFadeInMs"] = "0",
+    ["FFlagDebugRenderCollectGpuCounters"] = "True",
+    ["FFlagFixGraphicsQuality"] = "True",
+    ["FFlagCommitToGraphicsQualityFix"] = "True",
+    ["FFlagRenderEnableHalfsPVR"] = "False",
+    ["FFlagEnableAudioPannerFiltering"] = "True",
+    ["FFlagRenderFixFog"] = "true",
+
+    -- ===== CSG / LOD =====
+    ["DFIntCSGLevelOfDetailSwitchingDistanceL23"] = "0",
+    ["DFIntCSGLevelOfDetailSwitchingDistanceL34"] = "0",
+    ["DFIntCSGLevelOfDetailSwitchingDistanceL12"] = "0",
+    ["DFIntCSGLevelOfDetailSwitchingDistance"] = "0",
+    ["DFIntCSGLevelOfDetailSwitchingDistanceStatic"] = "0",
+    ["DFIntHACDPointSampleDistApartTenths"] = "2147483647",
+    ["DFFlagDebugSkipMeshVoxelizer"] = "True",
+    ["FFlagSimCSGV3IncrementalTriangulationStreamingCompression"] = "False",
+    ["FFlagSortPhysicsCollisionGroups"] = "True",
+    ["FFlagOptimizePhysCollide"] = "True",
+    ["FFlagNewOptimizeNoCollisionPrimitiveInMidphase660"] = "True",
+    ["DFFlagOptimizeNoCollisionPrimitiveInMidphaseCrash"] = "True",
+    ["DFFlagJointIrregularityOptimization"] = "true",
+
+    -- ===== Grass / Terrain =====
+    ["FFlagEnableTerrainMaterialsS2"] = "False",
+    ["FIntTerrainArraySliceSize"] = "0",
+    ["FIntRenderGrassHeightScalar"] = "0",
+    ["FIntFRMMinGrassDistance"] = "0",
+    ["FIntGrassMovementReducedMotionFactor"] = "0",
+    ["FFlagGlobalWindRendering"] = "False",
+    ["FFlagGlobalWindActivated"] = "False",
+    ["FStringTerrainMaterialTable2022"] = "",
+    ["FStringTerrainMaterialTablePre2022"] = "",
+    ["FStringPartTexturePackTablePre2022"] = "",
+    ["DFFlagDebugRenderForceTechnologyVoxel"] = "True",
+
+    -- ===== Performance Control =====
+    ["FFlagEnablePerformanceControlService"] = "True",
+    ["DFFlagPerformanceControlEnableMemoryProbing3"] = "True",
+    ["DFIntPerformanceControlFrameTimeMaxUtility"] = "-1",
+    ["DFIntPerformanceControlFrameTimeMax"] = "1",
+    ["DFIntPerformanceControlTextureQualityBestUtility"] = "-1",
+    ["DFIntPerformanceControlReportingPeriodInMs"] = "700",
+    ["DFIntNumFramesAllowedToBeAboveError"] = "1",
+    ["DFIntMaxAverageFrameDelayExceedFactor"] = "1",
+    ["DFIntGraphicsOptimizationModeMaxFrameTimeTargetMs"] = "25",
+    ["DFIntFrameRateMSToReduceTouchEvents"] = "30",
+    ["DFFlagDebugPerfMode"] = "True",
+    ["DFIntMemoryUtilityCurveTotalMemoryReserve"] = "0",
+    ["DFIntMemoryUtilityCurveNumSegments"] = "100",
+    ["DFIntMemoryUtilityCurveBaseHundrethsPercent"] = "10000",
+    ["DFIntMaxSpeedDeltaMillis"] = "1",
+    ["FIntMaxSpeedDeltaMillis"] = "1",
+
+    -- ===== Telemetry Disable =====
+    ["FFlagDisableTelemetryOnJoin"] = "True",
+    ["DFFlagDeferTelemetryUntilAfterLoad"] = "True",
+    ["FFlagDebugDisableTelemetryV2Event"] = "True",
+    ["FFlagDebugDisableTelemetryV2Stat"] = "True",
+    ["FFlagDebugDisableTelemetryPoint"] = "True",
+    ["FFlagEnableTelemetryProtocol"] = "False",
+    ["FFlagEnableTelemetryService1"] = "False",
+    ["FFlagOpenTelemetryEnabled2"] = "False",
+    ["FFlagEnableTelemetryServicePlaySessionInfo"] = "False",
+    ["FFlagEnableTelemetryServiceMemoryCPUInfo"] = "False",
+    ["DFFlagGraphicsQualityUsageTelemetry"] = "False",
+    ["DFFlagReportAssetRequestV1Telemetry"] = "False",
+    ["DFFlagAddMachineIDInstallerTelemetry"] = "False",
+    ["DFFlagRccLoadSoundLengthTelemetryEnabled"] = "False",
+    ["DFFlagBrowserTrackerIdTelemetryEnabled"] = "False",
+    ["DFFlagAudioDeviceTelemetry"] = "False",
+    ["DFFlagAddPlaySessionIdTelemetry"] = "False",
+    ["DFFlagAddPlaySessionIdToSimConstraintTelemetryEvent"] = "False",
+    ["DFFlagAddUserIdToSessionTracking"] = "False",
+    ["DFIntLightstepHTTPTransportHundredthsPercent2"] = "0",
+    ["DFFlagEnableLightstepReporting2"] = "False",
+    ["DFIntPhysicsAnalyticsHighFrequencyIntervalSec"] = "20",
+    ["DFIntClientLightingTechnologyChangedTelemetryHundredthsPercent"] = "0",
+    ["DFIntContentProviderPreloadHangTelemetryHundredthsPercentage"] = "0",
+    ["DFIntTrackCountryRegionAPIHundredthsPercent"] = "10000",
+    ["DFIntVisibilityCheckRayCastLimitPerFrame"] = "10",
+    ["DFStringTelegrafHTTPTransportUrl"] = "null",
+    ["DFStringAltTelegrafHTTPTransportUrl"] = "null",
+    ["DFStringLightstepToken"] = "null",
+    ["DFStringLightstepHTTPTransportUrlPath"] = "null",
+    ["DFStringLightstepHTTPTransportUrlHost"] = "null",
+    ["DFStringRobloxAnalyticsURL"] = "null",
+    ["DFStringTelemetryV2Url"] = "null",
+    ["DFStringCrashUploadToBacktraceBaseUrl"] = "null",
+    ["DFStringCrashUploadToBacktraceWindowsPlayerToken"] = "null",
+    ["DFStringCrashUploadToBacktraceMacPlayerToken"] = "null",
+    ["FStringCoreScriptBacktraceErrorUploadToken"] = "null",
+
+    -- ===== Misc / UI =====
+    ["FFlagEnableCommandAutocomplete"] = "False",
+    ["FFlagBetaBadgeLearnMoreLinkFormview"] = "False",
+    ["FFlagControlBetaBadgeWithGuac"] = "False",
+    ["FFlagVoiceBetaBadge"] = "False",
+    ["FFlagEnablePartyVoiceOnlyForEligibleUsers"] = "False",
+    ["FFlagEnablePartyVoiceOnlyForUnfilteredThreads"] = "False",
+    ["FFlagWindowsLaunchTypeAnalytics"] = "False",
+    ["FFlagVideoServiceAddHardwareCodecMetrics"] = "True",
+    ["DFFlagDPIScale"] = "False",
+    ["DFFlagDisableDPIScale"] = "False",
+    ["FIntFontSizePadding"] = "3",
+    ["FFlagEnablePreferredTextSizeStyleFixesInAppShell3"] = "True",
+    ["FFlagEnablePreferredTextSizeGuiService"] = "True",
+    ["FFlagEnablePreferredTextSizeScale"] = "True",
+    ["FFlagEnablePreferredTextSizeSettingInMenus2"] = "True",
+    ["FFlagEnablePreferredTextSizeStyleFixesInAvatarExp"] = "True",
+    ["FIntPreferredTextSizeSettingBetaFeatureRolloutPercent"] = "100",
+    ["FFlagUserShowGuiHideToggles"] = "True",
+    ["FFlagLuaAppLegacyInputSettingRefactor"] = "True",
+    ["FFlagBetterTrackpadScrolling"] = "True",
+    ["FFlagUserBetterInertialScrolling"] = "True",
+    ["FFlagFixSensitivityTextPrecision"] = "False",
+    ["FFlagFixIGMTabTransitions"] = "True",
+    ["DFIntCanHideGuiGroupId"] = "32380007",
+    ["FFlagEnablePreferredTextSizeStyleFixesInAppShell3"] = "True",
+    ["FIntCameraMaxZoomDistance"] = "2147483647",
+    ["FIntRobloxGuiBlurIntensity"] = "0",
+    ["FIntUnifiedLightingBlendZone"] = "0",
+    ["FFlagFixTextureCompositorFramebufferManagement2"] = "True",
+    ["FFlagDebugCheckRenderThreading"] = "True",
+    ["FFlagDebugForceGenerateHSR"] = "True",
+    ["FIntHSRClusterSymmetryDistancePercent"] = "10000",
+    ["DFFlagOptimizeClusterCacheAlloc"] = "True",
+    ["FIntUITextureMaxUpdateDepth"] = "1",
+    ["FIntEnableVisBugChecksHundredthPercent27"] = "100",
+    ["FIntOverrideISRReplicatorStepBandwidthBytes"] = "131072",
+    ["FIntVertexSmoothingGroupTolerance"] = "0",
+    ["FFlagFixOutdatedTimeScaleParticles"] = "False",
+    ["FFlagFixOutdatedParticles2"] = "False",
+    ["FFlagFixParticleAttachmentCulling"] = "False",
+    ["DFFlagAudioUseVolumetricPanning"] = "True",
+    ["DFFlagAudioEnableVolumetricPanningForMeshes"] = "True",
+    ["DFIntVoiceChatVolumeThousandths"] = "5000",
+    ["FFlagLoginPageOptimizedPngs"] = "True",
+    ["FFlagDebugAvatarChatVisualization"] = "True",
+    ["FStringGetPlayerImageDefaultTimeout"] = "1",
+    ["FStringVoiceBetaBadgeLearnMoreLink"] = "null",
+    ["FStringGamesUrlPath"] = "/games/",
+    ["FIntActivatedCountTimerMSMouse"] = "0",
+    ["FIntActivatedCountTimerMSKeyboard"] = "0",
+    ["FIntCAP1209DataSharingTOSVersion"] = "0",
+    ["FIntCAP1544DataSharingUserRolloutPercentage"] = "0",
+    ["DFIntSignalRCoreHubConnectionDisconnectInfoHundredthsPercent"] = "10",
+
+    -- ===== Extra Undocumented =====
+    ["DebugLimitMinTextureResolutionWhenSkipMips"] = "2147483647",
+    ["DoNotSkipMipsBasedOnSystemMemoryPS"] = "True",
+    ["TM2SkipMipsForUnstreamable2"] = "True",
+    ["RenderUseTextureManager224"] = "False",
+    ["DebugTextureManagerSkipMips"] = "9",
+    ["EnablePowerTraceModule"] = "True",
+    ["IncludePowerSaverMode"] = "True",
+    ["DebugFRMQualityLevelOverride"] = "1",
+}
+
+-- ========================================================================
+-- 3. Actually apply the FFlags
+-- ========================================================================
+local function getFFlagSetter()
+    local candidates = {
+        "setfflag",
+        "setfastflag",
+        "set_fflag",
+        "setFFlag",
+        "fflag",
+        "mfflags",
+    }
+
+    for _, name in ipairs(candidates) do
+        local fn = rawget(getfenv(), name) or (getgenv and getgenv()[name])
+        if type(fn) == "function" then
+            return fn
+        end
+    end
+    return nil
+end
+
+local function applyFFlags()
+    local setter = getFFlagSetter()
+
+    if not setter then
+        warn("[Sxlvatore Optimizer] No FFlag-setting function found in this environment. "
+            .. "FFlags were NOT applied. Check your executor's documentation for the "
+            .. "correct global function name (commonly setfflag/setfastflag).")
+        return 0
+    end
+
+    local applied, failed = 0, 0
+    for flagName, flagValue in pairs(fflags) do
+        local ok = pcall(function()
+            setter(flagName, flagValue)
+        end)
+        if ok then
+            applied += 1
+        else
+            failed += 1
+        end
+    end
+
+    print(string.format("[Sxlvatore Optimizer] FFlags applied: %d, failed: %d", applied, failed))
+    return applied
+end
+
+-- Apply FFlags first (before loading wait) for maximum effect
+task.spawn(applyFFlags)
+-- Then wait for the game to be loaded and hide the screen
+task.spawn(waitUntilFullyLoadedThenHide)
