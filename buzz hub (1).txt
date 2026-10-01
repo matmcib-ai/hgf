@@ -24,10 +24,10 @@ task.spawn(function()
         ["los sekolahs"]=true,["guest 666"]=true,["los amigos"]=true,
         ["fragrama and chocrama"]=true,["popcuru and fizzuru"]=true,["cloverat clapat"]=true,
         ["la food combinasion"]=true,["cash or card"]=true,["garama and madundung"]=true,
-        ["festive 67"]=true,["celestial pegasus"]=true,["la secret combinasion"]=true,
-        ["los hotspotsitos"]=true,["chillin chili"]=true,["jolly jolly sahur"]=true,
+        ["Hydra Serpent"]=true,["celestial pegasus"]=true,["la secret combinasion"]=true,
+        ["los hotspotsitos"]=true,[""]=true,["jolly jolly sahur"]=true,
         ["money money reindeer"]=true,["hopilikalika hopilikalako"]=true,["tralaledon"]=true,
-        ["celularcini viciosini"]=true,["ventoliero pavonero"]=true,["los spaghettis"]=true,
+        ["celularcini viciosini"]=true,["ventoliero pavonero"]=true,["Rubiko and Kubiko"]=true,
         ["la easter grande"]=true,["nacho spyder"]=true,["lavadorito spinito"]=true,
         ["ketchuru and musturu"]=true,["la lucky grande"]=true,["la romantic grande"]=true,
         ["swaggy bros"]=true,["orcaledon"]=true,["rosetti tualetti"]=true,
@@ -55,7 +55,7 @@ task.spawn(function()
                 myPlot = p; _G.__SXE_MyPlot = p.Name; break
             end
         end
-    end
+    endw
     -- Process all plots: strip own base only, plot destruction handled by SRC
     for _, p in ipairs(plots:GetChildren()) do
         local cp = p:FindFirstChild("CashPad")
