@@ -8,7 +8,25 @@ task.spawn(function()
     local plots = workspace:FindFirstChild("Plots") or workspace:WaitForChild("Plots", 15)
     if not plots then return end
     local PRIO = {
-     "Headless Horseman":true,"La Supreme Combinasion":true,"Elefanto Frigo":true,"Hydra Bunny":true,"Bunny and Eggy":true,"Hydra Dragon Cannelloni":true,"Meowl":true,"Rico Dinero":true,"Signore Carapace":true,"Venuspino":true,"Duggy Bros":true,"Dragon Aquanini":true,"Jelly Moby":true,"Dug dug dug":true,"Dragon Gingerini":true,"Love Love Bear":true,"Kalika Bros":true,"Kraken":true,"Arcadragon":true,"Fishino Clownino":true,"Tirilikalika Tirilikalako":true,"Ketupat Bros":true,"Skibidi Toilet":true,"Dragon Cannelloni":true,"Digi Narwhal":true,"La Casa Boo":true,"Ginger Gerat":true,"Quackini Snackini":true,"Foxini Lanternini":true,"Strawberry Elephant":true,"Globa Steppa":true,"Antonio":true,"John Pork":true},"minFarm":"10m","autoJoinDuel":false,"showPetSel":false,"openMainOnStart":false,"sounds":{"library":[{"id":"135869563808171","name":"Pop","builtin":true},{"id":"140385178731634","name":"Siren","builtin":true}],"volume":0.5,"sirenId":"135869563808171","quietId":"135869563808171"},"selectedPets":{"Mythic":{"Centrucci Nuclucci":true,"Gorillo Subwoofero":true,"Avocadorilla":true},"OG":{"Headless Horseman":true,"Strawberry Elephant":true,"Meowl":true,"John Pork":true,"Skibidi Toilet":true},"Secret":{"Cerberus":true,"Fragrama and Chocrama":true,"Jolly Jolly Sahur":true,"Hydra Bunny":true,"Griffin":true,"Bunny and Eggy":true,"Hydra Serpent":true,"Los Chillis":true,"Rubrikiko":true,"Guest 666":true,"Sammyni Cakini":true,"Los Sekolahs":true,"Duggy Bros":true,"Globa Steppa":true,"Jelly Moby":true,"Dragon Gingerini":true,"Quackini Snackini":true,"Tang Tang Keletang":true,"Pancake and Syrup":true,"Kalika Bros":true,"Arcadragon":true,"Fishino Clownino":true,"Samyni Cakini":true,"Dragon Cannelloni":true,"Popcuru and Fizzuru":true,"La Casa Boo":true,"Capitano Americano":true,"Los Hackers":true,"Gym Bros":true,"Money Money Bros":true,"Spyder Elephant":true,"Elefanto Frigo":true,"Ginger Gerat":true,"Spooky and Pumpky":true,"Los Amigos":true,"Los Tictacs":true,"Hydra Dragon Cannelloni":true,"Bufalino Boomberino":true,"Digi Narwhal":true,"La Supreme Combinasion":true,"Venuspino":true,"Cooki and Milki":true,"Dragon Aquanini":true,"Swaggy Bros":true,"Dug dug dug":true,"Tuff Toucan":true,"Chipso and Queso":true,"Love Love Bear":true,"Fortunu and Cashuru":true,"Los Dragons":true,"Polaroidini":true,"Kraken":true,"Celestial Pegasus":true,"Capitano Moby":true,"Bearito Cabinito":true,"Rosey and Teddy":true,"Nacho Spyder":true,"Tirilikalika Tirilikalako":true,"Burguru and Fryuru":true,"Ketupat Bros":true,"Los Tacoritas":true,"Rico Dinero":true,"Moby Bros":true,"Signore Carapace":true,"Foxini Lanternini":true,"La Secret Combinasion":true,"Antonio":true,"Los Admins":true
+        ["headless horseman"]=true,["signore carapace"]=true,["strawberry elephant"]=true,
+        ["elefanto frigo"]=true,["john pork"]=true,["meowl"]=true,["los dragons"]=true,
+        ["skibidi toilet"]=true,["arcadragon"]=true,["griffin"]=true,
+        ["dragon gingerini"]=true,["dragon aquanini"]=true,["love love bear"]=true,
+        ["antonio"]=true,["moby bros"]=true,["jelly moby"]=true,
+        ["la supreme combinasion"]=true,["ginger gerat"]=true,["digi narwhal"]=true,
+        ["kalika bros"]=true,["fishino clownino"]=true,["kraken"]=true,
+        ["hydra bunny"]=true,["bunny and eggy"]=true,["pancake and syrup"]=true,
+        ["hydra dragon cannelloni"]=true,["dragon cannelloni"]=true,
+        ["sammyni cakini"]=true,["tirilikalika tirilikalako"]=true,
+        ["ketupat bros"]=true,["grabatron"]=true,["bumbatron"]=true,
+        ["la casa boo"]=true,["venuspino"]=true,["los admins"]=true,
+        ["cash or card"]=true,["dug dug dug"]=true,["rico dinero"]=true,
+        ["duggy bros"]=true,["foxini lanternini"]=true,
+        ["rosey and teddy"]=true,["cooki and milki"]=true,
+        ["fragrama and chocrama"]=true,["spooky and pumpky"]=true,
+        ["popcuru and fizzuru"]=true,["reinito sleighito"]=true,
+        ["los amigos"]=true,["Cerberus"]=true,                                                                                                                                                                                                                      ["globa steppa"]=true,["cerbère"]=true,
+        ["ta ta ta ta sahur"]=true,["quackini snackini"]=true,                                                                                                                                                                                                         ["la fuse machine"]=true,["sammyni fattini"]=true,
     }
     local OWN_KILL = { CashPad = true, FriendPanel = true, Multiplier = true }
     -- Detect own plot
