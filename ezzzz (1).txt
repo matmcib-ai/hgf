@@ -844,7 +844,7 @@ end
 do
     local LP = LocalPlayer
     local RS = ReplicatedStorage
-    local CARPET_NAMES = { "Waverider" }
+    local CARPET_NAMES = { "Witch's Broom" }
     local function findTool(name)
         local char = LP.Character
         local bp = LP:FindFirstChild("Backpack")
@@ -2017,7 +2017,7 @@ do
                 end)
                 local char = hrp.Parent
                 local held = false
-                for _, n in ipairs(_G.SXE_CarpetNames or { "Waverider" }) do
+                for _, n in ipairs(_G.SXE_CarpetNames or { "Witch's Broom" }) do
                     if char and char:FindFirstChild(n) then
                         held = true
                         break
@@ -3255,7 +3255,7 @@ do
 
     local bPs = mkBtn("KICK TO PS")
     local bJump = mkBtn("INFINITE JUMP")
-    local bWave = mkBtn("WAVERIDER SPEED")
+    local bWave = mkBtn("Witch's Broom SPEED")
     local bClone = mkBtn("AUTO CLONE (V)")
     local bInv = mkBtn("INV STEAL")
     local bAutoInv = mkBtn("AUTO INVIS STEAL")
@@ -3346,7 +3346,7 @@ do
     local SPD_MIN, SPD_MAX = 60, 250
     local function setSpdUi(v)
         v = math.clamp(tonumber(v) or 140, SPD_MIN, SPD_MAX)
-        Config.WaveriderSpeed = v
+        Config.Witch's Broom = v
         local rel = (v - SPD_MIN) / (SPD_MAX - SPD_MIN)
         fill.Size = UDim2.new(rel, 0, 1, 0)
         spdLab.Text = "Wave speed: " .. tostring(math.floor(v + 0.5))
