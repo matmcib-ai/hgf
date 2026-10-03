@@ -1,0 +1,3114 @@
+-- Deobfuscated by tuffshioli on Discord
+-- Detected obfuscation: Luraph v15
+-- Local names are inferred from use (the original names are not in the bytecode)
+
+local v, v2, v3, localPlayer, playerGui, tbl, fn, codeSniper, tbl2, v4
+local v5, autoSubmit, submitAfter, tbl3, str, v6, connection, connection2, tbl4, retypeInvalid
+local riddleSolver, str2, v7, v8, n, n2, str3, n3, n4, fn2
+local fn3, fn4, fn5, v9, fn6, fn7, fn8
+
+do
+	local fn9 = cloneref or function(arg)
+		return arg
+	end
+
+	local v10 = fn9(game:GetService("Players"))
+	v = fn9(game:GetService("ReplicatedStorage"))
+	v2 = fn9(game:GetService("RunService"))
+	v3 = fn9(game:GetService("UserInputService"))
+	local v11 = fn9(game:GetService("HttpService"))
+	localPlayer = v10.LocalPlayer
+	playerGui = localPlayer:WaitForChild("PlayerGui")
+
+	if getgenv and getgenv().StopAura then
+		pcall(getgenv().StopAura)
+	end
+
+	tbl = {
+		codeSniper = true,
+		autoSubmit = true,
+		submitAfter = 3,
+		retypeInvalid = false,
+		riddleSolver = false,
+	}
+
+	pcall(function()
+		if type(isfile) == "function" and type(readfile) == "function" and isfile("ace_code_sniper_auto_redeem_test_config.json") then
+			local data = v11:JSONDecode(readfile("ace_code_sniper_auto_redeem_test_config.json"))
+
+			if type(data) == "table" then
+				if type(data.codeSniper) == "boolean" then
+					tbl.codeSniper = data.codeSniper
+				end
+
+				if type(data.autoSubmit) == "boolean" then
+					tbl.autoSubmit = data.autoSubmit
+				end
+
+				if type(data.submitAfter) == "number" then
+					tbl.submitAfter = math.clamp(math.floor(data.submitAfter), 1, 4)
+				end
+
+				if type(data.retypeInvalid) == "boolean" then
+					tbl.retypeInvalid = data.retypeInvalid
+				end
+
+				if type(data.riddleSolver) == "boolean" then
+					tbl.riddleSolver = data.riddleSolver
+				end
+			end
+		end
+	end)
+
+	fn = function()
+		if type(writefile) ~= "function" then
+			return
+		end
+
+		pcall(function()
+			writefile("ace_code_sniper_auto_redeem_test_config.json", v11:JSONEncode({
+				codeSniper = tbl.codeSniper,
+				autoSubmit = tbl.autoSubmit,
+				submitAfter = tbl.submitAfter,
+				retypeInvalid = tbl.retypeInvalid,
+				riddleSolver = tbl.riddleSolver,
+			}))
+		end)
+	end
+
+	codeSniper = tbl.codeSniper
+	tbl2 = {}
+	v4 = nil
+	v5 = nil
+	autoSubmit = tbl.autoSubmit
+	submitAfter = tbl.submitAfter
+	tbl3 = {}
+	str = ""
+	v6 = nil
+	connection = nil
+	connection2 = nil
+	tbl4 = {}
+	retypeInvalid = tbl.retypeInvalid
+	riddleSolver = tbl.riddleSolver
+	str2 = ""
+	v7 = nil
+	v8 = nil
+	n = 0
+	n2 = 0
+	str3 = "EXACT"
+	n3 = 1
+	local getupvalues_ = debug and debug.getupvalues or getupvalues
+	local v12 = getconnections
+	local getconnections_
+
+	if v12 then
+		getconnections_ = v12
+	else
+		getconnections_ = debug and debug.getconnections
+	end
+
+	local setupvalue_ = debug and debug.setupvalue or setupvalue
+	local request_ = syn and syn.request or http and http.request or request or http_request
+	local str4 = "https://sab-riddle-solver.xyrcheatz.workers.dev"
+	local str5 = "0facce8d7ac3a4b6fc4b6ae068b3b219883009780cb2ca31"
+	local str6 = "qwen"
+	local n5 = 0
+	local n6 = 0
+	local n7 = 0
+	n4 = 0
+
+	local function fn10(arg)
+		return tostring(arg or ""):match("^%s*(.-)%s*$") or ""
+	end
+
+	local function fn11(arg, arg2)
+		if not request_ then
+			return nil
+		end
+
+		local ok, result = pcall(request_, {
+			Url = str4 .. arg,
+			Method = "POST",
+			Headers = { ["Content-Type"] = "application/json", Authorization = "Bearer " .. str5 },
+			Body = v11:JSONEncode(arg2),
+		})
+
+		if not ok or type(result) ~= "table" then
+			return nil
+		end
+		local body = result.Body or result.body
+		if type(body) ~= "string" then
+			return nil
+		end
+
+		local ok2, result2 = pcall(function()
+			return v11:JSONDecode(body)
+		end)
+
+		if ok2 and type(result2) == "table" then
+			return result2
+		end
+		return nil
+	end
+
+	fn2 = function(arg, arg2)
+		n5 += 1
+
+		if setStatus then
+			setStatus("AI solving riddle...", COLORS and COLORS.Text or Color3.fromRGB(200, 200, 200))
+		end
+
+		task.spawn(function()
+			local solve = fn11("/solve", { message = arg, model = str6, history = {} })
+			n5 = math.max(0, n5 - 1)
+			if not codeSniper then
+				return
+			end
+			local aiAnswer = solve and solve.riddle == true and type(solve.answers) == "table" and solve.answers[1] and fn10(solve.answers[1]) or nil
+
+			if aiAnswer and #aiAnswer > 0 and riddleSolver and arg2 >= n7 then
+				n7 = arg2
+				n6 += 1
+
+				if setStatus then
+					setStatus("AI answer: " .. aiAnswer, COLORS and COLORS.Green or Color3.fromRGB(0, 255, 0))
+				end
+
+				if flashCode then
+					flashCode(aiAnswer)
+				end
+
+				typeAndSubmitCode(aiAnswer)
+			elseif not aiAnswer or #aiAnswer == 0 then
+				if setStatus then
+					setStatus("AI: no answer found", COLORS and COLORS.Red or Color3.fromRGB(255, 0, 0))
+				end
+			end
+		end)
+	end
+
+	fn3 = nil
+	fn4 = nil
+	fn5 = nil
+	v9 = nil
+
+	local function fn12(arg)
+		for i = 1, 10 do
+			if not arg then
+				break
+			end
+
+			if arg.Name == "ACECodeSniperUI" or arg.Name == "SourcesHubRedeemerGui" then
+				return true
+			end
+			arg = arg.Parent
+		end
+
+		return false
+	end
+
+	fn6 = function(arg)
+		while arg do
+			if arg:IsA("GuiObject") and not arg.Visible then
+				return false
+			end
+
+			if arg:IsA("ScreenGui") then
+				return arg.Enabled
+			end
+			arg = arg.Parent
+		end
+
+		return true
+	end
+
+	local function fn13(arg)
+		local tbl5 = {}
+
+		for _, child in ipairs(arg:GetChildren()) do
+			if child:IsA("ScreenGui") and child.Enabled and not fn12(child) then
+				for _, descendant in ipairs(child:GetDescendants()) do
+					if descendant:IsA("TextBox") and not fn12(descendant) then
+						tbl5[#tbl5 + 1] = descendant
+					end
+				end
+			end
+		end
+
+		return tbl5
+	end
+
+	local function fn14(arg)
+		local tbl5 = {}
+
+		for _, child in ipairs(arg:GetChildren()) do
+			if child:IsA("ScreenGui") and child.Enabled and not fn12(child) then
+				for _, descendant in ipairs(child:GetDescendants()) do
+					if (descendant:IsA("TextButton") or descendant:IsA("ImageButton")) and not fn12(descendant) then
+						local str7 = descendant.Name:lower()
+						local str8 = (descendant.Parent and descendant.Parent.Name or ""):lower()
+
+						if (str7:find("code") or str7:find("redeem") or str8:find("code") or str8:find("redeem")) and fn6(descendant) then
+							tbl5[#tbl5 + 1] = descendant
+						end
+					end
+				end
+			end
+		end
+
+		return tbl5
+	end
+
+	local function fn15(arg)
+		if not arg then
+			return false
+		end
+		local tbl5 = {}
+
+		tbl5[#tbl5 + 1] = function()
+			arg.MouseButton1Click:Fire()
+		end
+
+		tbl5[#tbl5 + 1] = function()
+			arg.Activated:Fire()
+		end
+
+		if typeof(firesignal) == "function" then
+			tbl5[#tbl5 + 1] = function()
+				firesignal(arg.MouseButton1Click)
+			end
+
+			tbl5[#tbl5 + 1] = function()
+				firesignal(arg.Activated)
+			end
+		end
+
+		if typeof(getconnections_) == "function" then
+			tbl5[#tbl5 + 1] = function()
+				local ok, result = pcall(getconnections_, arg.MouseButton1Click)
+
+				if ok and type(result) == "table" then
+					for _, v13 in ipairs(result) do
+						pcall(function()
+							v13:Fire()
+						end)
+					end
+				end
+
+				local ok2, result2 = pcall(getconnections_, arg.Activated)
+
+				if ok2 and type(result2) == "table" then
+					for _, v13 in ipairs(result2) do
+						pcall(function()
+							v13:Fire()
+						end)
+					end
+				end
+			end
+		end
+
+		if typeof(fireclick) == "function" then
+			tbl5[#tbl5 + 1] = function()
+				fireclick(arg)
+			end
+		end
+
+		local flag = false
+
+		for _, v13 in ipairs(tbl5) do
+			local ok = pcall(v13)
+			flag = flag or ok
+		end
+
+		return flag
+	end
+
+	local function fn16(arg)
+		if not arg then
+			return false
+		end
+		local flag = false
+
+		if typeof(firesignal) == "function" then
+			flag = pcall(firesignal, arg.FocusLost, true)
+		end
+
+		if typeof(getconnections_) == "function" then
+			local ok, result = pcall(getconnections_, arg.FocusLost)
+
+			if ok and type(result) == "table" then
+				for _, v13 in ipairs(result) do
+					local function_ = nil
+
+					pcall(function()
+						function_ = v13.Function
+					end)
+
+					if function_ and typeof(getupvalues_) == "function" and typeof(setupvalue_) == "function" then
+						local ok2, result2 = pcall(getupvalues_, function_)
+
+						if ok2 and type(result2) == "table" then
+							for k, v14 in pairs(result2) do
+								if type(v14) == "boolean" and v14 == true then
+									pcall(setupvalue_, function_, k, false)
+								end
+							end
+						end
+					end
+
+					local ok2 = pcall(function()
+						if v13.Enabled ~= false then
+							v13:Fire(true)
+						end
+					end)
+
+					flag = flag or ok2
+				end
+			end
+		end
+
+		return flag
+	end
+
+	fn7 = function(text)
+		local playerGui2 = playerGui or localPlayer:FindFirstChildOfClass("PlayerGui")
+		if not playerGui2 then
+			return false, "no PlayerGui"
+		end
+		local codes = playerGui2:FindFirstChild("Codes")
+
+		if codes then
+			if codes:IsA("ScreenGui") then
+				codes.Enabled = true
+			end
+
+			local codes2 = codes:FindFirstChild("Codes") or codes
+			local parent
+
+			if codes2:IsA("GuiObject") then
+				codes2.Visible = true
+				parent = codes2
+			else
+				parent = codes2
+			end
+
+			while parent and parent ~= codes do
+				if parent:IsA("GuiObject") then
+					parent.Visible = true
+				end
+
+				parent = parent.Parent
+			end
+
+			local v13 = nil
+
+			for _, descendant in ipairs(codes2:GetDescendants()) do
+				if descendant:IsA("TextBox") and not fn12(descendant) then
+					v13 = descendant
+					break
+				end
+			end
+
+			local v14 = nil
+
+			for _, descendant in ipairs(codes2:GetDescendants()) do
+				if (descendant:IsA("TextButton") or descendant:IsA("ImageButton")) and not fn12(descendant) then
+					local str7 = descendant.Name:lower()
+					local str8 = ""
+
+					pcall(function()
+						str8 = descendant.Text:lower()
+					end)
+
+					if str7:find("submit") or str8:find("submit") or str7:find("redeem") or str8:find("redeem") or str7:find("claim") or str8:find("confirm") or str7:find("enter") then
+						v14 = descendant
+						break
+					else
+						v14 = nil
+					end
+				else
+					v14 = nil
+				end
+			end
+
+			if not v14 then
+				for _, descendant in ipairs(codes2:GetDescendants()) do
+					if (descendant:IsA("TextButton") or descendant:IsA("ImageButton")) and not fn12(descendant) then
+						local str7 = descendant.Name:lower()
+						if not str7:find("close") and not str7:find("x") and not str7:find("toggle") then
+							v14 = descendant
+							break
+						end
+					end
+				end
+			end
+
+			if v13 then
+				pcall(function()
+					v13.Text = text
+				end)
+
+				task.wait(0.05)
+
+				if v14 then
+					fn15(v14)
+				end
+
+				fn16(v13)
+				return true, "submitted via PlayerGui.Codes"
+			end
+		end
+
+		local v13 = fn14(playerGui2)
+
+		for _, v14 in ipairs(v13) do
+			fn15(v14)
+			task.wait(0.05)
+		end
+
+		task.wait(0.2)
+		local v14 = nil
+		local n8 = tick() + 2
+
+		while tick() < n8 do
+			local v15 = fn13(playerGui2)
+
+			for _, v16 in ipairs(v15) do
+				if fn6(v16) then
+					local str7 = v16.Name:lower()
+					local str8 = (v16.Parent and v16.Parent.Name or ""):lower()
+					if str7:find("code") or str8:find("code") or str7:find("redeem") or str8:find("redeem") or str7:find("input") or str8:find("textbox") or str7:find("enter") then
+						v14 = v16
+						break
+					end
+				end
+			end
+
+			if not v14 then
+				for _, v16 in ipairs(v15) do
+					if fn6(v16) then
+						v14 = v16
+						break
+					end
+				end
+			end
+
+			if not v14 then
+				task.wait(0.1)
+				continue
+			end
+			break
+		end
+
+		if not v14 then
+			return false, "no codebox visible"
+		end
+
+		pcall(function()
+			v14.Text = text
+		end)
+
+		task.wait(0.05)
+		local tbl5 = { "submit", "redeem", "claim", "confirm", "enter", "send", "apply", "ok", "use", "go", "check" }
+		local parent = v14.Parent
+		local v15 = nil
+
+		for i = 1, 8 do
+			if parent then
+				for _, descendant in ipairs(parent:GetDescendants()) do
+					if (descendant:IsA("TextButton") or descendant:IsA("ImageButton")) and not fn12(descendant) and descendant ~= v14 then
+						local str7 = descendant.Name:lower()
+						local str8 = ""
+
+						pcall(function()
+							str8 = descendant.Text:lower()
+						end)
+
+						for _, v16 in ipairs(tbl5) do
+							if str7:find(v16) or str8:find(v16) then
+								if fn6(descendant) then
+									v15 = descendant
+									break
+								end
+							end
+						end
+
+						if v15 then
+							break
+						else
+						end
+					end
+				end
+
+				if not v15 then
+					parent = parent.Parent
+					continue
+				end
+			end
+
+			break
+		end
+
+		if v15 then
+			fn15(v15)
+		end
+
+		fn16(v14)
+		return true, "submitted via dynamic search"
+	end
+
+	fn8 = function()
+		local v13 = fn13(playerGui)
+
+		for _, v14 in ipairs(v13) do
+			if fn6(v14) then
+				return v14
+			end
+		end
+
+		return nil
+	end
+end
+
+local tbl5
+
+tbl5 = {
+	Window = Color3.fromRGB(5, 4, 15),
+	Row = Color3.fromRGB(18, 12, 40),
+	Control = Color3.fromRGB(36, 26, 74),
+	Log = Color3.fromRGB(10, 6, 32),
+	Border = Color3.fromRGB(139, 92, 246),
+	BorderHi = Color3.fromRGB(167, 139, 250),
+	White = Color3.fromRGB(236, 233, 251),
+	Text = Color3.fromRGB(236, 233, 251),
+	Dim = Color3.fromRGB(144, 137, 184),
+	Dock = Color3.fromRGB(24, 16, 52),
+	Accent = Color3.fromRGB(139, 92, 246),
+	Accent2 = Color3.fromRGB(59, 130, 246),
+	Accent3 = Color3.fromRGB(34, 211, 238),
+	Green = Color3.fromRGB(60, 230, 176),
+	Red = Color3.fromRGB(255, 92, 122),
+}
+
+local createUICorner
+
+createUICorner = function(parent, arg)
+	local uiCorner = Instance.new("UICorner")
+	uiCorner.CornerRadius = UDim.new(0, arg)
+	uiCorner.Parent = parent
+	return uiCorner
+end
+
+local createUIStroke
+
+createUIStroke = function(parent, color, thickness, transparency)
+	local uiStroke = Instance.new("UIStroke")
+	uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	uiStroke.Color = color
+	uiStroke.Thickness = thickness or 1
+	uiStroke.Transparency = transparency or 0
+	uiStroke.Parent = parent
+	return uiStroke
+end
+
+local createTextLabel
+
+createTextLabel = function(parent, name, text, size, position, textSize, textColor3, font)
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Name = name
+	textLabel.Size = size
+	textLabel.Position = position
+	textLabel.BackgroundTransparency = 1
+	textLabel.Text = text
+	textLabel.TextSize = textSize
+	textLabel.TextColor3 = textColor3
+	textLabel.Font = font or Enum.Font.GothamMedium
+	textLabel.TextXAlignment = Enum.TextXAlignment.Left
+	textLabel.TextYAlignment = Enum.TextYAlignment.Center
+	textLabel.Parent = parent
+	return textLabel
+end
+
+local fn9, fn10
+local image = "rbxassetid://124311138696338"
+
+fn9 = function(parent)
+	local imageLabel = Instance.new("ImageLabel")
+	imageLabel.Name = "BackgroundPhoto"
+	imageLabel.Size = UDim2.new(1, 0, 1, 0)
+	imageLabel.BackgroundTransparency = 1
+	imageLabel.Image = image
+	imageLabel.ImageTransparency = 0.25
+	imageLabel.ScaleType = Enum.ScaleType.Crop
+	imageLabel.ZIndex = 1
+	imageLabel.Parent = parent
+	createUICorner(imageLabel, 16)
+end
+
+fn10 = function(parent, arg, arg2, arg3, textSize)
+	local frame = Instance.new("Frame")
+	frame.Name = "BrandBacking"
+	frame.Size = UDim2.fromOffset(arg3, arg3)
+	frame.Position = UDim2.fromOffset(arg, arg2)
+	frame.BackgroundColor3 = tbl5.Accent
+	frame.BorderSizePixel = 0
+	frame.ZIndex = 6
+	frame.Parent = parent
+	createUICorner(frame, arg3 / 2)
+	createUIStroke(frame, tbl5.BorderHi, 1.5, 0.15)
+	local uiGradient = Instance.new("UIGradient")
+	local new = ColorSequenceKeypoint.new
+	local color = Color3.fromRGB
+	uiGradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, tbl5.Accent), new(1, color(45, 21, 110)) })
+	uiGradient.Rotation = 135
+	uiGradient.Parent = frame
+	local imageLabel = Instance.new("ImageLabel")
+	imageLabel.Name = "BadgePhoto"
+	imageLabel.Size = UDim2.fromScale(1, 1)
+	imageLabel.BackgroundTransparency = 1
+	imageLabel.Image = image
+	imageLabel.ImageTransparency = 0.75
+	imageLabel.ScaleType = Enum.ScaleType.Crop
+	imageLabel.ZIndex = 6
+	imageLabel.Parent = frame
+	createUICorner(imageLabel, arg3 / 2)
+	local textLabel = Instance.new("TextLabel")
+	textLabel.Name = "BrandMark"
+	textLabel.Size = UDim2.fromOffset(arg3, arg3)
+	textLabel.Position = UDim2.fromOffset(arg, arg2)
+	textLabel.BackgroundTransparency = 1
+	textLabel.Text = "P"
+	textLabel.TextSize = textSize
+	textLabel.TextColor3 = Color3.fromRGB(30, 14, 72)
+	textLabel.Font = Enum.Font.GothamBlack
+	textLabel.TextXAlignment = Enum.TextXAlignment.Center
+	textLabel.TextYAlignment = Enum.TextYAlignment.Center
+	textLabel.TextStrokeColor3 = tbl5.BorderHi
+	textLabel.TextStrokeTransparency = 0.15
+	textLabel.ZIndex = 7
+	textLabel.Parent = parent
+	local uiGradient2 = Instance.new("UIGradient")
+	local new2 = ColorSequenceKeypoint.new
+	local color2 = Color3.fromRGB
+	uiGradient2.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(38, 18, 90)), new2(1, color2(20, 9, 50)) })
+	uiGradient2.Rotation = 90
+	uiGradient2.Parent = textLabel
+	return frame, textLabel
+end
+
+local fn11
+
+fn11 = function(arg, arg2, arg3)
+	local flag = false
+	local vector2 = nil
+	local position = nil
+	local flag2 = false
+	local n5 = v3.TouchEnabled and 10 or 3
+	local v10
+
+	local function fn12(arg4)
+		if arg4 ~= v10 then
+			return
+		end
+		flag = false
+		v10 = nil
+		vector2 = nil
+		position = nil
+	end
+
+	arg2.Active = true
+
+	arg2.InputBegan:Connect(function(input)
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+
+		if flag then
+			return
+		end
+
+		if arg3 and arg3(input.Position) then
+			return
+		end
+		flag = true
+		v10 = input
+		vector2 = Vector2.new(input.Position.X, input.Position.Y)
+		position = arg.Position
+		flag2 = false
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End or input.UserInputState == Enum.UserInputState.Cancel then
+				fn12(input)
+			end
+		end)
+	end)
+
+	v3.InputChanged:Connect(function(input)
+		if not flag or not v10 then
+			return
+		end
+
+		if not (v10.UserInputType == Enum.UserInputType.Touch and input == v10) and not (v10.UserInputType == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseMovement) then
+			return
+		end
+		local n6 = Vector2.new(input.Position.X, input.Position.Y) - vector2
+
+		if not flag2 then
+			if n6.Magnitude < n5 then
+				return
+			end
+			flag2 = true
+		end
+
+		arg.Position = UDim2.new(position.X.Scale, position.X.Offset + n6.X, position.Y.Scale, position.Y.Offset + n6.Y)
+	end)
+end
+
+pcall(function()
+	for _, v10 in ipairs({ "ACECodeSniperUI", "AutoTypeCodesUI", "ACEPaste" }) do
+		local v11 = game.CoreGui:FindFirstChild(v10)
+
+		if v11 then
+			v11:Destroy()
+		end
+	end
+end)
+
+for _, v10 in ipairs({ "ACECodeSniperUI", "AutoTypeCodesUI", "ACEPaste" }) do
+	local v11 = playerGui:FindFirstChild(v10)
+
+	if v11 then
+		v11:Destroy()
+	end
+end
+
+local screenGui
+screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ACECodeSniperUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 999
+
+if not pcall(function()
+	screenGui.Parent = playerGui
+end) then
+	screenGui.Parent = game.CoreGui
+end
+
+local n5
+n5 = 360
+local n6
+n6 = 672
+local n7
+n7 = 16
+local frame
+frame = Instance.new("Frame")
+frame.Name = "Window"
+frame.Size = UDim2.fromOffset(360, 672)
+frame.AnchorPoint = Vector2.new(1, 0)
+frame.Position = UDim2.new(1, -8, 0, 8)
+frame.BackgroundColor3 = tbl5.Window
+frame.BorderSizePixel = 0
+frame.ClipsDescendants = true
+frame.Parent = screenGui
+createUICorner(frame, 16)
+createUIStroke(frame, tbl5.BorderHi, 1, 0.1)
+local createUIScale
+
+do
+	local tbl6 = {}
+
+	createUIScale = function(parent)
+		local uiScale = Instance.new("UIScale")
+		uiScale.Name = "InterfaceScale"
+		uiScale.Scale = 0.92
+		uiScale.Parent = parent
+		tbl6[#tbl6 + 1] = uiScale
+		return uiScale
+	end
+
+	createUIScale(frame)
+	local connection3 = nil
+
+	local function fn12()
+		local currentCamera = workspace.CurrentCamera
+		local scale = 0.92
+
+		if currentCamera then
+			local viewportSize = currentCamera.ViewportSize
+			local n8 = math.min((viewportSize.X - 16) / n5, (viewportSize.Y - 16) / n6)
+
+			if v3.TouchEnabled then
+				scale = math.max(0.45, math.min(0.72, n8))
+			end
+		end
+
+		for _, v10 in ipairs(tbl6) do
+			v10.Scale = scale
+		end
+	end
+
+	local function fn13()
+		if connection3 then
+			connection3:Disconnect()
+			connection3 = nil
+		end
+
+		local currentCamera = workspace.CurrentCamera
+
+		if currentCamera then
+			connection3 = currentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(fn12)
+		end
+
+		fn12()
+	end
+
+	workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(fn13)
+	fn13()
+end
+
+fn9(frame)
+
+do
+	local frame2 = Instance.new("Frame")
+	frame2.Name = "BackgroundTint"
+	frame2.Size = UDim2.new(1, 0, 1, 0)
+	frame2.BackgroundTransparency = 1
+	frame2.BorderSizePixel = 0
+	frame2.ZIndex = 2
+	frame2.Parent = frame
+	createUICorner(frame2, 16)
+	local uiGradient = Instance.new("UIGradient")
+	local colorSequence = ColorSequence.new
+	local tbl6 = {}
+	local v10 = ColorSequenceKeypoint.new(0, tbl5.Accent)
+	local v11 = ColorSequenceKeypoint.new(0.35, tbl5.Window)
+	local v12 = ColorSequenceKeypoint.new(0.65, tbl5.Window)
+	local new = ColorSequenceKeypoint.new
+	local accent3 = tbl5.Accent3
+	tbl6[1] = v10
+	tbl6[2] = v11
+	tbl6[3] = v12
+
+	do
+		local values = table.pack(new(1, accent3))
+		table.move(values, 1, values.n, 4, tbl6)
+	end
+
+	uiGradient.Color = colorSequence(tbl6)
+	local numberSequence = NumberSequence.new
+	local tbl7 = {}
+	local v13 = NumberSequenceKeypoint.new(0, 0.55)
+	local v14 = NumberSequenceKeypoint.new(0.35, 0.9)
+	local v15 = NumberSequenceKeypoint.new(0.65, 0.9)
+	local new2 = NumberSequenceKeypoint.new
+	tbl7[1] = v13
+	tbl7[2] = v14
+	tbl7[3] = v15
+
+	do
+		local values = table.pack(new2(1, 0.7))
+		table.move(values, 1, values.n, 4, tbl7)
+	end
+
+	uiGradient.Transparency = numberSequence(tbl7)
+	uiGradient.Rotation = 60
+	uiGradient.Parent = frame2
+end
+
+local frame2
+frame2 = Instance.new("Frame")
+frame2.Name = "Header"
+frame2.Size = UDim2.new(1, 0, 0, 104)
+frame2.BackgroundColor3 = tbl5.Dock
+frame2.BackgroundTransparency = 0.35
+frame2.Active = true
+frame2.ZIndex = 5
+frame2.Parent = frame
+createUICorner(frame2, 16)
+local scrollingFrame
+scrollingFrame = nil
+local textLabel
+textLabel = nil
+local fn12
+fn12 = nil
+local tbl6
+tbl6 = {}
+local v10
+v10 = codeSniper
+codeSniper = v10
+local tbl7
+
+tbl7 = {
+	Dim = "rgb(144,137,184)",
+	Amber = "rgb(139,92,246)",
+	Green = "rgb(60,230,176)",
+	Red = "rgb(255,92,122)",
+	Cyan = "rgb(34,211,238)",
+}
+
+local fn13
+
+fn13 = function()
+	task.defer(function()
+		task.wait()
+		if not scrollingFrame then
+			return
+		end
+
+		if fn12 then
+			fn12()
+		end
+
+		local n8 = math.max(0, scrollingFrame.AbsoluteCanvasSize.Y - scrollingFrame.AbsoluteWindowSize.Y)
+		scrollingFrame.CanvasPosition = Vector2.new(0, n8)
+	end)
+end
+
+local test, logs, settings, textButton, fn14, frame3, frame4, fn15, fn16, n8
+local v11, flag, flag2, str4, n9
+
+do
+	local function fn17(arg, arg2)
+		if not textLabel then
+			return
+		end
+		local text = "<font color=\"" .. tbl7.Dim .. "\">[setting]</font> " .. "<font color=\"" .. tbl7.Amber .. "\">" .. arg .. "</font> " .. "<font color=\"" .. tbl7.Dim .. "\">-&gt;</font> " .. "<font color=\"" .. (arg2 and tbl7.Green or tbl7.Red) .. "\">" .. (arg2 and "ON" or "OFF") .. "</font>"
+
+		if textLabel.Text == "" then
+			textLabel.Text = text
+		else
+			textLabel.Text = textLabel.Text .. "\n\n" .. text
+		end
+
+		fn13()
+	end
+
+	fn10(frame2, 15, 15, 34, 20)
+	local textLabel2 = Instance.new("TextLabel")
+	textLabel2.Name = "Title"
+	textLabel2.Size = UDim2.fromOffset(150, 28)
+	textLabel2.Position = UDim2.fromOffset(57, 18)
+	textLabel2.BackgroundTransparency = 1
+	textLabel2.Text = "PLEXYZ"
+	textLabel2.TextSize = 18
+	textLabel2.TextColor3 = tbl5.White
+	textLabel2.TextTransparency = 0
+	textLabel2.Font = Enum.Font.GothamBlack
+	textLabel2.TextXAlignment = Enum.TextXAlignment.Left
+	textLabel2.TextYAlignment = Enum.TextYAlignment.Center
+	textLabel2.ZIndex = 6
+	textLabel2.Parent = frame2
+	local frame5 = Instance.new("Frame")
+	frame5.Name = "TabBar"
+	frame5.Size = UDim2.fromOffset(156, 24)
+	frame5.AnchorPoint = Vector2.new(1, 0.5)
+	frame5.Position = UDim2.new(1, -43, 0, 32)
+	frame5.BackgroundColor3 = tbl5.Control
+	frame5.BackgroundTransparency = 0.25
+	frame5.ZIndex = 6
+	frame5.Parent = frame2
+	createUICorner(frame5, 12)
+	createUIStroke(frame5, tbl5.BorderHi, 1, 0.7)
+
+	local function createTextButton(text, arg, arg2)
+		local textButton2 = Instance.new("TextButton")
+		textButton2.Name = text .. "Tab"
+		textButton2.Size = UDim2.fromOffset(arg2, 18)
+		textButton2.Position = UDim2.fromOffset(arg, 3)
+		textButton2.BackgroundColor3 = tbl5.Accent
+		textButton2.BackgroundTransparency = 1
+		textButton2.AutoButtonColor = false
+		textButton2.Active = true
+		textButton2.Text = text
+		textButton2.TextSize = 8
+		textButton2.TextColor3 = tbl5.Dim
+		textButton2.Font = Enum.Font.GothamBlack
+		textButton2.ZIndex = 7
+		textButton2.Parent = frame5
+		createUICorner(textButton2, 7)
+		return textButton2
+	end
+
+	test = createTextButton("TEST", 4, 40)
+	logs = createTextButton("LOGS", 47, 40)
+	settings = createTextButton("SETTINGS", 90, 62)
+	textButton = Instance.new("TextButton")
+	textButton.Name = "Minimize"
+	textButton.Size = UDim2.fromOffset(22, 22)
+	textButton.AnchorPoint = Vector2.new(1, 0.5)
+	textButton.Position = UDim2.new(1, -15, 0, 32)
+	textButton.BackgroundColor3 = tbl5.Control
+	textButton.BackgroundTransparency = 0.25
+	textButton.AutoButtonColor = false
+	textButton.Active = true
+	textButton.Text = "-"
+	textButton.TextSize = 16
+	textButton.TextColor3 = tbl5.White
+	textButton.Font = Enum.Font.GothamBlack
+	textButton.ZIndex = 6
+	textButton.Parent = frame2
+	createUICorner(textButton, 8)
+	createUIStroke(textButton, tbl5.BorderHi, 1, 0.7)
+
+	fn14 = function(inputObject)
+		local v12 = fn8()
+		local str5 = table.concat(tbl3)
+		local text = v12 and v12.Text ~= "" and v12.Text or str5 ~= "" and str5 or str
+		if text == "" then
+			return
+		end
+		local v13, v14 = fn7(text)
+		if inputObject then
+			return
+		end
+
+		if v13 then
+			if fn3 then
+				fn3("Redeemed: " .. text, tbl5.Green)
+			end
+		elseif fn3 then
+			fn3("Failed: " .. tostring(v14), tbl5.Red)
+		end
+	end
+
+	local function fn18()
+		if textLabel then
+			textLabel.Text = "<font color=\"" .. tbl7.Green .. "\">cleared</font>"
+		end
+
+		if fn12 then
+			fn12()
+		end
+
+		if fn5 then
+			fn5()
+		end
+
+		if resetAceCollectBuffer then
+			resetAceCollectBuffer()
+		end
+
+		str = ""
+		local v12 = fn8()
+
+		if v12 then
+			pcall(function()
+				v12.Text = ""
+			end)
+		end
+
+		v9 = nil
+	end
+
+	local frame6 = Instance.new("Frame")
+	frame6.Name = "ActionRow"
+	frame6.Position = UDim2.fromOffset(15, 54)
+	frame6.Size = UDim2.fromOffset(330, 34)
+	frame6.BackgroundTransparency = 1
+	frame6.ZIndex = 6
+	frame6.Parent = frame2
+	local textButton2 = Instance.new("TextButton")
+	textButton2.Name = "Clear"
+	textButton2.Size = UDim2.new(0.5, -4, 1, 0)
+	textButton2.Position = UDim2.fromOffset(0, 0)
+	textButton2.BackgroundColor3 = tbl5.Control
+	textButton2.AutoButtonColor = false
+	textButton2.Active = true
+	textButton2.Text = "CLEAR"
+	textButton2.TextSize = 11
+	textButton2.TextColor3 = tbl5.White
+	textButton2.Font = Enum.Font.GothamBold
+	textButton2.ZIndex = 6
+	textButton2.Parent = frame6
+	createUICorner(textButton2, 9)
+	createUIStroke(textButton2, tbl5.BorderHi, 1, 0.65)
+	textButton2.Activated:Connect(fn18)
+	textButton2.MouseButton1Click:Connect(fn18)
+	local textButton3 = Instance.new("TextButton")
+	textButton3.Name = "Redeem"
+	textButton3.Size = UDim2.new(0.5, -4, 1, 0)
+	textButton3.Position = UDim2.new(0.5, 4, 0, 0)
+	textButton3.BackgroundColor3 = tbl5.Accent
+	textButton3.AutoButtonColor = false
+	textButton3.Active = true
+	textButton3.Text = "REDEEM"
+	textButton3.TextSize = 11
+	textButton3.TextColor3 = tbl5.Window
+	textButton3.Font = Enum.Font.GothamBold
+	textButton3.ZIndex = 6
+	textButton3.Parent = frame6
+	createUICorner(textButton3, 9)
+	textButton3.Activated:Connect(fn14)
+	textButton3.MouseButton1Click:Connect(fn14)
+	frame3 = Instance.new("Frame")
+	frame3.Name = "TitleDivider"
+	frame3.Size = UDim2.new(1, -30, 0, 1)
+	frame3.Position = UDim2.fromOffset(15, 96)
+	frame3.BackgroundColor3 = tbl5.Accent
+	frame3.BackgroundTransparency = 0.35
+	frame3.BorderSizePixel = 0
+	frame3.Parent = frame2
+	local uiGradient = Instance.new("UIGradient")
+	local colorSequence = ColorSequence.new
+	local tbl8 = {}
+	local v12 = ColorSequenceKeypoint.new(0, tbl5.Accent)
+	local v13 = ColorSequenceKeypoint.new(0.5, tbl5.Accent2)
+	local new = ColorSequenceKeypoint.new
+	local accent3 = tbl5.Accent3
+	tbl8[1] = v12
+	tbl8[2] = v13
+
+	do
+		local values = table.pack(new(1, accent3))
+		table.move(values, 1, values.n, 3, tbl8)
+	end
+
+	uiGradient.Color = colorSequence(tbl8)
+	uiGradient.Parent = frame3
+	frame4 = Instance.new("Frame")
+	frame4.Name = "MainPage"
+	frame4.Size = UDim2.new(1, 0, 0, 506)
+	frame4.Position = UDim2.fromOffset(0, 104)
+	frame4.BackgroundTransparency = 1
+	frame4.ZIndex = 3
+	frame4.Parent = frame
+
+	local function createFrame(name, arg, arg2)
+		local frame7 = Instance.new("Frame")
+		frame7.Name = name
+		frame7.Position = UDim2.fromOffset(8, arg + 3)
+		frame7.Size = UDim2.new(1, -16, 0, arg2 - 6)
+		frame7.BackgroundColor3 = tbl5.Control
+		frame7.BackgroundTransparency = 0.25
+		frame7.BorderSizePixel = 0
+		frame7.Parent = frame4
+		createUICorner(frame7, 10)
+		createUIStroke(frame7, tbl5.BorderHi, 1, 0.7)
+		return frame7
+	end
+
+	fn15 = function(parent, arg, arg2, arg3, arg4)
+		parent.Active = true
+		tbl6[arg2] = arg
+		local frame7 = Instance.new("Frame")
+		frame7.Name = "State"
+		frame7.Size = UDim2.fromOffset(40, 20)
+		frame7.Position = UDim2.new(1, -48, 0.5, -10)
+		frame7.BackgroundColor3 = arg and tbl5.Green or tbl5.Control
+		frame7.BorderSizePixel = 0
+		frame7.Active = true
+		frame7.ZIndex = 5
+		frame7.Parent = parent
+		createUICorner(frame7, 10)
+		local v14 = createUIStroke(frame7, tbl5.BorderHi, 1, arg and 0.1 or 0.65)
+		local frame8 = Instance.new("Frame")
+		frame8.Name = "Knob"
+		frame8.Size = UDim2.fromOffset(16, 16)
+		frame8.Position = arg and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+		frame8.BackgroundColor3 = arg and tbl5.Window or tbl5.White
+		frame8.BorderSizePixel = 0
+		frame8.ZIndex = 6
+		frame8.Parent = frame7
+		createUICorner(frame8, 8)
+		local textButton4 = Instance.new("TextButton")
+		textButton4.Name = "Hit"
+		textButton4.Size = UDim2.fromScale(1, 1)
+		textButton4.BackgroundTransparency = 1
+		textButton4.AutoButtonColor = false
+		textButton4.Active = true
+		textButton4.Text = ""
+		textButton4.ZIndex = 7
+		textButton4.Parent = frame7
+		local flag3 = arg
+		local n10 = 0
+
+		local function fn19()
+			if tick() - n10 < 0.15 then
+				return
+			end
+
+			if arg4 and not arg4(not flag3) then
+				return
+			end
+			n10 = tick()
+			flag3 = not flag3
+			tbl6[arg2] = flag3
+			frame7.BackgroundColor3 = flag3 and tbl5.Green or tbl5.Control
+			frame8.BackgroundColor3 = flag3 and tbl5.Window or tbl5.White
+			frame8.Position = flag3 and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+			v14.Transparency = flag3 and 0.1 or 0.65
+
+			if v10 then
+				fn17(arg2, flag3)
+			end
+
+			if arg3 then
+				arg3(flag3)
+			end
+		end
+
+		textButton4.Activated:Connect(fn19)
+		textButton4.MouseButton1Click:Connect(fn19)
+
+		textButton4.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+				fn19()
+			end
+		end)
+
+		return frame7, fn19
+	end
+
+	local function createFrame2(parent, position, size, arg, arg2, arg3, arg4, textSize)
+		local frame7 = Instance.new("Frame")
+		frame7.Name = arg .. "Segmented"
+		frame7.Position = position
+		frame7.Size = size
+		frame7.BackgroundTransparency = 1
+		frame7.Parent = parent
+		local white = tbl5.White
+		local gothamBlack = Enum.Font.GothamBlack
+		createTextLabel(frame7, "Label", arg, UDim2.new(0, 34, 1, 0), UDim2.fromOffset(10, 0), 13, white, gothamBlack)
+		local frame8 = Instance.new("Frame")
+		frame8.Name = "Options"
+		frame8.Size = UDim2.new(1, -52, 1, 0)
+		frame8.Position = UDim2.fromOffset(44, 0)
+		frame8.BackgroundTransparency = 1
+		frame8.Parent = frame7
+		local uiListLayout = Instance.new("UIListLayout")
+		uiListLayout.FillDirection = Enum.FillDirection.Horizontal
+		uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+		uiListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+		uiListLayout.Padding = UDim.new(0, 3)
+		uiListLayout.Parent = frame8
+		local tbl9 = {}
+		local v14 = arg3
+
+		local function fn19()
+			for i, v15 in ipairs(tbl9) do
+				local flag3 = i == v14
+				v15.BackgroundTransparency = flag3 and 0 or 1
+				v15.TextColor3 = flag3 and tbl5.Window or tbl5.Dim
+			end
+		end
+
+		for i, v15 in ipairs(arg2) do
+			local text = v15 == "lower" and "LOWER" or v15
+			local textButton4 = Instance.new("TextButton")
+			textButton4.Name = "Opt" .. i
+			textButton4.LayoutOrder = i
+			textButton4.AutomaticSize = Enum.AutomaticSize.X
+			textButton4.Size = UDim2.fromOffset(0, 22)
+			textButton4.BackgroundColor3 = tbl5.Accent
+			textButton4.BackgroundTransparency = 1
+			textButton4.AutoButtonColor = false
+			textButton4.Active = true
+			textButton4.Text = text
+			textButton4.TextSize = textSize or 9
+			textButton4.TextColor3 = tbl5.Dim
+			textButton4.Font = Enum.Font.GothamBlack
+			textButton4.TextXAlignment = Enum.TextXAlignment.Center
+			textButton4.TextYAlignment = Enum.TextYAlignment.Center
+			textButton4.TextWrapped = false
+			textButton4.ZIndex = 5
+			textButton4.Parent = frame8
+			createUICorner(textButton4, 8)
+			local uiPadding = Instance.new("UIPadding")
+			uiPadding.PaddingLeft = UDim.new(0, 7)
+			uiPadding.PaddingRight = UDim.new(0, 7)
+			uiPadding.PaddingTop = UDim.new(0, 3)
+			uiPadding.PaddingBottom = UDim.new(0, 3)
+			uiPadding.Parent = textButton4
+			tbl9[i] = textButton4
+
+			local function fn20()
+				v14 = i
+				fn19()
+
+				if arg4 then
+					arg4(v15, i)
+				end
+			end
+
+			textButton4.Activated:Connect(fn20)
+			textButton4.MouseButton1Click:Connect(fn20)
+
+			textButton4.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+					fn20()
+				end
+			end)
+		end
+
+		fn19()
+		return frame7
+	end
+
+	fn16 = function(parent, arg, arg2)
+		local flag3 = false
+		local textButton4 = Instance.new("TextButton")
+		textButton4.Name = "Key"
+		textButton4.Size = UDim2.fromOffset(34, 24)
+		textButton4.Position = UDim2.new(1, -70, 0.5, -12)
+		textButton4.BackgroundColor3 = tbl5.Control
+		textButton4.AutoButtonColor = false
+		textButton4.Active = true
+		textButton4.Text = arg and arg.Name or "None"
+		textButton4.TextSize = 11
+		textButton4.TextColor3 = tbl5.White
+		textButton4.Font = Enum.Font.GothamBlack
+		textButton4.ZIndex = 5
+		textButton4.Parent = parent
+		createUICorner(textButton4, 7)
+		createUIStroke(textButton4, tbl5.BorderHi, 1, 0.65)
+		local textButton5 = Instance.new("TextButton")
+		textButton5.Name = "Clear"
+		textButton5.Size = UDim2.fromOffset(24, 24)
+		textButton5.Position = UDim2.new(1, -32, 0.5, -12)
+		textButton5.BackgroundColor3 = tbl5.Control
+		textButton5.AutoButtonColor = false
+		textButton5.Active = true
+		textButton5.Text = "X"
+		textButton5.TextSize = 11
+		textButton5.TextColor3 = tbl5.Dim
+		textButton5.Font = Enum.Font.GothamBlack
+		textButton5.ZIndex = 5
+		textButton5.Parent = parent
+		createUICorner(textButton5, 7)
+		createUIStroke(textButton5, tbl5.BorderHi, 1, 0.65)
+
+		local function fn19(arg3)
+			arg = arg3
+			textButton4.Text = arg3 and arg3.Name or "None"
+		end
+
+		local function fn20()
+			flag3 = true
+			textButton4.Text = "..."
+		end
+
+		textButton4.Activated:Connect(fn20)
+		textButton4.MouseButton1Click:Connect(fn20)
+
+		textButton5.Activated:Connect(function()
+			fn19(nil)
+		end)
+
+		textButton5.MouseButton1Click:Connect(function()
+			fn19(nil)
+		end)
+
+		v3.InputBegan:Connect(function(input, gameProcessed)
+			if flag3 then
+				if input.UserInputType == Enum.UserInputType.Keyboard then
+					flag3 = false
+					fn19(input.KeyCode)
+				end
+
+				return
+			end
+
+			if gameProcessed then
+				return
+			end
+
+			if arg and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == arg then
+				arg2()
+			end
+		end)
+
+		return textButton4, textButton5
+	end
+
+	n8 = 46
+	local Listen = createFrame("Listen", 0, 46)
+	local white = tbl5.White
+	local gothamBlack = Enum.Font.GothamBlack
+	createTextLabel(Listen, "Title", "LISTEN", UDim2.new(1, -50, 1, 0), UDim2.fromOffset(10, 0), 14, white, gothamBlack)
+	local listen
+
+	listen, v11 = fn15(Listen, v10, "Listen", function(codeSniper2)
+		v10 = codeSniper2
+		codeSniper = codeSniper2
+		local flag3 = not codeSniper2
+
+		if flag3 and fn5 then
+			fn5()
+		end
+
+		if flag3 and spamRedeemActive and toggleSpamRedeem then
+			toggleSpamRedeem()
+		end
+
+		tbl.codeSniper = codeSniper2
+		fn()
+		v9 = nil
+
+		if textLabel then
+			if codeSniper2 then
+				textLabel.Text = "<font color=\"" .. tbl7.Amber .. "\">&gt;</font> <font color=\"" .. tbl7.Dim .. "\">scanning for codes...</font>"
+
+				for _, v14 in ipairs({ "Auto submit", "Retype invalid" }) do
+					if tbl6[v14] then
+						fn17(v14, true)
+					end
+				end
+			else
+				textLabel.Text = "<font color=\"" .. tbl7.Dim .. "\">status:</font> <font color=\"" .. tbl7.Red .. "\">OFF</font>\n<font color=\"" .. tbl7.Dim .. "\">code sniper paused</font>"
+			end
+
+			fn13()
+		end
+	end)
+
+	local ListenKey = createFrame("ListenKey", 46, 46)
+	local white2 = tbl5.White
+	local gothamBlack2 = Enum.Font.GothamBlack
+	createTextLabel(ListenKey, "Title", "LISTEN KEY", UDim2.new(1, -90, 1, 0), UDim2.fromOffset(10, 0), 14, white2, gothamBlack2)
+
+	fn16(ListenKey, Enum.KeyCode.F, function()
+		v11()
+	end)
+
+	local RedeemKey = createFrame("RedeemKey", n8 * 2, 46)
+	local white3 = tbl5.White
+	local gothamBlack3 = Enum.Font.GothamBlack
+	createTextLabel(RedeemKey, "Title", "REDEEM KEY", UDim2.new(1, -90, 1, 0), UDim2.fromOffset(10, 0), 14, white3, gothamBlack3)
+	fn16(RedeemKey, Enum.KeyCode.G, fn14)
+	local AutoSubmit = createFrame("AutoSubmit", n8 * 3, 46)
+	local white4 = tbl5.White
+	local gothamBlack4 = Enum.Font.GothamBlack
+	createTextLabel(AutoSubmit, "Title", "AUTO SUBMIT", UDim2.new(1, -50, 1, 0), UDim2.fromOffset(10, 0), 14, white4, gothamBlack4)
+
+	fn15(AutoSubmit, autoSubmit, "Auto submit", function(autoSubmit2)
+		autoSubmit = autoSubmit2
+		tbl.autoSubmit = autoSubmit2
+		fn()
+	end)
+
+	flag = false
+	local Manual = createFrame("Manual", n8 * 4, 46)
+	local white5 = tbl5.White
+	local gothamBlack5 = Enum.Font.GothamBlack
+	createTextLabel(Manual, "Title", "MANUAL", UDim2.new(1, -50, 1, 0), UDim2.fromOffset(10, 0), 14, white5, gothamBlack5)
+	local SubmitAfter = createFrame("SubmitAfter", n8 * 5, 46)
+
+	createFrame2(SubmitAfter, UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), "WORDS", { "1", "2", "3", "4" }, submitAfter, function(arg)
+		submitAfter = tonumber(arg)
+		tbl.submitAfter = submitAfter
+		fn5()
+		fn()
+	end, 16)
+
+	local Case = createFrame("Case", n8 * 6, 46)
+
+	createFrame2(Case, UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), "CASE", { "UPPER", "lower", "EXACT" }, 3, function(arg)
+		str3 = arg
+	end)
+
+	flag2 = false
+	str4 = "FAST"
+	local n10 = 0
+	n9 = 0
+	local tbl9 = { MAX = 0.11, FAST = 0.22, MED = 0.4 }
+
+	local function fn19()
+		local v14 = tbl9[str4]
+		if not v14 then
+			return
+		end
+		n10 += 1
+		local v15 = n10
+		local v16 = str4
+
+		task.spawn(function()
+			while flag2 and v10 and str4 == v16 and v15 == n10 do
+				fn14(true)
+				n9 += 1
+
+				if setSameLineStatus then
+					setSameLineStatus("Spam redeem (" .. v16 .. "): " .. n9 .. " presses", tbl5.Accent3)
+				end
+
+				task.wait(v14 * (0.8 + math.random() * 0.4))
+			end
+		end)
+	end
+
+	local SpamRedeem = createFrame("SpamRedeem", n8 * 7, 46)
+	local white6 = tbl5.White
+	local gothamBlack6 = Enum.Font.GothamBlack
+	createTextLabel(SpamRedeem, "Title", "SPAM REDEEM", UDim2.new(1, -50, 1, 0), UDim2.fromOffset(10, 0), 14, white6, gothamBlack6)
+	SpamRedeemWarnLabel = Instance.new("TextLabel")
+	SpamRedeemWarnLabel.Name = "Warn"
+	SpamRedeemWarnLabel.Size = UDim2.new(1, -210, 1, 0)
+	SpamRedeemWarnLabel.Position = UDim2.fromOffset(120, 0)
+	SpamRedeemWarnLabel.BackgroundTransparency = 1
+	SpamRedeemWarnLabel.Text = ""
+	SpamRedeemWarnLabel.TextSize = 10
+	SpamRedeemWarnLabel.TextColor3 = tbl5.Red
+	SpamRedeemWarnLabel.Font = Enum.Font.GothamBlack
+	SpamRedeemWarnLabel.TextXAlignment = Enum.TextXAlignment.Right
+	SpamRedeemWarnLabel.TextYAlignment = Enum.TextYAlignment.Center
+	SpamRedeemWarnLabel.TextWrapped = true
+	SpamRedeemWarnLabel.ZIndex = 5
+	SpamRedeemWarnLabel.Parent = SpamRedeem
+	local v14 = select
+
+	local spamRedeem, v15 = fn15(SpamRedeem, false, "Spam redeem", function(arg)
+		flag2 = arg
+		n9 = 0
+		_sameLineBase = nil
+		SpamRedeemWarnLabel.Text = ""
+
+		if arg then
+			fn19()
+		end
+	end, function(arg)
+		if arg and not v10 then
+			SpamRedeemWarnLabel.Text = "You must be on Listen"
+			local text = SpamRedeemWarnLabel.Text
+
+			task.delay(2.5, function()
+				if SpamRedeemWarnLabel.Text == text then
+					SpamRedeemWarnLabel.Text = ""
+				end
+			end)
+
+			return false
+		end
+
+		return true
+	end)
+
+	toggleSpamRedeem = v14(2, spamRedeem, v15)
+	local Speed = createFrame("Speed", n8 * 8, 46)
+
+	createFrame2(Speed, UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), "SPEED", { "MAX", "FAST", "MED", "EVERY WORD" }, 2, function(arg)
+		str4 = arg
+		n9 = 0
+		_sameLineBase = nil
+
+		if flag2 then
+			fn19()
+		end
+	end)
+
+	local RetypeInvalid = createFrame("RetypeInvalid", n8 * 9, 46)
+	local white7 = tbl5.White
+	local gothamBlack7 = Enum.Font.GothamBlack
+	createTextLabel(RetypeInvalid, "Title", "RETYPE INVALID", UDim2.new(1, -50, 1, 0), UDim2.fromOffset(10, 0), 14, white7, gothamBlack7)
+
+	fn15(RetypeInvalid, retypeInvalid, "Retype invalid", function(retypeInvalid2)
+		retypeInvalid = retypeInvalid2
+		tbl.retypeInvalid = retypeInvalid2
+		fn()
+	end)
+
+	local Events = createFrame("Events", n8 * 10, 46, true)
+	local white8 = tbl5.White
+	local gothamBlack8 = Enum.Font.GothamBlack
+	createTextLabel(Events, "Title", "EVENTS", UDim2.new(1, -90, 1, 0), UDim2.fromOffset(10, 0), 14, white8, gothamBlack8)
+
+	local function fn20()
+		local n11 = n8 * 5
+
+		if flag then
+			SubmitAfter.Visible = false
+			Case.Visible = false
+		else
+			SubmitAfter.Visible = true
+			SubmitAfter.Position = UDim2.fromOffset(8, n11 + 3)
+			local n12 = n11 + n8
+			Case.Visible = true
+			Case.Position = UDim2.fromOffset(8, n12 + 3)
+			n11 = n12 + n8
+		end
+
+		SpamRedeem.Position = UDim2.fromOffset(8, n11 + 3)
+		local n12 = n11 + n8
+		Speed.Position = UDim2.fromOffset(8, n12 + 3)
+		local n13 = n12 + n8
+		RetypeInvalid.Position = UDim2.fromOffset(8, n13 + 3)
+		Events.Position = UDim2.fromOffset(8, n13 + n8 + 3)
+
+		if updateWindowSize then
+			updateWindowSize()
+		end
+	end
+
+	fn15(Manual, flag, "Manual", function(arg)
+		flag = arg
+		fn20()
+	end)
+
+	local textButton4 = Instance.new("TextButton")
+	textButton4.Name = "BlockAll"
+	textButton4.Size = UDim2.fromOffset(80, 26)
+	textButton4.Position = UDim2.new(1, -88, 0.5, -13)
+	textButton4.BackgroundColor3 = tbl5.Accent
+	textButton4.AutoButtonColor = false
+	textButton4.Active = true
+	textButton4.Text = "BLOCK ALL"
+	textButton4.TextSize = 10
+	textButton4.TextColor3 = tbl5.Window
+	textButton4.Font = Enum.Font.GothamBlack
+	textButton4.ZIndex = 5
+	textButton4.Parent = Events
+	createUICorner(textButton4, 8)
+	local flag3 = false
+
+	local function fn21(descendant)
+		if descendant:IsA("Sound") or descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") or descendant:IsA("Beam") or descendant:IsA("Smoke") or descendant:IsA("Fire") or descendant:IsA("Highlight") then
+			pcall(function()
+				descendant:Destroy()
+			end)
+		end
+	end
+
+	local function fn22()
+		if flag3 then
+			return
+		end
+		flag3 = true
+		textButton4.Text = "BLOCKED"
+		textButton4.BackgroundColor3 = tbl5.Control
+		textButton4.TextColor3 = tbl5.White
+
+		for _, descendant in ipairs(game:GetDescendants()) do
+			fn21(descendant)
+		end
+
+		game.DescendantAdded:Connect(fn21)
+
+		if fn3 then
+			fn3("Events blocked (sounds & effects)", tbl5.Green)
+		end
+	end
+
+	textButton4.Activated:Connect(fn22)
+	textButton4.MouseButton1Click:Connect(fn22)
+end
+
+local fn17
+local n10 = 48
+
+fn17 = function(arg, arg2, arg3)
+	local n11 = arg3 or 672
+	local frame5 = Instance.new("Frame")
+	frame5.Name = arg .. "Panel"
+	frame5.AnchorPoint = Vector2.new(1, 0)
+	frame5.Position = UDim2.new(1, -(8 + (n5 + n7) * arg2), 0, 8)
+	frame5.Size = UDim2.fromOffset(360, n11)
+	frame5.BackgroundColor3 = tbl5.Window
+	frame5.BorderSizePixel = 0
+	frame5.ClipsDescendants = true
+	frame5.Visible = false
+	frame5.ZIndex = 2
+	frame5.Parent = screenGui
+	createUICorner(frame5, 16)
+	createUIStroke(frame5, tbl5.BorderHi, 1, 0.1)
+	createUIScale(frame5)
+	fn9(frame5)
+	local frame6 = Instance.new("Frame")
+	frame6.Name = "Header"
+	frame6.Size = UDim2.new(1, 0, 0, 48)
+	frame6.BackgroundColor3 = tbl5.Dock
+	frame6.BackgroundTransparency = 0
+	frame6.ZIndex = 3
+	frame6.Parent = frame5
+	createUICorner(frame6, 16)
+	fn10(frame6, 9, 9, 30, 16)
+	local white = tbl5.White
+	local gothamBlack = Enum.Font.GothamBlack
+	createTextLabel(frame6, "Title", arg, UDim2.new(1, -88, 1, 0), UDim2.fromOffset(46, 0), 14, white, gothamBlack).ZIndex = 4
+	local textButton2 = Instance.new("TextButton")
+	textButton2.Name = "Close"
+	textButton2.Size = UDim2.fromOffset(24, 24)
+	textButton2.Position = UDim2.new(1, -34, 0.5, -12)
+	textButton2.BackgroundColor3 = tbl5.Control
+	textButton2.AutoButtonColor = false
+	textButton2.Active = true
+	textButton2.Text = "×"
+	textButton2.TextSize = 15
+	textButton2.TextColor3 = tbl5.White
+	textButton2.Font = Enum.Font.GothamBold
+	textButton2.ZIndex = 4
+	textButton2.Parent = frame6
+	createUICorner(textButton2, 8)
+	local frame7 = Instance.new("Frame")
+	frame7.Name = "Body"
+	frame7.Position = UDim2.fromOffset(0, 48)
+	frame7.Size = UDim2.new(1, 0, 1, -n10)
+	frame7.BackgroundTransparency = 1
+	frame7.ZIndex = 3
+	frame7.Parent = frame5
+
+	fn11(frame5, frame6, function(arg4)
+		local absolutePosition = textButton2.AbsolutePosition
+		local absoluteSize = textButton2.AbsoluteSize
+		return arg4.X >= absolutePosition.X - 6 and arg4.X <= absolutePosition.X + absoluteSize.X + 6 and arg4.Y >= absolutePosition.Y - 6 and arg4.Y <= absolutePosition.Y + absoluteSize.Y + 6
+	end)
+
+	return frame5, frame7, textButton2
+end
+
+local settings2, v12, flag3
+
+do
+	local v13
+	settings2, v13, v12 = fn17("SETTINGS", 1, 490)
+	flag3 = false
+	local tbl8 = { AUTOBUY = false, ANTIRAGDOLL = false, FREEZE = false, ANIMCHANGER = false }
+
+	local tbl9 = {
+		Amazon = { run = "rbxassetid://134824450619865" },
+		Levitation = { run = "rbxassetid://616010382" },
+		Mage = { run = "rbxassetid://10921148209" },
+		Vampire = { run = "rbxassetid://10921320299" },
+		Zombie = { run = "rbxassetid://616163682" },
+	}
+
+	local tbl10 = { "Amazon", "Levitation", "Mage", "Vampire", "Zombie" }
+	local str5 = "Amazon"
+	local tbl11 = {}
+	local connection3 = nil
+	local connection4 = nil
+	local flag4 = false
+
+	local function fn18(arg)
+		if not arg then
+			return false
+		end
+		local parent = arg.Parent
+		if not parent or parent.Name ~= "PromptAttachment" then
+			return false
+		end
+		local parent2 = parent.Parent
+		if not parent2 or parent2.Name ~= "Part" then
+			return false
+		end
+		local parent3 = parent2.Parent
+		return parent3 and parent3:IsA("Model") and parent3 or false
+	end
+
+	local function fn19(arg)
+		local parent = arg and arg.Parent
+		if parent and parent:IsA("BasePart") then
+			return parent.Position
+		end
+		local v14 = fn18(arg)
+		if v14 and v14.PrimaryPart then
+			return v14.PrimaryPart.Position
+		end
+	end
+
+	local function fn20(arg)
+		if arg:IsA("ProximityPrompt") and fn18(arg) then
+			tbl11[arg] = true
+		end
+	end
+
+	local function fn21()
+		if connection3 then
+			connection3:Disconnect()
+		end
+
+		if connection4 then
+			connection4:Disconnect()
+		end
+
+		tbl11 = {}
+
+		for _, descendant in ipairs(workspace:GetDescendants()) do
+			if descendant:IsA("ProximityPrompt") then
+				fn20(descendant)
+			end
+		end
+
+		connection4 = workspace.DescendantAdded:Connect(function(descendant)
+			if descendant:IsA("ProximityPrompt") then
+				fn20(descendant)
+			end
+		end)
+
+		connection3 = v2.Heartbeat:Connect(function()
+			if not tbl8.AUTOBUY or flag4 then
+				return
+			end
+			local character = localPlayer.Character
+			character = character and character:FindFirstChild("HumanoidRootPart")
+			if not character then
+				return
+			end
+
+			for k in pairs(tbl11) do
+				if not k.Parent then
+					tbl11[k] = nil
+				else
+					local v14 = fn19(k)
+
+					if v14 and (character.Position - v14).Magnitude <= 15 then
+						flag4 = true
+
+						task.spawn(function()
+							pcall(function()
+								local n11 = math.max(k.HoldDuration, 0.1)
+								k:InputHoldBegin()
+								task.wait(n11 + 0.1)
+
+								if k.Parent then
+									k:InputHoldEnd()
+								end
+							end)
+
+							pcall(function()
+								if k.Parent then
+									k:InputHoldEnd()
+								end
+							end)
+
+							flag4 = false
+						end)
+
+						break
+					end
+				end
+			end
+		end)
+	end
+
+	local function fn22()
+		if connection3 then
+			connection3:Disconnect()
+			connection3 = nil
+		end
+
+		if connection4 then
+			connection4:Disconnect()
+			connection4 = nil
+		end
+
+		for k in pairs(tbl11) do
+			pcall(function()
+				if k.Parent then
+					k:InputHoldEnd()
+				end
+			end)
+		end
+
+		tbl11 = {}
+		flag4 = false
+	end
+
+	local connection5 = nil
+	local n11 = 0
+
+	local function fn23(arg)
+		if not arg then
+			return
+		end
+		local humanoid = arg:FindFirstChildOfClass("Humanoid")
+		local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+		if not humanoid or not humanoidRootPart or humanoid.Health <= 0 then
+			return
+		end
+
+		pcall(function()
+			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+			humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+			humanoidRootPart.AssemblyAngularVelocity = Vector3.zero
+
+			for _, descendant in ipairs(arg:GetDescendants()) do
+				if descendant:IsA("Motor6D") or descendant:IsA("Constraint") then
+					descendant.Enabled = true
+				end
+			end
+
+			local currentCamera = workspace.CurrentCamera
+
+			if currentCamera then
+				currentCamera.CameraSubject = humanoid
+			end
+
+			humanoid.AutoRotate = true
+			humanoid.PlatformStand = false
+			humanoid.Sit = false
+			local playerScripts = localPlayer:FindFirstChild("PlayerScripts")
+			playerScripts = playerScripts and playerScripts:FindFirstChild("PlayerModule")
+			playerScripts = playerScripts and playerScripts:FindFirstChild("ControlModule")
+
+			if playerScripts then
+				local ok, result = pcall(require, playerScripts)
+
+				if ok and result and result.Enable then
+					result:Enable()
+				end
+			end
+		end)
+	end
+
+	local function fn24()
+		if connection5 then
+			connection5:Disconnect()
+		end
+
+		n11 = 0
+
+		connection5 = v2.Heartbeat:Connect(function()
+			if not tbl8.ANTIRAGDOLL then
+				return
+			end
+			local character = localPlayer.Character
+			local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+			if not humanoid or humanoid.Health <= 0 then
+				return
+			end
+			local state = humanoid:GetState()
+
+			if state == Enum.HumanoidStateType.Physics or state == Enum.HumanoidStateType.Ragdoll or state == Enum.HumanoidStateType.FallingDown then
+				local now = tick()
+
+				if now - n11 > 0.15 then
+					n11 = now
+					fn23(character)
+				end
+			end
+		end)
+	end
+
+	local function fn25()
+		if connection5 then
+			connection5:Disconnect()
+			connection5 = nil
+		end
+
+		n11 = 0
+	end
+
+	local function fn26()
+		if not tbl8.ANIMCHANGER then
+			return
+		end
+		local character = localPlayer.Character
+		local animate = character and character:FindFirstChild("Animate")
+		local v14 = tbl9[str5]
+		if not animate or not v14 then
+			return
+		end
+		local run = animate:FindFirstChild("run")
+
+		if run and v14.run then
+			local animation = run:FindFirstChildWhichIsA("Animation", true)
+
+			if animation then
+				animation.AnimationId = v14.run
+			end
+		end
+
+		pcall(function()
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			humanoid = humanoid and humanoid:FindFirstChildOfClass("Animator")
+
+			if humanoid then
+				for _, v15 in ipairs(humanoid:GetPlayingAnimationTracks()) do
+					if v15.Name == "Run" or v15.Name == "run" then
+						v15:Stop(0.1)
+					end
+				end
+			end
+		end)
+	end
+
+	local n12 = 8
+
+	local function createFrame(arg)
+		local n13 = arg or 40
+		local frame5 = Instance.new("Frame")
+		frame5.Position = UDim2.fromOffset(8, n12)
+		frame5.Size = UDim2.new(1, -16, 0, n13)
+		frame5.BackgroundColor3 = tbl5.Control
+		frame5.BackgroundTransparency = 0.1
+		frame5.BorderSizePixel = 0
+		frame5.ZIndex = 4
+		frame5.Parent = v13
+		createUICorner(frame5, 10)
+		createUIStroke(frame5, tbl5.BorderHi, 1, 0.5)
+		n12 = n12 + n13 + 6
+		return frame5
+	end
+
+	local function fn27(arg, arg2)
+		local white = tbl5.White
+		local gothamBlack = Enum.Font.GothamBlack
+		local title = createTextLabel(arg, "Title", arg2, UDim2.new(1, -50, 1, 0), UDim2.fromOffset(12, 0), 13, white, gothamBlack)
+		title.ZIndex = 5
+		return title
+	end
+
+	local v14 = createFrame()
+	fn27(v14, "AUTO LISTEN")
+
+	fn15(v14, false, "Auto listen", function(arg)
+		flag3 = arg
+	end)
+
+	local v15 = createFrame()
+	fn27(v15, "ANTI RAGDOLL")
+
+	fn15(v15, false, "Anti ragdoll", function(antiragdoll)
+		tbl8.ANTIRAGDOLL = antiragdoll
+
+		if antiragdoll then
+			fn24()
+		else
+			fn25()
+		end
+	end)
+
+	local v16 = createFrame()
+	fn27(v16, "AUTOBUY")
+
+	local autobuy, v17 = fn15(v16, false, "Autobuy", function(autobuy)
+		tbl8.AUTOBUY = autobuy
+
+		if autobuy then
+			fn21()
+		else
+			fn22()
+		end
+	end)
+
+	local v18 = createFrame()
+	fn27(v18, "AUTOBUY KEY")
+
+	fn16(v18, Enum.KeyCode.G, function()
+		v17()
+	end)
+
+	local v19 = createFrame()
+	fn27(v19, "FREEZE")
+
+	local freeze, v20 = fn15(v19, false, "Freeze", function(freeze)
+		tbl8.FREEZE = freeze
+	end)
+
+	local v21 = createFrame()
+	fn27(v21, "FREEZE KEY")
+
+	fn16(v21, Enum.KeyCode.F, function()
+		v20()
+	end)
+
+	local v22 = createFrame()
+	fn27(v22, "ANIM CHANGER")
+
+	local animChanger, v23 = fn15(v22, false, "Anim changer", function(animchanger)
+		tbl8.ANIMCHANGER = animchanger
+
+		if animchanger then
+			fn26()
+		end
+	end)
+
+	local v24 = createFrame()
+	fn27(v24, "ANIM CHANGER KEY")
+
+	fn16(v24, Enum.KeyCode.J, function()
+		v23()
+	end)
+
+	local v25 = createFrame()
+	fn27(v25, "ANIMATION")
+	local textButton2 = Instance.new("TextButton")
+	textButton2.Name = "AnimDropdown"
+	textButton2.Size = UDim2.fromOffset(130, 28)
+	textButton2.Position = UDim2.new(1, -138, 0.5, -14)
+	textButton2.BackgroundColor3 = tbl5.Accent
+	textButton2.AutoButtonColor = false
+	textButton2.Active = true
+	textButton2.Text = str5 .. "  ▾"
+	textButton2.TextSize = 11
+	textButton2.TextColor3 = tbl5.Window
+	textButton2.Font = Enum.Font.GothamBlack
+	textButton2.ZIndex = 5
+	textButton2.Parent = v25
+	createUICorner(textButton2, 8)
+	local frame5 = Instance.new("Frame")
+	frame5.Name = "AnimDropdownList"
+	frame5.BackgroundColor3 = tbl5.Dock
+	frame5.BorderSizePixel = 0
+	frame5.Visible = false
+	frame5.ClipsDescendants = true
+	frame5.ZIndex = 60
+	frame5.Size = UDim2.fromOffset(130, #tbl10 * 28)
+	frame5.Parent = screenGui
+	createUICorner(frame5, 8)
+	createUIStroke(frame5, tbl5.BorderHi, 1, 0.4)
+	Instance.new("UIListLayout").Parent = frame5
+	local flag5 = false
+	local tbl12 = {}
+
+	local function fn28()
+		for _, v26 in ipairs(tbl12) do
+			local flag6 = v26.Name == str5
+			v26.BackgroundColor3 = flag6 and tbl5.Accent or tbl5.Control
+			v26.TextColor3 = flag6 and tbl5.Window or tbl5.White
+		end
+	end
+
+	local function fn29()
+		flag5 = false
+		frame5.Visible = false
+	end
+
+	local function fn30()
+		flag5 = true
+		local absolutePosition = textButton2.AbsolutePosition
+		local absoluteSize = textButton2.AbsoluteSize
+		frame5.Position = UDim2.fromOffset(absolutePosition.X - 130 - absoluteSize.X, absolutePosition.Y + absoluteSize.Y + 4)
+		frame5.Visible = true
+	end
+
+	for _, v26 in ipairs(tbl10) do
+		local textButton3 = Instance.new("TextButton")
+		textButton3.Name = v26
+		textButton3.Size = UDim2.new(1, 0, 0, 28)
+		textButton3.BackgroundColor3 = tbl5.Control
+		textButton3.AutoButtonColor = false
+		textButton3.Active = true
+		textButton3.Text = v26
+		textButton3.TextSize = 11
+		textButton3.TextColor3 = tbl5.White
+		textButton3.Font = Enum.Font.GothamBold
+		textButton3.ZIndex = 61
+		textButton3.Parent = frame5
+		tbl12[#tbl12 + 1] = textButton3
+
+		textButton3.Activated:Connect(function()
+			str5 = v26
+			textButton2.Text = str5 .. "  ▾"
+			fn28()
+			fn29()
+
+			if tbl8.ANIMCHANGER then
+				fn26()
+			end
+		end)
+	end
+
+	fn28()
+
+	textButton2.Activated:Connect(function()
+		if flag5 then
+			fn29()
+		else
+			fn30()
+		end
+	end)
+
+	task.spawn(function()
+		while task.wait(0.1) do
+			pcall(function()
+				local character = localPlayer.Character
+				if not character then
+					return
+				end
+
+				for _, descendant in ipairs(character:GetDescendants()) do
+					if descendant:IsA("BasePart") then
+						descendant.Anchored = tbl8.FREEZE
+					end
+				end
+			end)
+		end
+	end)
+
+	localPlayer.CharacterAdded:Connect(function(character)
+		task.wait(0.5)
+
+		if tbl8.ANTIRAGDOLL then
+			fn24()
+		end
+
+		if tbl8.FREEZE then
+			for _, descendant in ipairs(character:GetDescendants()) do
+				if descendant:IsA("BasePart") then
+					descendant.Anchored = true
+				end
+			end
+		end
+
+		if tbl8.ANIMCHANGER then
+			task.wait(0.2)
+			fn26()
+		end
+	end)
+
+	localPlayer.CharacterRemoving:Connect(function()
+		flag4 = false
+		fn22()
+	end)
+end
+
+local logs2, v13
+local v14
+logs2, v14, v13 = fn17("LOGS", 2)
+scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Name = "Console"
+scrollingFrame.Size = UDim2.new(1, -20, 1, -20)
+scrollingFrame.Position = UDim2.fromOffset(10, 10)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.ClipsDescendants = true
+scrollingFrame.Active = true
+scrollingFrame.ScrollingEnabled = true
+scrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+scrollingFrame.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
+scrollingFrame.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.None
+scrollingFrame.ScrollBarThickness = 4
+scrollingFrame.ScrollBarImageColor3 = tbl5.Dim
+scrollingFrame.ZIndex = 4
+scrollingFrame.Parent = v14
+textLabel = Instance.new("TextLabel")
+textLabel.Name = "ConsoleOutput"
+textLabel.Size = UDim2.new(1, -10, 0, 115)
+textLabel.AutomaticSize = Enum.AutomaticSize.Y
+textLabel.Position = UDim2.fromOffset(4, 4)
+textLabel.BackgroundTransparency = 1
+textLabel.RichText = true
+
+if v10 then
+	textLabel.Text = "<font color=\"" .. tbl7.Amber .. "\">&gt;</font> <font color=\"" .. tbl7.Dim .. "\">scanning for codes...</font>"
+else
+	textLabel.Text = "<font color=\"" .. tbl7.Dim .. "\">status:</font> <font color=\"" .. tbl7.Red .. "\">OFF</font>\n<font color=\"" .. tbl7.Dim .. "\">code sniper paused</font>"
+end
+
+textLabel.TextSize = 15
+textLabel.Font = Enum.Font.GothamBlack
+textLabel.TextColor3 = tbl5.Dim
+textLabel.TextXAlignment = Enum.TextXAlignment.Left
+textLabel.TextYAlignment = Enum.TextYAlignment.Top
+textLabel.TextWrapped = true
+textLabel.ZIndex = 5
+textLabel.Parent = scrollingFrame
+local n11 = 24
+
+fn12 = function()
+	if not scrollingFrame or not textLabel then
+		return
+	end
+	scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, textLabel.Position.Y.Offset + textLabel.AbsoluteSize.Y + n11)
+end
+
+textLabel:GetPropertyChangedSignal("AbsoluteSize"):Connect(fn12)
+task.defer(fn12)
+local textBox
+
+do
+	local testSender, v15, v16 = fn17("TEST SENDER", 3, 250)
+	local accent3 = tbl5.Accent3
+	local gothamBlack = Enum.Font.GothamBlack
+	createTextLabel(v15, "MessageLabel", "MESSAGE", UDim2.new(1, -32, 0, 14), UDim2.fromOffset(16, 14), 11, accent3, gothamBlack)
+	textBox = Instance.new("TextBox")
+	textBox.Name = "MessageBox"
+	textBox.Size = UDim2.new(1, -32, 0, 64)
+	textBox.Position = UDim2.fromOffset(16, 34)
+	textBox.BackgroundColor3 = tbl5.Control
+	textBox.TextColor3 = tbl5.White
+	textBox.PlaceholderText = "type a fake announcement..."
+	textBox.PlaceholderColor3 = tbl5.Dim
+	textBox.Text = ""
+	textBox.TextSize = 17
+	textBox.Font = Enum.Font.GothamBold
+	textBox.MultiLine = true
+	textBox.ClearTextOnFocus = false
+	textBox.TextXAlignment = Enum.TextXAlignment.Left
+	textBox.TextYAlignment = Enum.TextYAlignment.Top
+	textBox.TextWrapped = true
+	textBox.ZIndex = 4
+	textBox.Parent = v15
+	createUICorner(textBox, 9)
+	createUIStroke(textBox, tbl5.BorderHi, 1, 0.65)
+	local uiPadding = Instance.new("UIPadding")
+	uiPadding.PaddingLeft = UDim.new(0, 8)
+	uiPadding.PaddingRight = UDim.new(0, 8)
+	uiPadding.PaddingTop = UDim.new(0, 6)
+	uiPadding.Parent = textBox
+	local frame5 = Instance.new("Frame")
+	frame5.Name = "ButtonRow"
+	frame5.Position = UDim2.fromOffset(16, 106)
+	frame5.Size = UDim2.fromOffset(328, 32)
+	frame5.BackgroundTransparency = 1
+	frame5.ZIndex = 4
+	frame5.Parent = v15
+	local textButton2 = Instance.new("TextButton")
+	textButton2.Name = "TestCode"
+	textButton2.Size = UDim2.fromOffset(88, 32)
+	textButton2.Position = UDim2.fromOffset(0, 0)
+	textButton2.BackgroundColor3 = tbl5.Control
+	textButton2.AutoButtonColor = false
+	textButton2.Active = true
+	textButton2.Text = "TEST CODE"
+	textButton2.TextSize = 9
+	textButton2.TextColor3 = tbl5.White
+	textButton2.Font = Enum.Font.GothamBlack
+	textButton2.ZIndex = 4
+	textButton2.Parent = frame5
+	createUICorner(textButton2, 9)
+	createUIStroke(textButton2, tbl5.BorderHi, 1, 0.65)
+	local textButton3 = Instance.new("TextButton")
+	textButton3.Name = "Send"
+	textButton3.Size = UDim2.new(1, -96, 1, 0)
+	textButton3.Position = UDim2.fromOffset(96, 0)
+	textButton3.BackgroundColor3 = tbl5.Accent
+	textButton3.AutoButtonColor = false
+	textButton3.Active = true
+	textButton3.Text = "SEND"
+	textButton3.TextSize = 12
+	textButton3.TextColor3 = tbl5.Window
+	textButton3.Font = Enum.Font.GothamBlack
+	textButton3.ZIndex = 4
+	textButton3.Parent = frame5
+	createUICorner(textButton3, 9)
+	local frame6 = Instance.new("Frame")
+	frame6.Name = "FiredCard"
+	frame6.Position = UDim2.fromOffset(16, 150)
+	frame6.Size = UDim2.new(1, -32, 0, 34)
+	frame6.BackgroundColor3 = tbl5.Control
+	frame6.BackgroundTransparency = 0.3
+	frame6.ZIndex = 4
+	frame6.Parent = v15
+	createUICorner(frame6, 9)
+	createUIStroke(frame6, tbl5.BorderHi, 1, 0.65)
+	local green = tbl5.Green
+	local gothamBlack2 = Enum.Font.GothamBlack
+	local fired = createTextLabel(frame6, "Fired", "fired: -", UDim2.new(1, -20, 1, 0), UDim2.fromOffset(10, 0), 14, green, gothamBlack2)
+	fired.ZIndex = 5
+	local textLabel2 = Instance.new("TextLabel")
+	textLabel2.Name = "TestBanner"
+	textLabel2.AnchorPoint = Vector2.new(0.5, 0.5)
+	textLabel2.Position = UDim2.fromScale(0.5, 0.12)
+	textLabel2.Size = UDim2.fromScale(0.7, 0.08)
+	textLabel2.BackgroundTransparency = 1
+	textLabel2.Text = ""
+	textLabel2.TextScaled = true
+	textLabel2.Font = Enum.Font.GothamBlack
+	textLabel2.TextColor3 = tbl5.White
+	textLabel2.TextStrokeColor3 = Color3.new(0, 0, 0)
+	textLabel2.TextStrokeTransparency = 1
+	textLabel2.TextTransparency = 1
+	textLabel2.ZIndex = 50
+	textLabel2.Parent = screenGui
+
+	local function fn18(text)
+		textLabel2.Text = text
+		textLabel2.TextTransparency = 0
+		textLabel2.TextStrokeTransparency = 0.2
+
+		task.spawn(function()
+			task.wait(1.4)
+
+			for i = 1, 10 do
+				textLabel2.TextTransparency = i / 10
+				textLabel2.TextStrokeTransparency = 0.2 + i / 10 * 0.8
+				task.wait(0.03)
+			end
+		end)
+	end
+
+	local flag4 = false
+	local flag5 = false
+	local flag6 = false
+
+	local function fn19(visible)
+		flag4 = visible
+		settings2.Visible = visible
+		settings.TextColor3 = visible and tbl5.Accent or tbl5.Dim
+	end
+
+	local function fn20(visible)
+		flag5 = visible
+		logs2.Visible = visible
+		logs.TextColor3 = visible and tbl5.Accent or tbl5.Dim
+	end
+
+	local function fn21(visible)
+		flag6 = visible
+		testSender.Visible = visible
+		test.TextColor3 = visible and tbl5.Accent or tbl5.Dim
+	end
+
+	local function fn22()
+		fn19(not flag4)
+	end
+
+	local function fn23()
+		fn20(not flag5)
+	end
+
+	local function fn24()
+		fn21(not flag6)
+	end
+
+	local function fn25(arg, arg2)
+		local absolutePosition = arg.AbsolutePosition
+		local absoluteSize = arg.AbsoluteSize
+		return arg2.X >= absolutePosition.X and arg2.X <= absolutePosition.X + absoluteSize.X and arg2.Y >= absolutePosition.Y and arg2.Y <= absolutePosition.Y + absoluteSize.Y
+	end
+
+	v3.InputBegan:Connect(function(input)
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+		local position = input.Position
+
+		if fn25(test, position) then
+			fn24()
+		elseif fn25(logs, position) then
+			fn23()
+		elseif fn25(settings, position) then
+			fn22()
+		elseif fn25(v12, position) then
+			fn19(false)
+		elseif fn25(v13, position) then
+			fn20(false)
+		elseif fn25(v16, position) then
+			fn21(false)
+		end
+	end)
+
+	local white = tbl5.White
+	local gothamBold = Enum.Font.GothamBold
+	local discordFooter = createTextLabel(frame, "DiscordFooter", "https://discord.gg/SggvvNkNwf", UDim2.fromOffset(230, 19), UDim2.new(0.5, -115, 0, n6 - 32), 10, white, gothamBold)
+	discordFooter.TextXAlignment = Enum.TextXAlignment.Center
+	discordFooter.BackgroundColor3 = tbl5.Window
+	discordFooter.BackgroundTransparency = 1
+	discordFooter.TextStrokeColor3 = tbl5.Window
+	discordFooter.TextStrokeTransparency = 0.45
+	discordFooter.ZIndex = 3
+	local flag7 = false
+
+	updateWindowSize = function()
+		if flag7 then
+			frame.Size = UDim2.fromOffset(360, 104)
+			return
+		end
+		local n12 = flag and n6 - n8 * 2 or 672
+		frame.Size = UDim2.fromOffset(360, n12)
+		discordFooter.Position = UDim2.new(0.5, -115, 0, n12 - 32)
+	end
+
+	local function fn26(arg)
+		flag7 = arg
+		local visible = not arg
+		frame4.Visible = visible
+		frame3.Visible = visible
+		discordFooter.Visible = visible
+		updateWindowSize()
+		textButton.Text = arg and "+" or "-"
+	end
+
+	local function fn27()
+		fn26(not flag7)
+	end
+
+	v3.InputBegan:Connect(function(input)
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+
+		if fn25(textButton, input.Position) then
+			fn27()
+		end
+	end)
+
+	fn11(frame, frame2, function(arg)
+		for _, descendant in ipairs(frame2:GetDescendants()) do
+			if descendant:IsA("GuiButton") then
+				local absolutePosition = descendant.AbsolutePosition
+				local absoluteSize = descendant.AbsoluteSize
+				if arg.X >= absolutePosition.X - 6 and arg.X <= absolutePosition.X + absoluteSize.X + 6 and arg.Y >= absolutePosition.Y - 6 and arg.Y <= absolutePosition.Y + absoluteSize.Y + 6 then
+					return true
+				end
+			end
+		end
+
+		return false
+	end)
+
+	local function fn28(arg)
+		if arg == tbl5.Green then
+			return tbl7.Green
+		end
+
+		if arg == tbl5.Red then
+			return tbl7.Red
+		end
+
+		if arg == tbl5.Text then
+			return tbl7.Amber
+		end
+
+		if arg == tbl5.White then
+			return tbl7.Cyan
+		end
+
+		if arg == tbl5.Dim then
+			return tbl7.Dim
+		end
+		local floor = math.floor
+		local n12 = arg.B * 255 + 0.5
+		return string.format("rgb(%d,%d,%d)", math.floor(arg.R * 255 + 0.5), math.floor(arg.G * 255 + 0.5), floor(n12))
+	end
+
+	fn3 = function(arg, arg2)
+		if not textLabel or not codeSniper then
+			return
+		end
+
+		if arg == v9 then
+			return
+		end
+		v9 = arg
+		_sameLineBase = nil
+		local text = "<font color=\"" .. fn28(arg2 or tbl5.Dim) .. "\">" .. tostring(arg) .. "</font>"
+
+		if textLabel.Text == "" then
+			textLabel.Text = text
+		else
+			textLabel.Text = textLabel.Text .. "\n\n" .. text
+		end
+
+		fn13()
+	end
+
+	setSameLineStatus = function(arg, arg2)
+		if not textLabel or not codeSniper then
+			return
+		end
+		local str5 = "<font color=\"" .. fn28(arg2 or tbl5.Dim) .. "\">" .. tostring(arg) .. "</font>"
+
+		if _sameLineBase == nil then
+			_sameLineBase = textLabel.Text
+		end
+
+		textLabel.Text = _sameLineBase == "" and str5 or _sameLineBase .. "\n\n" .. str5
+		v9 = arg
+		fn13()
+	end
+
+	local function fn29(arg, arg2)
+		if not arg or arg == "" or arg == "—" then
+			return
+		end
+		fn3("[code] -> " .. tostring(arg), arg2 or tbl5.White)
+	end
+
+	local function fn30()
+		tbl3 = {}
+	end
+
+	fn5 = function()
+		tbl3 = {}
+	end
+
+	local n12 = 0
+
+	local function fn31()
+		if connection then
+			pcall(function()
+				connection:Disconnect()
+			end)
+		end
+
+		if connection2 then
+			pcall(function()
+				connection2:Disconnect()
+			end)
+		end
+
+		for _, v17 in ipairs(tbl4) do
+			pcall(function()
+				v17:Disconnect()
+			end)
+		end
+
+		connection = nil
+		connection2 = nil
+		tbl4 = {}
+		v6 = nil
+	end
+
+	local function fn32(arg)
+		if not arg or v6 == arg then
+			return
+		end
+		fn31()
+		v6 = arg
+
+		if arg.Text ~= "" then
+			str2 = arg.Text
+		end
+
+		connection = arg:GetPropertyChangedSignal("Text"):Connect(function()
+			if arg.Text == "" then
+				if tick() - n12 > 0.4 then
+					fn30()
+				end
+			else
+				str2 = arg.Text
+			end
+		end)
+
+		connection2 = arg.AncestryChanged:Connect(function(child, parent)
+			if not parent then
+				fn30()
+				fn31()
+			end
+		end)
+	end
+
+	v3.TextBoxFocused:Connect(function(arg)
+		if arg:IsDescendantOf(screenGui) then
+			return
+		end
+
+		if arg ~= fn8() then
+			return
+		end
+		v4 = arg
+		v5 = arg
+		fn32(arg)
+
+		if codeSniper then
+			fn3("Ready", tbl5.Green)
+		end
+	end)
+
+	v3.TextBoxFocusReleased:Connect(function(arg)
+		if arg:IsDescendantOf(screenGui) then
+			return
+		end
+		local v17 = fn8()
+		if arg ~= v17 and arg ~= v5 then
+			return
+		end
+
+		if retypeInvalid and fn4 and (arg == v17 or arg == v5) then
+			fn4(arg, arg.Text ~= "" and arg.Text or str2, false)
+		end
+
+		if v4 == arg then
+			v4 = nil
+
+			if codeSniper then
+				fn3(v5 and v5.Parent and "Ready" or "Click code box first", v5 and v5.Parent and tbl5.Green or tbl5.Dim)
+			end
+		end
+	end)
+
+	local function fn33()
+		n2 += 1
+		v7 = nil
+		v8 = nil
+		n = 0
+	end
+
+	fn4 = function(arg, arg2, arg3)
+		if not retypeInvalid or not arg2 or arg2 == "" then
+			return
+		end
+
+		if not arg3 and v7 and os.clock() <= n then
+			return
+		end
+		n2 += 1
+		local v17 = n2
+		v7 = arg2
+		v8 = arg
+		n = os.clock() + 8
+
+		task.delay(8, function()
+			if v17 == n2 then
+				fn33()
+			end
+		end)
+	end
+
+	local function fn34(arg, text)
+		if not retypeInvalid or not text or text == "" then
+			return false
+		end
+		v2.Heartbeat:Wait()
+		local v17 = fn8() or arg
+		if not v17 or not fn6(v17) then
+			return false
+		end
+
+		local ok = pcall(function()
+			v17.Text = text
+		end)
+
+		if ok then
+			v5 = v17
+			fn32(v17)
+		end
+
+		return ok
+	end
+
+	local function fn35(arg, arg2)
+		if not retypeInvalid or not v7 then
+			return
+		end
+
+		if n < os.clock() then
+			fn33()
+			return
+		end
+
+		if arg2 and arg2:IsDescendantOf(screenGui) then
+			return
+		end
+		local str5 = tostring(arg or ""):lower()
+		if not (str5:find("invalid code", 1, true) or str5:find("code is invalid", 1, true) or str5:find("expired", 1, true) or str5:find("already redeemed", 1, true) or str5:find("already used", 1, true) or str5:find("doesn't exist", 1, true) or str5:find("does not exist", 1, true) or str5:find("not found", 1, true) or str5:find("rejected", 1, true)) then
+			return
+		end
+		local v17 = v7
+		local v18 = fn34(v8, v7)
+		fn33()
+
+		if v18 then
+			fn3("Invalid - repasted: " .. v17, tbl5.Text)
+			fn29(v17, tbl5.Red)
+		end
+	end
+
+	local function fn36(arg)
+		if not arg or arg == "" then
+			return
+		end
+
+		if v6 and not fn6(v6) then
+			fn30()
+			fn31()
+		end
+
+		local v17 = fn8()
+		tbl3[#tbl3 + 1] = arg
+		local redeemed = table.concat(tbl3)
+		local n13 = #tbl3
+
+		if redeemed ~= "" then
+			str = redeemed
+		end
+
+		if v17 then
+			v5 = v17
+			fn32(v17)
+			local flag8 = v3:GetFocusedTextBox() == v17
+			v17.Text = redeemed
+			n12 = tick()
+
+			if flag8 then
+				pcall(function()
+					local cursorPosition = #redeemed + 1
+					v17.CursorPosition = cursorPosition
+					v17.SelectionStart = cursorPosition
+				end)
+			end
+		else
+			fn3("Captured; opening & searching UI...", tbl5.Text)
+		end
+
+		if flag then
+			local green2 = tbl5.Green
+			fn3("Pasted " .. tostring(n13) .. " : " .. redeemed, green2)
+		else
+			fn3("Pasted " .. tostring(n13) .. "/" .. tostring(submitAfter) .. " : " .. redeemed, tbl5.Green)
+		end
+
+		if flag then
+			if autoSubmit then
+				fn14()
+			end
+
+			return
+		end
+
+		if submitAfter <= n13 then
+			tbl3 = {}
+
+			if autoSubmit then
+				fn4(v17, redeemed, true)
+				local v18, v19 = fn7(redeemed)
+
+				if v18 then
+					fn3("Redeemed: " .. redeemed, tbl5.Green)
+				else
+					local v20 = fn34(v17, redeemed)
+					fn33()
+
+					if v20 then
+						fn3("Invalid - repasted: " .. redeemed, tbl5.Text)
+						fn29(redeemed, tbl5.Red)
+					else
+						local red = tbl5.Red
+						fn3("Failed: " .. tostring(v19), red)
+					end
+				end
+			end
+		end
+	end
+
+	local function fn37(arg)
+		if not (arg:IsA("TextLabel") or arg:IsA("TextButton")) then
+			return
+		end
+		fn35(arg.Text or "", arg)
+
+		arg:GetPropertyChangedSignal("Text"):Connect(function()
+			fn35(arg.Text or "", arg)
+		end)
+	end
+
+	for _, descendant in ipairs(playerGui:GetDescendants()) do
+		fn37(descendant)
+	end
+
+	playerGui.DescendantAdded:Connect(function(descendant)
+		task.wait(0.04)
+		fn37(descendant)
+	end)
+
+	local function fn38()
+		if _G.PhiNotifyRemote then
+			return _G.PhiNotifyRemote
+		end
+		local net = v:WaitForChild("Packages"):WaitForChild("Net")
+		local getinfo = debug and (debug.getinfo or debug.info)
+
+		if getgc and getinfo and getconnections then
+			for _, descendant in ipairs(net:GetDescendants()) do
+				if descendant:IsA("RemoteEvent") then
+					local ok, result = pcall(getconnections, descendant.OnClientEvent)
+
+					if ok then
+						for _, v17 in ipairs(result) do
+							local ok2, result2 = pcall(function()
+								return v17.Function
+							end)
+
+							if ok2 and type(result2) == "function" then
+								local ok3, result3 = pcall(getinfo, result2)
+
+								if ok3 then
+									ok3 = tostring(result3.short_src or result3.source or ""):find("NotificationController", 1, true)
+								end
+
+								if ok3 then
+									return descendant
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		return nil
+	end
+
+	local function fn39(arg)
+		if type(arg) ~= "string" then
+			return tostring(arg)
+		end
+		return (arg:gsub("<[^>]->", ""))
+	end
+
+	local function fn40(arg)
+		local tbl8 = {}
+
+		for match in arg:gmatch("[%w_]+") do
+			tbl8[#tbl8 + 1] = match
+		end
+
+		return tbl8
+	end
+
+	local tbl8 = {}
+
+	resetAceCollectBuffer = function()
+		tbl8 = {}
+	end
+
+	local function fn41(arg)
+		local match = fn39(tostring(arg or "")):match("^%s*(.-)%s*$") or ""
+		if match == "" then
+			return
+		end
+
+		if flag3 and not v10 then
+			local str5 = match:lower()
+
+			if str5:find("code is", 1, true) or str5:find("use code", 1, true) then
+				v11()
+			end
+		end
+
+		if not codeSniper then
+			return
+		end
+
+		if riddleSolver and match:find("%s") then
+			n4 += 1
+			fn2(match, n4)
+			return
+		end
+
+		if match:find("%s") then
+			return
+		end
+
+		if flag2 and str4 == "EVERY WORD" then
+			task.spawn(function()
+				fn14(true)
+				n9 += 1
+
+				if setSameLineStatus then
+					setSameLineStatus("Spam redeem (EVERY WORD): " .. n9 .. " presses", tbl5.Accent3)
+				end
+			end)
+		end
+
+		if flag then
+			if match == "" or tbl2[match] then
+				return
+			end
+			tbl2[match] = true
+
+			task.delay(1.25, function()
+				tbl2[match] = nil
+			end)
+
+			local str5 = match
+
+			if str3 == "UPPER" then
+				str5 = str5:upper()
+			elseif str3 == "lower" then
+				str5 = str5:lower()
+			end
+
+			fn36(str5)
+			return
+		end
+
+		for _, v17 in ipairs(fn40(match)) do
+			tbl8[#tbl8 + 1] = v17
+		end
+
+		local tbl9 = {}
+
+		for i = 1, math.min(#tbl8, 1) do
+			tbl9[i] = tbl8[i]
+		end
+
+		if #tbl8 < n3 then
+			return
+		end
+		tbl8 = {}
+		local str5 = table.concat(tbl9)
+
+		if str3 == "UPPER" then
+			str5 = str5:upper()
+		elseif str3 == "lower" then
+			str5 = str5:lower()
+		end
+
+		if str5 == "" or tbl2[str5] then
+			return
+		end
+		tbl2[str5] = true
+
+		task.delay(1.25, function()
+			tbl2[str5] = nil
+		end)
+
+		fn36(str5)
+	end
+
+	local function fn42()
+		local fired2 = "TESTCODE" .. tostring(math.random(1, 9999))
+		textBox.Text = fired2
+		fired.Text = "fired: " .. fired2
+		fn18(fired2)
+		fn41(fired2)
+	end
+
+	local function fn43()
+		local text = textBox.Text
+		if text == "" then
+			return
+		end
+		fired.Text = "fired: " .. text
+		fn18(text)
+		fn41(text)
+
+		for _, v17 in ipairs(fn40(text)) do
+			fn41(v17)
+		end
+	end
+
+	textButton2.Activated:Connect(fn42)
+	textButton3.Activated:Connect(fn43)
+	local v17 = fn38()
+	local connection3 = nil
+
+	if v17 then
+		if getgenv then
+			local aceCodeSniperNotifyConnection = getgenv().ACECodeSniperNotifyConnection
+
+			if aceCodeSniperNotifyConnection then
+				pcall(function()
+					aceCodeSniperNotifyConnection:Disconnect()
+				end)
+			end
+		end
+
+		connection3 = v17.OnClientEvent:Connect(function(...)
+			pcall(fn41, ...)
+		end)
+
+		if getgenv then
+			getgenv().ACECodeSniperNotifyConnection = connection3
+		end
+	end
+
+	if getgenv then
+		getgenv().StopAura = function()
+			if connection3 then
+				pcall(function()
+					connection3:Disconnect()
+				end)
+
+				connection3 = nil
+			end
+
+			if getgenv().ACECodeSniperNotifyConnection then
+				pcall(function()
+					getgenv().ACECodeSniperNotifyConnection:Disconnect()
+				end)
+
+				getgenv().ACECodeSniperNotifyConnection = nil
+			end
+
+			if screenGui then
+				screenGui:Destroy()
+			end
+		end
+	end
+end
