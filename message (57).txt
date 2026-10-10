@@ -1,0 +1,542 @@
+--// MEERKO LOADER
+
+if _G.MeerkoLoaderRunning then return end
+_G.MeerkoLoaderRunning = true
+
+local Players         = game:GetService("Players")
+local ContentProvider = game:GetService("ContentProvider")
+local RunService      = game:GetService("RunService")
+local Workspace       = game:GetService("Workspace")
+local Lighting        = game:GetService("Lighting")
+local TweenService    = game:GetService("TweenService")
+
+pcall(function() game:GetService("ReplicatedFirst"):RemoveDefaultLoadingScreen() end)
+
+local T0 = os.clock()
+local function log(msg)
+    if _G.MeerkoLoaderQuiet then return end
+    pcall(print, ("[MEERKO] %.2fs | %s"):format(os.clock() - T0, msg))
+end
+
+local PLAY_FPS = tonumber(_G.MeerkoPlayFps) or 9999
+if setfpscap then pcall(setfpscap, PLAY_FPS) end
+
+if setfflag then
+    local flags = {
+        DebugForceAllTextures1x1 = "True",
+        RomRenderTextureScale = "10",
+        DFIntTextureQualityOverride = "0",
+        FIntRenderShadowIntensity = "0",
+        FIntRenderLocalLightUpdatesMax = "1",
+        FIntRenderLocalLightUpdatesMin = "1",
+        FIntRenderLocalLightFadeInMs = "0",
+        DFIntCSGLevelOfDetailSwitchingDistance = "0",
+        DFIntCSGLevelOfDetailSwitchingDistanceL12 = "0",
+        DFIntCSGLevelOfDetailSwitchingDistanceL23 = "0",
+        DFIntCSGLevelOfDetailSwitchingDistanceL34 = "0",
+        FFlagDebugSkipMeshVoxelizer = "True",
+        FIntTerrainArraySliceSize = "0",
+        DFIntMaxFrameBufferSize = "1",
+        FFlagNewLightAttenuation = "False",
+        DFFlagDebugPauseVoxelizer = "True",
+        FIntSimWidgetKeyboardMoveTime = "0",
+    }
+    for k, v in pairs(flags) do pcall(setfflag, k, v) end
+end
+
+local LP = Players.LocalPlayer
+while not LP do
+    task.wait()
+    LP = Players.LocalPlayer
+end
+
+local MAX_LOAD  = tonumber(_G.MeerkoMaxLoad) or 20
+local restore   = {}
+local restored  = false
+local READY_AT  = nil
+
+local function keep(fn) restore[#restore + 1] = fn end
+if _G.MeerkoKeepLowGraphics == nil then _G.MeerkoKeepLowGraphics = true end
+local function keepGfx(fn)
+    if _G.MeerkoKeepLowGraphics ~= false then return end
+    restore[#restore + 1] = fn
+end
+
+local function restoreAll(reason)
+    if restored then return end
+    restored = true
+    for i = #restore, 1, -1 do pcall(restore[i]) end
+    table.clear(restore)
+    if setfpscap then pcall(setfpscap, PLAY_FPS) end
+    log("restored (" .. tostring(reason) .. ")")
+end
+
+task.delay(MAX_LOAD, function() restoreAll("timeout") end)
+if LP.OnTeleport then
+    pcall(function()
+        LP.OnTeleport:Connect(function() restoreAll("teleport") end)
+    end)
+end
+
+local UIC = {
+    bg   = Color3.fromRGB(10, 10, 15),
+    bg2  = Color3.fromRGB(26, 26, 38),
+    seg  = Color3.fromRGB(40, 40, 58),
+    line = Color3.fromRGB(80, 80, 108),
+    acc  = Color3.fromRGB(255, 92, 92),
+    acc2 = Color3.fromRGB(255, 186, 148),
+    txt  = Color3.fromRGB(255, 255, 255),
+    dim  = Color3.fromRGB(126, 126, 150),
+}
+
+local function mk(class, parent, props)
+    local o = Instance.new(class)
+    for k, v in pairs(props) do o[k] = v end
+    o.Parent = parent
+    return o
+end
+
+local function pickHost()
+    local hosts = {}
+    pcall(function() if gethui then hosts[#hosts + 1] = gethui() end end)
+    pcall(function() hosts[#hosts + 1] = game:GetService("CoreGui") end)
+    hosts[#hosts + 1] = LP:FindFirstChildOfClass("PlayerGui") or LP:WaitForChild("PlayerGui", 10)
+    for _, h in ipairs(hosts) do
+        if h then
+            local ok = pcall(function()
+                local probe = Instance.new("Folder")
+                probe.Parent = h
+                probe:Destroy()
+            end)
+            if ok then return h end
+        end
+    end
+    return nil
+end
+
+local gui, card, halo, stroke, strokeGrad, shineGrad, status, fill, head
+local CARD_W, CARD_H = 344, 64
+
+local uiOk = pcall(function()
+    local host = pickHost()
+    if not host then error("no gui host") end
+
+    local old = host:FindFirstChild("MeerkoLoaderUI")
+    if old then old:Destroy() end
+
+    gui = mk("ScreenGui", host, {
+        Name = "MeerkoLoaderUI", ResetOnSpawn = false,
+        IgnoreGuiInset = true, ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        DisplayOrder = 9999,
+    })
+
+    halo = mk("Frame", gui, {
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 0, 0, -CARD_H),
+        Size = UDim2.fromOffset(CARD_W + 6, CARD_H + 6),
+        BackgroundColor3 = UIC.acc,
+        BackgroundTransparency = 0.86,
+        BorderSizePixel = 0,
+    })
+    mk("UICorner", halo, { CornerRadius = UDim.new(0, 16) })
+
+    card = mk("Frame", gui, {
+        AnchorPoint = Vector2.new(0.5, 0),
+        Position = UDim2.new(0.5, 0, 0, -CARD_H),
+        Size = UDim2.fromOffset(CARD_W, CARD_H),
+        BackgroundColor3 = UIC.bg,
+        BorderSizePixel = 0,
+    })
+    mk("UICorner", card, { CornerRadius = UDim.new(0, 14) })
+    mk("UIGradient", card, {
+        Rotation = 115,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, UIC.bg2),
+            ColorSequenceKeypoint.new(0.55, UIC.bg),
+            ColorSequenceKeypoint.new(1, UIC.bg),
+        }),
+    })
+
+    stroke = mk("UIStroke", card, {
+        Color = UIC.line, Thickness = 1.4, Transparency = 0.25,
+    })
+    strokeGrad = mk("UIGradient", stroke, {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, UIC.acc),
+            ColorSequenceKeypoint.new(0.35, UIC.line),
+            ColorSequenceKeypoint.new(0.65, UIC.line),
+            ColorSequenceKeypoint.new(1, UIC.acc2),
+        }),
+    })
+
+    local title = mk("TextLabel", card, {
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 20, 0, 11),
+        Size = UDim2.new(1, -150, 0, 22),
+        Font = Enum.Font.GothamBlack, TextSize = 18,
+        TextColor3 = UIC.txt, TextXAlignment = Enum.TextXAlignment.Left,
+        Text = "IDI HAHUI",
+    })
+    shineGrad = mk("UIGradient", title, {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, UIC.txt),
+            ColorSequenceKeypoint.new(0.42, UIC.txt),
+            ColorSequenceKeypoint.new(0.5, UIC.acc2),
+            ColorSequenceKeypoint.new(0.58, UIC.txt),
+            ColorSequenceKeypoint.new(1, UIC.txt),
+        }),
+        Offset = Vector2.new(-1, 0),
+    })
+
+    status = mk("TextLabel", card, {
+        AnchorPoint = Vector2.new(1, 0),
+        BackgroundTransparency = 1,
+        Position = UDim2.new(1, -20, 0, 15),
+        Size = UDim2.fromOffset(120, 18),
+        Font = Enum.Font.GothamBold, TextSize = 13,
+        TextColor3 = UIC.dim, TextXAlignment = Enum.TextXAlignment.Right,
+        Text = "0%",
+    })
+
+    local track = mk("Frame", card, {
+        Position = UDim2.new(0, 20, 1, -16),
+        Size = UDim2.new(1, -40, 0, 5),
+        BackgroundColor3 = UIC.seg,
+        BorderSizePixel = 0,
+    })
+    mk("UICorner", track, { CornerRadius = UDim.new(1, 0) })
+
+    fill = mk("Frame", track, {
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = UIC.acc,
+        BorderSizePixel = 0,
+    })
+    mk("UICorner", fill, { CornerRadius = UDim.new(1, 0) })
+    mk("UIGradient", fill, { Color = ColorSequence.new(UIC.acc, UIC.acc2) })
+
+    head = mk("Frame", track, {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0, 0, 0.5, 0),
+        Size = UDim2.fromOffset(10, 10),
+        BackgroundColor3 = UIC.acc2,
+        BorderSizePixel = 0,
+    })
+    mk("UICorner", head, { CornerRadius = UDim.new(1, 0) })
+
+    local slideIn = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    TweenService:Create(card, slideIn, { Position = UDim2.new(0.5, 0, 0, 24) }):Play()
+    TweenService:Create(halo, slideIn, { Position = UDim2.new(0.5, 0, 0, 21) }):Play()
+end)
+
+if not uiOk then log("ui failed to build - loading anyway") end
+_G.MeerkoLoaderUIShown = uiOk
+
+if uiOk then
+    task.spawn(function()
+        while card and card.Parent do
+            strokeGrad.Rotation = (strokeGrad.Rotation + 2) % 360
+            RunService.Heartbeat:Wait()
+        end
+    end)
+    task.spawn(function()
+        while card and card.Parent do
+            shineGrad.Offset = Vector2.new(-1, 0)
+            TweenService:Create(shineGrad, TweenInfo.new(1.1, Enum.EasingStyle.Linear), {
+                Offset = Vector2.new(1, 0),
+            }):Play()
+            task.wait(2.4)
+        end
+    end)
+end
+
+pcall(function()
+    local ok, s = pcall(settings)
+    if ok and s then
+        local r = s.Rendering
+        local prev = r.QualityLevel
+        r.QualityLevel = Enum.QualityLevel.Level01
+        keepGfx(function() r.QualityLevel = prev end)
+    end
+end)
+
+pcall(function()
+    local effects = {}
+    for _, o in ipairs(Lighting:GetDescendants()) do
+        if o:IsA("PostEffect") or o:IsA("Atmosphere") then
+            if o.Enabled ~= false then
+                effects[#effects + 1] = o
+                o.Enabled = false
+            end
+        end
+    end
+    keepGfx(function()
+        for _, o in ipairs(effects) do
+            pcall(function() o.Enabled = true end)
+        end
+    end)
+
+    local snap = {
+        GlobalShadows = Lighting.GlobalShadows,
+        FogEnd = Lighting.FogEnd,
+        FogStart = Lighting.FogStart,
+        EnvironmentDiffuseScale = Lighting.EnvironmentDiffuseScale,
+        EnvironmentSpecularScale = Lighting.EnvironmentSpecularScale,
+    }
+    Lighting.GlobalShadows = false
+    Lighting.EnvironmentDiffuseScale = 0
+    Lighting.EnvironmentSpecularScale = 0
+    Lighting.FogStart = 0
+    Lighting.FogEnd = tonumber(_G.MeerkoLoadFog) or 260
+    keepGfx(function()
+        for k, v in pairs(snap) do pcall(function() Lighting[k] = v end) end
+    end)
+end)
+
+pcall(function()
+    local ter = Workspace:FindFirstChildOfClass("Terrain")
+    if not ter then return end
+    local snap = {
+        Decoration = ter.Decoration,
+        WaterWaveSize = ter.WaterWaveSize,
+        WaterReflectance = ter.WaterReflectance,
+        WaterTransparency = ter.WaterTransparency,
+    }
+    ter.Decoration = false
+    ter.WaterWaveSize = 0
+    ter.WaterReflectance = 0
+    ter.WaterTransparency = 1
+    keepGfx(function()
+        for k, v in pairs(snap) do pcall(function() ter[k] = v end) end
+    end)
+end)
+
+local HIDE   = { Avatar = true, ProfilePicture = true, SettingsButton = true }
+local FRIED  = Color3.fromRGB(255, 110, 40)
+local SMOOTH = Enum.Material.SmoothPlastic
+
+local FX = {
+    ParticleEmitter = true, Trail = true, Beam = true,
+    Smoke = true, Fire = true, Sparkles = true,
+}
+
+local PRELOAD = _G.MeerkoPreload == true
+local PROPS = {
+    MeshPart    = { "MeshId", "TextureID" },
+    SpecialMesh = { "MeshId", "TextureId" },
+    Decal       = { "Texture" },
+    Texture     = { "Texture" },
+}
+
+local ids, nIds, seen = {}, 0, {}
+local fxOff = {}
+local hooks = {}
+
+local function harvest(o)
+    local props = PROPS[o.ClassName]
+    if not props then return end
+    for i = 1, #props do
+        local id = o[props[i]]
+        if type(id) == "string" and #id > 0 and not seen[id] then
+            local b = id:byte(1)
+            if b == 114 or b == 104 then
+                seen[id] = true
+                nIds = nIds + 1
+                ids[nIds] = id
+            end
+        end
+    end
+end
+
+local function touch3D(o)
+    local c = o.ClassName
+    if c == "MeshPart" then
+        o.TextureID = ""
+        o.Material = SMOOTH
+    elseif c == "SpecialMesh" then
+        o.TextureId = ""
+    elseif c == "Decal" or c == "Texture" then
+        o.Texture = ""
+    elseif FX[c] then
+        if o.Enabled then
+            fxOff[#fxOff + 1] = o
+            o.Enabled = false
+        end
+        return
+    elseif o:IsA("BasePart") then
+        o.Material = SMOOTH
+    else
+        return
+    end
+    if PRELOAD then harvest(o) end
+end
+
+local function touch2D(o)
+    local c = o.ClassName
+    if c == "ImageLabel" or c == "ImageButton" then
+        o.ResampleMode = Enum.ResamplerMode.Pixelated
+        o.ImageColor3 = FRIED
+    elseif HIDE[o.Name] then
+        o.Visible = false
+    end
+end
+
+local function sweep(list, fn)
+    local total, i = #list, 1
+    local budgetMs = tonumber(_G.MeerkoSweepMs) or 6
+    while i <= total do
+        local t = os.clock()
+        local ok = pcall(function()
+            while i <= total do
+                fn(list[i])
+                i = i + 1
+                if (os.clock() - t) * 1000 >= budgetMs then break end
+            end
+        end)
+        if not ok then i = i + 1 end
+        RunService.Heartbeat:Wait()
+    end
+    return total
+end
+
+task.spawn(function()
+    local count = sweep(Workspace:GetDescendants(), touch3D)
+    hooks[#hooks + 1] = Workspace.DescendantAdded:Connect(function(o) pcall(touch3D, o) end)
+    log("world swept: " .. count)
+end)
+
+if _G.MeerkoFryUI ~= false then
+    task.spawn(function()
+        local pg = LP:FindFirstChildOfClass("PlayerGui") or LP:WaitForChild("PlayerGui", 10)
+        if not pg then return end
+        sweep(pg:GetDescendants(), touch2D)
+        hooks[#hooks + 1] = pg.DescendantAdded:Connect(function(o) pcall(touch2D, o) end)
+    end)
+end
+
+keepGfx(function()
+    for _, c in ipairs(hooks) do pcall(function() c:Disconnect() end) end
+    table.clear(hooks)
+    for _, o in ipairs(fxOff) do
+        if o.Parent then pcall(function() o.Enabled = true end) end
+    end
+    table.clear(fxOff)
+end)
+
+local MARK = { game = false, char = false, plots = false, assets = false }
+
+task.spawn(function()
+    if not game:IsLoaded() then game.Loaded:Wait() end
+    MARK.game = true
+end)
+
+task.spawn(function()
+    local ch = LP.Character or LP.CharacterAdded:Wait()
+    ch:WaitForChild("HumanoidRootPart", 20)
+    MARK.char = true
+end)
+
+task.spawn(function()
+    if Workspace:FindFirstChild("Plots") or Workspace:WaitForChild("Plots", 12) then
+        MARK.plots = true
+    end
+end)
+
+for _, d in ipairs({ 0.3, 1.5 }) do
+    task.delay(d, function()
+        pcall(function()
+            local cam = Workspace.CurrentCamera
+            if cam and cam.CameraType ~= Enum.CameraType.Custom then
+                cam.CameraType = Enum.CameraType.Custom
+                local ch = LP.Character
+                if ch then cam.CameraSubject = ch:FindFirstChildOfClass("Humanoid") end
+            end
+        end)
+    end)
+end
+
+task.spawn(function()
+    while not (MARK.game and MARK.char) and (os.clock() - T0) < MAX_LOAD do
+        RunService.Heartbeat:Wait()
+    end
+    READY_AT = os.clock() - T0
+    log(("ready in %.2fs"):format(READY_AT))
+    restoreAll("ready")
+
+    if PRELOAD and nIds > 0 then
+        local total, cursor = nIds, 1
+        local workers = tonumber(_G.MeerkoPreloadWorkers) or 4
+        local chunk = math.max(12, math.ceil(total / (workers * 2)))
+        for _ = 1, workers do
+            task.spawn(function()
+                while true do
+                    local s = cursor
+                    if s > total then return end
+                    cursor = math.min(s + chunk, total + 1)
+                    pcall(ContentProvider.PreloadAsync, ContentProvider,
+                        table.move(ids, s, cursor - 1, 1, {}))
+                end
+            end)
+        end
+        log("preloading " .. total .. " assets")
+    end
+    MARK.assets = true
+end)
+
+if uiOk then
+    local shown = 0
+    local function setProgress(p)
+        p = math.clamp(p, 0, 1)
+        if p <= shown then return end
+        shown = p
+        local ti = TweenInfo.new(0.25, Enum.EasingStyle.Quad)
+        TweenService:Create(fill, ti, { Size = UDim2.fromScale(p, 1) }):Play()
+        TweenService:Create(head, ti, { Position = UDim2.new(p, 0, 0.5, 0) }):Play()
+        status.Text = ("%d%%"):format(math.floor(p * 100))
+    end
+
+    local WEIGHT = { game = 0.40, char = 0.30, plots = 0.20, assets = 0.10 }
+
+    task.spawn(function()
+        local t = os.clock()
+        while not READY_AT do
+            local p = 0
+            for k, w in pairs(WEIGHT) do
+                if MARK[k] then p = p + w end
+            end
+            setProgress(math.min(0.97, p + math.min(0.08, (os.clock() - t) / 90)))
+            task.wait(0.08)
+        end
+        setProgress(1)
+        status.Text = ("%.2fs"):format(READY_AT)
+        status.TextColor3 = UIC.acc2
+        TweenService:Create(head, TweenInfo.new(0.35), {
+            Size = UDim2.fromOffset(0, 0), BackgroundTransparency = 1,
+        }):Play()
+        TweenService:Create(halo, TweenInfo.new(0.35), { BackgroundTransparency = 0.7 }):Play()
+    end)
+
+    task.spawn(function()
+        while not READY_AT do task.wait(0.1) end
+        task.wait(tonumber(_G.MeerkoCardHold) or 1.4)
+        local t = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        for _, o in ipairs({ card, halo }) do
+            TweenService:Create(o, t, {
+                Position = UDim2.new(0.5, 0, 0, -CARD_H - 12),
+                BackgroundTransparency = 1,
+            }):Play()
+        end
+        TweenService:Create(stroke, t, { Transparency = 1 }):Play()
+        for _, o in ipairs(card:GetDescendants()) do
+            if o:IsA("TextLabel") then
+                TweenService:Create(o, t, { TextTransparency = 1 }):Play()
+            elseif o:IsA("Frame") then
+                TweenService:Create(o, t, { BackgroundTransparency = 1 }):Play()
+            end
+        end
+        task.wait(0.45)
+        pcall(function() gui:Destroy() end)
+        _G.MeerkoLoaderRunning = nil
+    end)
+else
+    task.delay(MAX_LOAD + 2, function() _G.MeerkoLoaderRunning = nil end)
+end
