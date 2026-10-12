@@ -1,0 +1,678 @@
+-- ══════════════════════════════════════════════
+-- HOOK CLIENTLOADER — coupe le chargement a la source
+-- ══════════════════════════════════════════════
+_G.__SXE_GrappleFired = false
+_G.__SXE_KillQ = {}
+
+do
+    local RS = game:GetService("ReplicatedStorage")
+    local KEEP = {
+        CustomProximityPromptController = true,
+        InteractController              = true,
+        PlotController                  = true,
+        AnimalController                = true,
+        PetController                   = true,
+        WorldBrainrotController         = true,
+        EquipBrainrotsController        = true,
+        EquipBrainrotsRenderController  = true,
+        SelectBrainrotsController       = true,
+        BrainrotPreloadingController    = true,
+        AssetStreamController           = true,
+        AdminPanelController            = true,
+        NotificationController          = true,
+    }
+
+    local function wrap(fn)
+        if newcclosure then
+            return newcclosure(fn)
+        end
+        return fn
+    end
+
+    local function isCtrlFolder(x)
+        return typeof(x) == "Instance" and x.Name == "Controllers" and x.Parent == RS
+    end
+
+    local function callerName()
+        if not getcallingscript then
+            return "?"
+        end
+        local ok, s = pcall(getcallingscript)
+        if not ok or s == nil then
+            return "nil"
+        end
+        return tostring(s.Name)
+    end
+
+    local function fromLoader()
+        return callerName() == "ClientLoader"
+    end
+
+    local function filt(kids)
+        if type(kids) ~= "table" then
+            return kids
+        end
+        local out = {}
+        for i = 1, #kids do
+            local k = kids[i]
+            if k and KEEP[k.Name] then
+                out[#out + 1] = k
+            end
+        end
+        return out
+    end
+
+    local oldNc
+    local undone = false
+    local function unhook()
+        if undone then return end
+        undone = true
+        pcall(function()
+            if oldNc then
+                hookmetamethod(game, "__namecall", oldNc)
+            end
+        end)
+    end
+
+    pcall(function()
+        oldNc = hookmetamethod(game, "__namecall", wrap(function(self, ...)
+            local method = getnamecallmethod()
+            if type(method) ~= "string" then
+                return oldNc(self, ...)
+            end
+            local ml = string.lower(method)
+            if ml ~= "getchildren" then
+                return oldNc(self, ...)
+            end
+            if not isCtrlFolder(self) then
+                return oldNc(self, ...)
+            end
+            if not fromLoader() then
+                return oldNc(self, ...)
+            end
+            return filt(oldNc(self, ...))
+        end))
+    end)
+
+    task.delay(6, unhook)
+end
+
+-- ══════════════════════════════════════════════
+-- RS KILL
+-- ══════════════════════════════════════════════
+task.spawn(function()
+    local RS = game:GetService("ReplicatedStorage")
+    local KILL = {
+        RNGMachineVFX        = true,
+        LuckIcons            = true,
+        GlossaryBackground   = true,
+        AnimationGraphEditor = true,
+        ML                   = true,
+        PlayWaveEvents       = true,
+    }
+    local function yeet(ch)
+        if not ch then return end
+        pcall(function()
+            ch:Destroy()
+        end)
+    end
+    local function dropKill(ch)
+        if ch and KILL[ch.Name] then yeet(ch) end
+    end
+    local kids = RS:GetChildren()
+    for i = 1, #kids do dropKill(kids[i]) end
+    RS.ChildAdded:Connect(dropKill)
+end)
+
+task.wait()
+
+-- ══════════════════════════════════════════════
+-- SXE KILL QUEUE
+-- ══════════════════════════════════════════════
+local function _sxeBusy()
+    return _G.__SXE_VelFlying == true
+end
+
+function _G.SXE_Kill(inst)
+    if not inst then return end
+    if _sxeBusy() then
+        local q = _G.__SXE_KillQ
+        q[#q + 1] = inst
+        return
+    end
+    pcall(function() inst:Destroy() end)
+end
+
+function _G.SXE_FlushKills()
+    local q = _G.__SXE_KillQ
+    _G.__SXE_KillQ = {}
+    for i = 1, #q do
+        local x = q[i]
+        if x and x.Parent then
+            pcall(function() x:Destroy() end)
+        end
+    end
+end
+
+-- ══════════════════════════════════════════════
+-- SCRIPT PRINCIPAL
+-- ══════════════════════════════════════════════
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local MaterialService = game:GetService("MaterialService")
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+
+if not Players.LocalPlayer then
+    Players.PlayerAdded:Wait()
+end
+
+local player = Players.LocalPlayer
+
+pcall(function()
+    ReplicatedFirst:RemoveDefaultLoadingScreen()
+end)
+
+pcall(function()
+    settings().Rendering.QualityLevel        = Enum.QualityLevel.Level01
+    settings().Rendering.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level01
+    settings().Physics.AllowSleep = true
+    settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Skip
+    workspace.Terrain.WaterWaveSize     = 0
+    workspace.Terrain.WaterWaveSpeed    = 0
+    workspace.Terrain.WaterReflectance  = 0
+    workspace.Terrain.WaterTransparency = 1
+    workspace.Terrain.Decoration        = false
+end)
+pcall(function() setfpscap(999) end)
+
+local function waitForClaims()
+    for _, desc in ipairs(Workspace:GetDescendants()) do
+        if desc.Name == "Claim" and desc:FindFirstChild("Main") then return end
+    end
+    local conn
+    local done = Instance.new("BindableEvent")
+    conn = Workspace.DescendantAdded:Connect(function(desc)
+        if desc.Name == "Claim" then
+            task.delay(0.1, function()
+                if desc:FindFirstChild("Main") then
+                    conn:Disconnect()
+                    done:Fire()
+                end
+            end)
+        end
+    end)
+    done.Event:Wait()
+    done:Destroy()
+end
+waitForClaims()
+task.wait(0.5)
+
+local plotsContainer = Workspace:FindFirstChild("Plots")
+Workspace.ChildAdded:Connect(function(c)
+    if c.Name == "Plots" then plotsContainer = c end
+end)
+
+local function isInPlots(obj)
+    if not plotsContainer then return false end
+    local p = obj
+    while p and p ~= Workspace do
+        if p == plotsContainer then return true end
+        p = p.Parent
+    end
+    return false
+end
+
+local MACHINES_KILL = {
+    ["FuseMachine"]=true, ["CraftingMachine"]=true, ["IncubatorMachine"]=true,
+    ["RNGMachine"]=true, ["CrystalSpinWheel"]=true, ["Beehive"]=true, ["Beehee"]=true,
+    ["Shop"]=true, ["RobuxShop"]=true, ["ShopNPCRobuxIdle"]=true,
+    ["LosTraders"]=true, ["TradePlazaPortal"]=true, ["SoccerScoreBoard"]=true,
+    ["EventBoard"]=true, ["StPatricksPot"]=true, ["RenderedMovingAnimals"]=true,
+    ["GriefShieldForcefield"]=true, ["TutorialArrow"]=true, ["MainHighlight"]=true,
+    ["Road"]=true, ["RoadPanel"]=true, ["UFO"]=true,
+    ["Cave"]=true, ["GenerationBoard"]=true, ["StealsBoard"]=true, ["LiveBoard"]=true,
+    ["AdminBoard"]=true, ["Present"]=true, ["Honey"]=true, ["Trap"]=true,
+    ["CrystalMap"]=true, ["__PROJECTILES"]=true, ["ToolsAdds"]=true,
+}
+
+local UI_KILL = {
+    ["ResetGui"]=true, ["TouchGui"]=true,
+    ["CoinsShop"]=true, ["NewShop"]=true, ["JumpShop"]=true,
+    ["RodsShop"]=true, ["CandyShop"]=true, ["ValentinesShop"]=true,
+    ["Merchant"]=true, ["BrainrotTrader"]=true, ["SantaMerchant"]=true,
+    ["BeeMerchant"]=true, ["TacoMerchant"]=true,
+    ["StockMachine"]=true, ["SingleStockMachine"]=true,
+    ["CrystalWheel"]=true, ["FuseMachine"]=true, ["CraftingMachine"]=true,
+    ["TradePlayerList"]=true, ["TradeLiveTrade"]=true,
+    ["TradePlaza"]=true, ["TradePlazaServerBrowser"]=true,
+    ["TradePlazaSignEdit"]=true, ["TradePrompts"]=true,
+    ["HoneyBeeBase"]=true, ["TacoBase"]=true, ["LuckyBase"]=true,
+    ["EasterBase"]=true, ["BeeLuckyBlock"]=true,
+    ["ValentinesSendGift"]=true, ["ValentinesGifts"]=true,
+    ["ValentinesCard"]=true, ["ValentinesBase"]=true,
+    ["SkullEmoji"]=true, ["ActiveEvents"]=true,
+    ["DuelsMachineSession"]=true, ["DuelsMachinePrompt"]=true,
+    ["DuelsMachinePlayerList"]=true, ["DuelsMachineTopFrame"]=true,
+    ["DuelsMachineAnimation"]=true,
+    ["Codes"]=true, ["Glossary"]=true, ["SkillTree"]=true,
+    ["Settings"]=true, ["Rebirth"]=true, ["BackroomsSpeedUpgrade"]=true,
+    ["PortalGui"]=true, ["PortalGuiBack"]=true,
+    ["TsunamiSpeedUpgrade"]=true, ["VoiceChat"]=true,
+    ["DialogAnswers"]=true, ["GiftPlayer"]=true, ["Digging"]=true,
+    ["VersionLabel"]=true, ["Index"]=true,
+    ["TopNotification"]=true, ["Notification"]=true,
+    ["LeftBottom"]=true, ["RightBottom"]=true, ["LeftCenter"]=true,
+    ["__AssetStream"]=true, ["Confirmation"]=true,
+    ["SurfaceGui"]=true, ["ToolsFrames"]=true,
+}
+
+local ClothingClasses = {
+    "Shirt","Pants","ShirtGraphic",
+    "Accessory","Hat","HairAccessory",
+    "FaceAccessory","NeckAccessory","ShoulderAccessory",
+    "FrontAccessory","BackAccessory","WaistAccessory",
+}
+
+local function safeDestroy(o)
+    if o and o.Parent then _G.SXE_Kill(o) end
+end
+
+local function isProtected(obj)
+    if not obj then return false end
+    local p = obj
+    while p and p ~= Workspace do
+        if p.Name == "AnimalPodiums" then return true end
+        if p.Name == "Claim"         then return true end
+        p = p.Parent
+    end
+    return false
+end
+
+local function isClothing(obj)
+    for _, c in ipairs(ClothingClasses) do
+        if obj:IsA(c) then return true end
+    end
+    return false
+end
+
+local function isCharacterPart(obj)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr.Character and obj:IsDescendantOf(plr.Character) then return true end
+    end
+    return false
+end
+
+local function stripObject(obj)
+    pcall(function()
+        if obj:IsA("Texture") or obj:IsA("Decal") or obj:IsA("SpecialMesh") then
+            safeDestroy(obj)
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam")
+            or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            pcall(function() obj.Enabled = false end)
+            safeDestroy(obj)
+        elseif obj:IsA("SurfaceAppearance") then
+            safeDestroy(obj)
+        elseif obj:IsA("BasePart") then
+            obj.CastShadow      = false
+            obj.Material        = Enum.Material.Plastic
+            obj.MaterialVariant = ""
+            obj.Reflectance     = 0
+        end
+    end)
+end
+
+local function cleanObject(obj)
+    pcall(function()
+        if obj:IsA("SurfaceAppearance") then
+            safeDestroy(obj)
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            if not (obj.Name == "face" and obj.Parent and obj.Parent.Name == "Head") then
+                safeDestroy(obj)
+            end
+        elseif obj:IsA("SpecialMesh") then
+            obj.TextureId = ""
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+            safeDestroy(obj)
+        elseif obj:IsA("PointLight") or obj:IsA("SpotLight") or obj:IsA("SurfaceLight") then
+            safeDestroy(obj)
+        elseif obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") or obj:IsA("Explosion") then
+            safeDestroy(obj)
+        elseif obj:IsA("Animation") or obj:IsA("AnimationController") then
+            safeDestroy(obj)
+        elseif obj:IsA("BasePart") then
+            obj.CastShadow      = false
+            obj.Material        = Enum.Material.Plastic
+            obj.MaterialVariant = ""
+            obj.Reflectance     = 0
+        end
+    end)
+end
+
+local function stopAnimations(animator)
+    pcall(function()
+        for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+            local isChar = false
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr.Character and animator:IsDescendantOf(plr.Character) then
+                    isChar = true break
+                end
+            end
+            if not isChar then track:Stop() end
+        end
+    end)
+end
+
+local function optimizeCharacter(char)
+    if not char then return end
+    task.spawn(function()
+        task.wait(0.3)
+        for _, obj in ipairs(char:GetDescendants()) do
+            if isClothing(obj) then safeDestroy(obj)
+            else cleanObject(obj) end
+        end
+    end)
+end
+
+local function makeCollidableInvisible(obj)
+    pcall(function()
+        for _, desc in ipairs(obj:GetDescendants()) do
+            if desc:IsA("BasePart") or desc:IsA("MeshPart") then
+                pcall(function()
+                    desc.Transparency=1 desc.CastShadow=false
+                    desc.Material=Enum.Material.SmoothPlastic
+                    desc.Reflectance=0 desc.CanCollide=true
+                end)
+            end
+            for _,cn in ipairs({"ParticleEmitter","Trail","Beam","Smoke","PointLight","SpotLight","SurfaceLight"}) do
+                if desc:IsA(cn) then pcall(function() desc.Enabled=false end) end
+            end
+        end
+    end)
+end
+
+local function makeFullyInvisible(obj)
+    if isProtected(obj) then return end
+    pcall(function()
+        for _, desc in ipairs(obj:GetDescendants()) do
+            if not isProtected(desc) then
+                if desc:IsA("BasePart") or desc:IsA("MeshPart") then
+                    pcall(function()
+                        desc.Transparency=1 desc.CastShadow=false
+                        desc.Material=Enum.Material.SmoothPlastic
+                        desc.Reflectance=0 desc.CanCollide=false
+                    end)
+                end
+                for _,cn in ipairs({"ParticleEmitter","Trail","Beam","Smoke","PointLight","SpotLight","SurfaceLight","BillboardGui","SurfaceGui"}) do
+                    if desc:IsA(cn) then pcall(function() desc.Enabled=false end) end
+                end
+            end
+        end
+        if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+            pcall(function()
+                obj.Transparency=1 obj.CastShadow=false
+                obj.Material=Enum.Material.SmoothPlastic
+                obj.Reflectance=0 obj.CanCollide=false
+            end)
+        end
+    end)
+end
+
+local function cleanMachines()
+    for _, child in ipairs(Workspace:GetChildren()) do
+        if MACHINES_KILL[child.Name] then safeDestroy(child) end
+    end
+    Workspace.ChildAdded:Connect(function(child)
+        if MACHINES_KILL[child.Name] then
+            task.wait(0.1)
+            safeDestroy(child)
+        end
+    end)
+end
+
+local function cleanMap()
+    local map = Workspace:FindFirstChild("Map")
+    if not map then return end
+    local KEEP_VIS = {["Ground"]=true,["Ground_Left"]=true,["Ground_Right"]=true,["Carpet"]=true}
+    local KEEP_COL = {["WallModels"]=true,["Borders"]=true,["Collisions"]=true}
+    local function proc(child)
+        if KEEP_VIS[child.Name] then return
+        elseif KEEP_COL[child.Name] then makeCollidableInvisible(child)
+        else makeFullyInvisible(child) end
+    end
+    for _, child in ipairs(map:GetChildren()) do proc(child) end
+    map.ChildAdded:Connect(proc)
+end
+
+-- Autres joueurs visibles mais allégés
+local function cleanOtherPlayers()
+    for _, op in ipairs(Players:GetPlayers()) do
+        if op ~= player then
+            if op.Character then optimizeCharacter(op.Character) end
+            local gui = op:FindFirstChild("PlayerGui")
+            if gui then safeDestroy(gui) end
+        end
+    end
+    Players.PlayerAdded:Connect(function(np)
+        np.CharacterAdded:Connect(function(c) optimizeCharacter(c) end)
+    end)
+end
+
+local function disableVisualEffects()
+    Lighting.Ambient=Color3.new(1,1,1) Lighting.Brightness=2
+    Lighting.GlobalShadows=false Lighting.OutdoorAmbient=Color3.new(1,1,1)
+    Lighting.ShadowSoftness=0
+    Lighting.FogEnd=9e9 Lighting.FogStart=9e9
+    Lighting.EnvironmentDiffuseScale=0 Lighting.EnvironmentSpecularScale=0
+    for _, c in ipairs(Lighting:GetChildren()) do
+        if c.ClassName~="Script" and c.ClassName~="LocalScript" then safeDestroy(c) end
+    end
+end
+
+local function cleanUI()
+    local gui = player:FindFirstChild("PlayerGui")
+    if not gui then return end
+    local function disable(c)
+        if UI_KILL[c.Name] then
+            pcall(function() c.Enabled = false end)
+        end
+    end
+    for _, c in ipairs(gui:GetChildren()) do disable(c) end
+    gui.ChildAdded:Connect(function(c)
+        task.wait(0.1)
+        disable(c)
+    end)
+end
+
+local function disableSounds()
+    for _, s in ipairs(game:GetDescendants()) do
+        if s.ClassName=="Sound" then pcall(function() s.Volume=0 end) end
+    end
+end
+
+local claimTemplate = nil
+local function saveTemplate()
+    for _, desc in ipairs(Workspace:GetDescendants()) do
+        if desc.Name == "Claim" and desc:FindFirstChild("Main") then
+            claimTemplate = desc:Clone()
+            claimTemplate.Parent = nil
+            return true
+        end
+    end
+    return false
+end
+
+local function forceSlot(slot)
+    if not slot or not slot.Parent then return end
+    if slot:FindFirstChild("Claim") then return end
+    if not claimTemplate then
+        if not saveTemplate() then return end
+    end
+    local c = claimTemplate:Clone()
+    c.Parent = slot
+end
+
+local watched = {}
+local function watchPlot(plot)
+    if watched[plot] then return end
+    watched[plot] = true
+    local podiums = plot:FindFirstChild("AnimalPodiums", true)
+    if not podiums then return end
+    for _, slot in ipairs(podiums:GetChildren()) do
+        forceSlot(slot)
+        slot.ChildRemoved:Connect(function(child)
+            if child.Name == "Claim" then
+                task.delay(0.05, function() forceSlot(slot) end)
+            end
+        end)
+    end
+    podiums.ChildAdded:Connect(function(slot)
+        task.delay(0.05, function()
+            forceSlot(slot)
+            slot.ChildRemoved:Connect(function(child)
+                if child.Name == "Claim" then
+                    task.delay(0.05, function() forceSlot(slot) end)
+                end
+            end)
+        end)
+    end)
+end
+
+local function initForcedSpawn()
+    for _, v in ipairs(Workspace:GetDescendants()) do
+        if v.Name == "AnimalPodiums" then watchPlot(v.Parent) end
+    end
+    Workspace.DescendantAdded:Connect(function(v)
+        if v.Name == "AnimalPodiums" then
+            task.delay(0.1, function() watchPlot(v.Parent) end)
+        end
+    end)
+end
+
+local function killInvisibleWalls()
+    local function scanPlot(plot)
+        local iw = plot:FindFirstChild("InvisibleWalls")
+        if iw then safeDestroy(iw) end
+        plot.ChildAdded:Connect(function(child)
+            if child.Name == "InvisibleWalls" then safeDestroy(child) end
+        end)
+    end
+    local function bindContainer(container)
+        for _, plot in ipairs(container:GetChildren()) do scanPlot(plot) end
+        container.ChildAdded:Connect(function(plot) scanPlot(plot) end)
+    end
+    if plotsContainer then bindContainer(plotsContainer)
+    else Workspace.ChildAdded:Connect(function(c)
+        if c.Name == "Plots" then bindContainer(c) end
+    end) end
+end
+
+local function cleanBasewalls()
+    local function hideAllDescendants(obj)
+        pcall(function()
+            for _, desc in ipairs(obj:GetDescendants()) do
+                if desc:IsA("BasePart") or desc:IsA("MeshPart") then
+                    desc.Transparency = 1
+                    desc.CastShadow   = false
+                    desc.CanCollide   = true
+                end
+            end
+        end)
+    end
+    local function processPlot(plot)
+        local deco = plot:FindFirstChild("Decorations")
+        if not deco then return end
+        hideAllDescendants(deco)
+        deco.DescendantAdded:Connect(function(desc)
+            if desc:IsA("BasePart") or desc:IsA("MeshPart") then
+                pcall(function()
+                    desc.Transparency = 1
+                    desc.CastShadow   = false
+                    desc.CanCollide   = true
+                end)
+            end
+        end)
+    end
+    local function bindPlots(container)
+        for _, plot in ipairs(container:GetChildren()) do processPlot(plot) end
+        container.ChildAdded:Connect(processPlot)
+    end
+    if plotsContainer then bindPlots(plotsContainer)
+    else Workspace.ChildAdded:Connect(function(c)
+        if c.Name == "Plots" then bindPlots(c) end
+    end) end
+    Workspace.DescendantAdded:Connect(function(v)
+        if v.Name == "Decorations" and plotsContainer
+            and v.Parent and v.Parent.Parent == plotsContainer then
+            processPlot(v.Parent)
+        end
+    end)
+end
+
+Workspace.DescendantAdded:Connect(function(obj)
+    task.defer(function()
+        if isInPlots(obj) then return end
+        if isCharacterPart(obj) then return end
+        if isClothing(obj) then safeDestroy(obj) return end
+        if MACHINES_KILL[obj.Name] then safeDestroy(obj) return end
+        cleanObject(obj)
+        stripObject(obj)
+        if obj:IsA("Animator") then stopAnimations(obj) end
+    end)
+end)
+
+Lighting.DescendantAdded:Connect(function(obj)
+    if obj:IsA("Atmosphere") or obj:IsA("Clouds") or obj:IsA("PostEffect") then
+        safeDestroy(obj)
+    end
+end)
+
+MaterialService.DescendantAdded:Connect(function(obj)
+    safeDestroy(obj)
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(2)
+        pcall(function()
+            for _, obj in ipairs(Lighting:GetChildren()) do
+                if obj:IsA("Atmosphere") or obj:IsA("Clouds") or obj:IsA("PostEffect") then
+                    safeDestroy(obj)
+                end
+            end
+        end)
+    end
+end)
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    optimizeCharacter(plr.Character)
+    plr.CharacterAdded:Connect(optimizeCharacter)
+end
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(optimizeCharacter)
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(15)
+        pcall(function() collectgarbage("collect") end)
+    end
+end)
+
+local ok, err = pcall(function()
+    if not player.Character then player.CharacterAdded:Wait() end
+    saveTemplate()
+    cleanMachines()
+    cleanMap()
+    cleanOtherPlayers()
+    disableVisualEffects()
+    cleanUI()
+    disableSounds()
+    killInvisibleWalls()
+    initForcedSpawn()
+    cleanBasewalls()
+    _G.SXE_FlushKills()
+    print("[TP] Done.")
+end)
+
+if not ok then warn("[TP] Erreur: "..tostring(err)) end
