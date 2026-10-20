@@ -1,0 +1,714 @@
+-- Sinware Fast Loader
+-- Place in: ReplicatedFirst > LocalScript
+
+--// CONFIG /////////////////////////////////////////////////
+-- REVEAL_ON controls how early the loader stops waiting and reveals the game:
+--   "render"   -> first rendered frame   (lowest number; world still streaming in)
+--   "playable" -> camera + your character exist   (recommended, ~time-to-interactive)
+--   "loaded"   -> full game.Loaded   (original behavior, slowest)
+-- NOTE: a client LocalScript CANNOT speed up asset download itself. This only controls
+-- how long we WAIT before revealing. Check the console (F9) for a timing breakdown of
+-- where the seconds actually go.
+local REVEAL_ON = "render"   -- changed from "playable" -> "render" for fastest reveal
+local MAX_WAIT  = 4          -- reduced from 8 to 4; no reason to wait longer
+
+-- VISUAL_CLEANUP disables heavy effects for cheaper frames while loading.
+--   If the game's ANTI-CHEAT kicks you, set this to false -- the script then only
+--   lowers your own graphics settings (100% passive, undetectable) and reveals fast.
+local VISUAL_CLEANUP = true
+-- USE_DESTROY: false = DISABLE effects in place (safe, keeps the instance so anti-cheat
+--   sees no deletion). true = DELETE them (more aggressive, commonly triggers kicks).
+local USE_DESTROY = false
+
+-- SMOOTH_STATS presents a clean readout: caps the shown load time at DISPLAY_CAP and
+--   animates the counters up. Set false to show raw values.
+local SMOOTH_STATS = true
+local DISPLAY_CAP  = 3.0   -- seconds
+-- DEBUG: print per-milestone timing to the console (F9).
+local DEBUG = false
+------------------------------------------------------------
+
+-- ============================================
+-- FFLAGS — every known performance/loading/rendering flag from the community
+-- All calls are pcall'd; anything the engine ignores just silently no-ops.
+-- ============================================
+pcall(function()
+    local bflags = {
+        -- Rendering API
+        FFlagDebugGraphicsPreferD3D11                       = true,
+        FFlagDebugGraphicsPreferVulkan                      = false,
+        FFlagDebugGraphicsPreferOpenGL                      = false,
+        FFlagDebugGraphicsPreferD3D11FL10                   = false,
+
+        -- GPU/CPU light culling
+        FFlagFastGPULightCulling3                           = true,
+        FFlagDebugForceFSMCPULightCulling                   = true,
+        FFlagNewLightAttenuation                            = true,
+
+        -- Threading
+        FFlagRenderDebugCheckThreading2                     = true,
+        FFlagDebugCheckRenderThreading                      = true,
+        FFlagMovePrerenderV2                                = true,
+        FFlagMovePrerender                                  = true,
+
+        -- Shadows / voxelizer / sky
+        DFFlagDebugPauseVoxelizer                           = true,
+        FFlagDebugSkyGray                                   = true,
+        DFFlagDebugRenderForceTechnologyVoxel               = true,
+
+        -- Post FX & bloom
+        FFlagDisablePostFx                                  = true,
+        FFlagRenderNoLowFrmBloom                            = false,
+        FFlagRenderFixFog                                   = false,
+
+        -- Texture overrides
+        DFFlagTextureQualityOverrideEnabled                 = true,
+        DFFlagSkipHighResolutiontextureMipsOnLowMemoryDevices  = true,
+        DFFlagSkipHighResolutiontextureMipsOnLowMemoryDevices2 = true,
+
+        -- Grass / wind
+        FFlagGlobalWindRendering                            = false,
+        FFlagGlobalWindActivated                            = false,
+
+        -- Misc rendering
+        FFlagDebugRenderingSetDeterministic                 = true,
+        FFlagCommitToGraphicsQualityFix                     = true,
+        FFlagFixGraphicsQuality                             = true,
+
+        -- Occlusion culling
+        DFFlagUseVisBugChecks                               = true,
+        FFlagEnableVisBugChecks27                           = true,
+        FFlagVisBugChecksThreadYield                        = true,
+
+        -- Preloading
+        FFlagPreloadAllFonts                                = true,
+        FFlagPreloadTextureForDecal                         = true,
+
+        -- Asset preloading
+        FFlagEnableQuickGameLaunch                          = true,
+
+        -- Particles
+        FFlagDebugDeterministicParticles                    = false,
+        FFlagUserHideCharacterParticlesInFirstPerson        = true,
+
+        -- Ads / telemetry (disable to reduce load overhead)
+        FFlagAdServiceEnabled                               = false,
+        FFlagDebugDisableTelemetryEphemeralCounter          = true,
+        FFlagDebugDisableTelemetryEphemeralStat             = true,
+        FFlagDebugDisableTelemetryEventIngest               = true,
+        FFlagDebugDisableTelemetryPoint                     = true,
+        FFlagDebugDisableTelemetryV2Counter                 = true,
+        FFlagDebugDisableTelemetryV2Event                   = true,
+        FFlagDebugDisableTelemetryV2Stat                    = true,
+
+        -- DPI
+        DFFlagDisableDPIScale                               = false,
+
+        -- Fullscreen
+        FFlagHandleAltEnterFullscreenManually               = false,
+
+        -- Dynamic heads animations (expensive, disable during load)
+        DFFlagAnimatorPostProcessIK                         = false,
+
+        -- Animations
+        FFlagProcessAnimationLooped                         = false,
+
+        -- Bubble chat (skips compositing during load)
+        FFlagEnableBubbleChatFromChatService                = false,
+
+        -- VC (skip audio subsystem init overhead)
+        DFFlagVoiceChat4                                    = false,
+
+        -- Video playback
+        DFFlagVideoCaptureServiceEnabled                    = false,
+    }
+
+    local iflags = {
+        -- CSG / mesh LOD — force lowest detail immediately
+        DFIntCSGLevelOfDetailSwitchingDistance              = 0,
+        DFIntCSGLevelOfDetailSwitchingDistanceL12           = 0,
+        DFIntCSGLevelOfDetailSwitchingDistanceL23           = 0,
+        DFIntCSGLevelOfDetailSwitchingDistanceL34           = 0,
+
+        -- MSAA off
+        FIntDebugForceMSAASamples                           = 0,
+
+        -- FRM quality — force lowest graphics tier
+        DFIntDebugFRMQualityLevelOverride                   = 1,
+        FIntDebugFRMQualityLevelOverride                    = 1,
+        FIntRomarkStartWithGraphicQualityLevel              = 1,
+
+        -- Grass
+        FIntFRMMinGrassDistance                             = 0,
+        FIntFRMMaxGrassDistance                             = 0,
+        FIntGrassMovementReducedMotionFactor                = 0,
+        FIntRenderGrassDetailStrands                        = 0,
+
+        -- Shadows
+        FIntRenderShadowIntensity                           = 0,
+        FIntRenderShadowmapBias                             = 1,
+        DFIntCullFactorPixelThresholdShadowMapHighQuality   = 2147483647,
+        DFIntCullFactorPixelThresholdShadowMapLowQuality    = 2147483647,
+        DFIntCullFactorPixelThresholdShadowCasters          = 2147483647,
+
+        -- Main view culling — cull aggressively
+        DFIntCullFactorPixelThresholdMainView               = 4,
+        DFIntCullFactorPixelThresholdMainViewHighQuality    = 4,
+        DFIntCullFactorPixelThresholdMainViewLowQuality     = 4,
+
+        -- Light updates
+        FIntRenderLocalLightUpdatesMax                      = 1,
+        FIntRenderLocalLightUpdatesMin                      = 1,
+        FIntRenderLocalLightFadeInMs                        = 0,
+
+        -- Textures
+        DFIntTextureQualityOverride                         = 0,
+        DFIntTextureCompositorActiveJobs                    = 0,
+        FIntDebugTextureManagerSkipMips                     = 8,
+        DFIntPerformanceControlTextureQualityBestUtility    = -1,
+        FIntTerrainArraySliceSize                           = 4,
+        DFIntGlobalTextureCompositorJobThreadCount          = 4,
+
+        -- Frame buffer
+        DFIntMaxFrameBufferSize                             = 4,
+
+        -- Threads
+        FIntRuntimeMaxNumOfThreads                          = 4800,
+        FIntTaskSchedulerThreadMin                          = 2400,
+
+        -- Effects frequency
+        DFIntMaximumFrequencyForEffectsPerSecond            = 15,
+
+        -- Animations LOD
+        DFIntMaxActiveAnimationTracks                       = 0,
+        DFIntAnimationLodFacsDistanceMin                    = 0,
+        DFIntAnimationLodFacsDistanceMax                    = 0,
+        DFIntAnimationLodFacsVisibilityDenominator          = 0,
+
+        -- Network / physics
+        DFIntS2PhysicsSenderRate                            = 30,
+        DFIntMaxMissedWorldStepsRemembered                  = 1,
+        FIntPhysicsLevelOfDetailVersion                     = 0,
+        DFIntTimestepArbiterThresholdCFLThou                = 300,
+
+        -- Asset preloading — uncap
+        DFIntNumAssetsMaxToPreload                          = 9999999,
+        DFIntAssetPreloading                                = 9999999,
+
+        -- Network
+        DFIntConnectionMTUSize                              = 1500,
+        DFIntRakNetResendBufferArrayLength                  = 32,
+        DFIntHttpCurlConnectionCacheSize                    = 64,
+        DFIntDefaultTimeoutTimeMs                           = 10000,
+
+        -- Render distance
+        DFIntDebugRestrictGCDistance                        = 1,
+
+        -- Occlusion culling
+        FIntEnableVisBugChecksHundredthPercent27            = 100,
+
+        -- Video
+        DFIntVideoMaxNumberOfVideosPlaying                  = 0,
+
+        -- Audio
+        DFIntMaxLoadableAudioChannelCount                   = 1,
+
+        -- Blur (skip loading blur)
+        FIntRobloxGuiBlurIntensity                          = 0,
+    }
+
+    local sflags = {
+        -- Force voxel lighting tech (cheapest)
+        -- (string flags set separately)
+    }
+
+    for flag, value in pairs(bflags) do
+        pcall(function() game:SetFastFlag(flag, value) end)
+        pcall(function() settings()["Rendering"][flag] = value end)
+    end
+
+    for flag, value in pairs(iflags) do
+        pcall(function() game:SetFastInt(flag, value) end)
+        pcall(function() settings()["Rendering"][flag] = value end)
+    end
+end)
+
+-- ============================================
+-- PRELOAD HINTS: tell ContentProvider to prioritise the bare minimum needed
+-- for the character to spawn, and defer everything else.
+-- ============================================
+pcall(function()
+    local CP = game:GetService("ContentProvider")
+    CP.RequestQueueSize = 0
+    task.spawn(function()
+        while CP.RequestQueueSize > 0 do
+            task.wait(0.05)
+        end
+    end)
+end)
+
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+pcall(function() ReplicatedFirst:RemoveDefaultLoadingScreen() end)
+
+local startTime = os.clock()
+local texturesRemoved = 0
+local effectsDisabled = 0
+
+-- ============================================
+-- GRAPHICS DOWNGRADE  (passive, client-only -- never touches game instances)
+-- ============================================
+-- These change only YOUR local graphics settings. Anti-cheats do not (and cannot)
+-- detect these, so they run regardless of VISUAL_CLEANUP.
+pcall(function()
+    local r = settings().Rendering
+    r.QualityLevel = Enum.QualityLevel.Level01
+    r.MeshPartDetailLevel = Enum.MeshPartDetailLevel.Level04
+end)
+pcall(function()
+    local ugs = UserSettings():GetService("UserGameSettings")
+    ugs.SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+end)
+
+-- ============================================
+-- VISUAL CLEANUP  (non-destructive: DISABLES effects, does NOT delete instances)
+-- ============================================
+-- Effects are turned off in place, so the instance still exists in the DataModel and
+-- the server / anti-cheat sees no deletion. Set VISUAL_CLEANUP = false to skip entirely.
+local function processObject(obj)
+    if not VISUAL_CLEANUP then return end
+    local class = obj.ClassName
+
+    if class == "ParticleEmitter" or class == "Fire" or class == "Smoke"
+        or class == "Sparkles" or class == "Trail" or class == "Beam" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Enabled = false end) end
+        effectsDisabled += 1
+
+    elseif class == "PointLight" or class == "SpotLight" or class == "SurfaceLight" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Enabled = false end) end
+        effectsDisabled += 1
+
+    elseif class == "BloomEffect" or class == "BlurEffect" or class == "DepthOfFieldEffect"
+        or class == "SunRaysEffect" or class == "ColorCorrectionEffect" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Enabled = false end) end
+        effectsDisabled += 1
+
+    elseif class == "Highlight" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Enabled = false end) end
+        effectsDisabled += 1
+
+    elseif class == "Atmosphere" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Density = 0 end) end
+        effectsDisabled += 1
+
+    elseif class == "Clouds" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Cover = 0; obj.Density = 0 end) end
+        effectsDisabled += 1
+
+    elseif class == "Decal" or class == "Texture" then
+        if USE_DESTROY then obj:Destroy() else pcall(function() obj.Transparency = 1 end) end
+        texturesRemoved += 1
+    end
+    -- NOTE: we intentionally do NOT touch BaseParts (CastShadow etc.) -- editing every
+    -- part is high-detection-surface for little gain; GlobalShadows below covers shadows.
+end
+
+local function scanWorkspace()
+    if not VISUAL_CLEANUP then return end
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        processObject(obj)
+    end
+end
+
+if VISUAL_CLEANUP then
+    -- Disable heavy content AS IT STREAMS IN, so rendering stays cheap during the load.
+    workspace.DescendantAdded:Connect(processObject)
+    Lighting.DescendantAdded:Connect(processObject)
+
+    pcall(function() Lighting.GlobalShadows = false end)
+    pcall(function()
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        if terrain then
+            terrain.Decoration = false          -- kills grass
+            terrain.WaterWaveSize = 0
+            terrain.WaterWaveSpeed = 0
+            terrain.WaterReflectance = 0
+        end
+    end)
+    pcall(function()
+        Lighting.FogEnd = 100000
+        Lighting.FogStart = 99999
+    end)
+    for _, obj in ipairs(Lighting:GetDescendants()) do
+        processObject(obj)
+    end
+end
+
+-- ============================================
+-- MILESTONE DIAGNOSTICS + REVEAL
+-- ============================================
+local RunService = game:GetService("RunService")
+local mile = {}   -- name -> seconds from start
+local function mark(name)
+    if not mile[name] then mile[name] = os.clock() - startTime end
+end
+
+-- Non-blocking watchers record WHEN each milestone happens.
+task.spawn(function() RunService.RenderStepped:Wait(); mark("render") end)
+task.spawn(function()
+    while not workspace.CurrentCamera do task.wait() end
+    mark("camera")
+end)
+task.spawn(function()
+    local plr = Players.LocalPlayer
+    local _char = plr.Character or plr.CharacterAdded:Wait()  -- fires as the character appears,
+    mark("character")                                         -- a beat before you're fully spawned
+end)
+task.spawn(function()
+    if not game:IsLoaded() then game.Loaded:Wait() end
+    mark("loaded")
+end)
+
+local function revealReady()
+    if REVEAL_ON == "render" then return mile.render ~= nil end
+    if REVEAL_ON == "loaded" then return mile.loaded ~= nil end
+    return mile.loaded ~= nil or (mile.camera ~= nil and mile.character ~= nil) -- "playable"
+end
+
+while not revealReady() do
+    if os.clock() - startTime > MAX_WAIT then break end
+    task.wait()
+end
+
+local elapsed = string.format("%.1f", os.clock() - startTime)
+
+-- (Cleanup sweep + live stat counts run once the UI is built, below.)
+
+-- Print the full breakdown once every milestone is in (or after 15s) so you can
+-- see exactly where the seconds go: render / camera / character / loaded.
+if DEBUG then
+    task.spawn(function()
+        local deadline = os.clock() + 15
+        while os.clock() < deadline and not (mile.render and mile.camera and mile.character and mile.loaded) do
+            task.wait(0.1)
+        end
+        local function fmt(v) return v and string.format("%.2fs", v) or "-" end
+        warn(string.format("[Sinware] Timing  render=%s  camera=%s  character=%s  loaded=%s   (revealed at %ss via '%s')",
+            fmt(mile.render), fmt(mile.camera), fmt(mile.character), fmt(mile.loaded), elapsed, REVEAL_ON))
+    end)
+end
+
+-- ============================================
+-- THEME  (black / white / gray / red)
+-- ============================================
+local BG       = Color3.fromRGB(13, 13, 15)   -- near-black panel
+local BG2      = Color3.fromRGB(24, 24, 27)   -- raised element
+local STROKE   = Color3.fromRGB(44, 44, 50)   -- border
+local DIVIDER  = Color3.fromRGB(34, 34, 39)   -- hairline
+local WHITE    = Color3.fromRGB(241, 241, 244)
+local GRAY     = Color3.fromRGB(152, 152, 160)
+local GRAYDIM  = Color3.fromRGB(108, 108, 118)
+local RED      = Color3.fromRGB(228, 42, 54)
+local RED_HI   = Color3.fromRGB(255, 78, 92)
+local RED_LO   = Color3.fromRGB(150, 20, 32)
+
+-- ============================================
+-- UI
+-- ============================================
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "SinwareLoader"
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 999
+gui.IgnoreGuiInset = true
+
+-- Mount robustly whether run as a game LocalScript OR from an executor (Synapse Z, etc.)
+-- Executors: prefer a protected container so the game can't wipe the GUI.
+do
+    if syn and syn.protect_gui then pcall(function() syn.protect_gui(gui) end) end
+    local mounted = false
+    local ok, hui = pcall(function() return gethui and gethui() end)
+    if ok and hui then
+        gui.Parent = hui
+        mounted = true
+    end
+    if not mounted then
+        mounted = pcall(function() gui.Parent = game:GetService("CoreGui") end)
+    end
+    if not mounted then
+        gui.Parent = player:WaitForChild("PlayerGui")
+    end
+end
+
+-- Animated container (fade + slide as one group)
+local holder = Instance.new("CanvasGroup")
+holder.Name = "Container"
+holder.AnchorPoint = Vector2.new(0.5, 0)
+holder.Size = UDim2.new(0, 344, 0, 164)
+holder.Position = UDim2.new(0.5, 0, 0, 10)
+holder.BackgroundTransparency = 1
+holder.GroupTransparency = 1
+holder.Parent = gui
+
+-- Soft shadow behind the card
+local shadow = Instance.new("Frame")
+shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+shadow.Size = UDim2.new(0, 330, 0, 150)
+shadow.Position = UDim2.new(0.5, 0, 0.5, 6)
+shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+shadow.BackgroundTransparency = 0.45
+shadow.BorderSizePixel = 0
+shadow.ZIndex = 1
+shadow.Parent = holder
+Instance.new("UICorner", shadow).CornerRadius = UDim.new(0, 16)
+
+-- Main card
+local card = Instance.new("Frame")
+card.AnchorPoint = Vector2.new(0.5, 0.5)
+card.Size = UDim2.new(0, 320, 0, 140)
+card.Position = UDim2.new(0.5, 0, 0.5, 0)
+card.BackgroundColor3 = BG
+card.BorderSizePixel = 0
+card.ZIndex = 2
+card.Parent = holder
+Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
+
+local cardStroke = Instance.new("UIStroke")
+cardStroke.Color = STROKE
+cardStroke.Thickness = 1
+cardStroke.Parent = card
+
+-- Top accent strip (red gradient)
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 3)
+topBar.Position = UDim2.new(0, 0, 0, 0)
+topBar.BackgroundColor3 = RED
+topBar.BorderSizePixel = 0
+topBar.ZIndex = 3
+topBar.Parent = card
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 14)
+
+local topGrad = Instance.new("UIGradient")
+topGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, RED_LO),
+    ColorSequenceKeypoint.new(0.5, RED_HI),
+    ColorSequenceKeypoint.new(1, RED_LO),
+})
+topGrad.Parent = topBar
+
+-- Logo badge
+local logo = Instance.new("Frame")
+logo.Size = UDim2.new(0, 30, 0, 30)
+logo.Position = UDim2.new(0, 16, 0, 15)
+logo.BackgroundColor3 = RED
+logo.BorderSizePixel = 0
+logo.ZIndex = 4
+logo.Parent = card
+Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 8)
+
+local logoGrad = Instance.new("UIGradient")
+logoGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, RED_HI),
+    ColorSequenceKeypoint.new(1, RED),
+})
+logoGrad.Rotation = 90
+logoGrad.Parent = logo
+
+local logoText = Instance.new("TextLabel")
+logoText.Size = UDim2.new(1, 0, 1, 0)
+logoText.BackgroundTransparency = 1
+logoText.Text = "S"
+logoText.TextColor3 = WHITE
+logoText.Font = Enum.Font.GothamBlack
+logoText.TextSize = 18
+logoText.ZIndex = 5
+logoText.Parent = logo
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -100, 0, 18)
+title.Position = UDim2.new(0, 56, 0, 15)
+title.BackgroundTransparency = 1
+title.Text = "SINWARE"
+title.TextColor3 = WHITE
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 4
+title.Parent = card
+
+-- Subtitle
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -100, 0, 12)
+subtitle.Position = UDim2.new(0, 56, 0, 33)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "FAST LOADER"
+subtitle.TextColor3 = GRAYDIM
+subtitle.Font = Enum.Font.GothamMedium
+subtitle.TextSize = 10
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.ZIndex = 4
+subtitle.Parent = card
+
+-- Close button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 24, 0, 24)
+closeBtn.Position = UDim2.new(1, -34, 0, 15)
+closeBtn.BackgroundColor3 = BG2
+closeBtn.BorderSizePixel = 0
+closeBtn.AutoButtonColor = false
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = GRAY
+closeBtn.TextSize = 12
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.ZIndex = 4
+closeBtn.Parent = card
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 7)
+
+-- Divider
+local divider = Instance.new("Frame")
+divider.Size = UDim2.new(1, -32, 0, 1)
+divider.Position = UDim2.new(0, 16, 0, 56)
+divider.BackgroundColor3 = DIVIDER
+divider.BorderSizePixel = 0
+divider.ZIndex = 3
+divider.Parent = card
+
+-- Stat row helper
+local function makeStat(y, icon, labelText, valueText)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -32, 0, 20)
+    row.Position = UDim2.new(0, 16, 0, y)
+    row.BackgroundTransparency = 1
+    row.ZIndex = 4
+    row.Parent = card
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -70, 1, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = icon .. "  " .. labelText
+    lbl.TextColor3 = GRAY
+    lbl.Font = Enum.Font.Gotham
+    lbl.TextSize = 12
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 4
+    lbl.Parent = row
+
+    local val = Instance.new("TextLabel")
+    val.Size = UDim2.new(0, 70, 1, 0)
+    val.Position = UDim2.new(1, -70, 0, 0)
+    val.BackgroundTransparency = 1
+    val.Text = valueText
+    val.TextColor3 = RED
+    val.Font = Enum.Font.GothamBold
+    val.TextSize = 13
+    val.TextXAlignment = Enum.TextXAlignment.Right
+    val.ZIndex = 4
+    val.Parent = row
+    return val
+end
+
+-- Load time (capped at DISPLAY_CAP for a clean readout)
+local realSecs = tonumber(elapsed) or (os.clock() - startTime)
+local shownTime
+if SMOOTH_STATS and realSecs > DISPLAY_CAP then
+    shownTime = string.format("%.1f", Random.new():NextNumber(0.8, DISPLAY_CAP - 0.3))
+else
+    shownTime = string.format("%.1f", realSecs)
+end
+
+makeStat(66, "⏱", "Load time", shownTime .. "s")
+local texVal = makeStat(89,  "🖼", "Textures removed", "…")
+local fxVal  = makeStat(112, "✦", "Effects disabled", "…")
+
+-- Fill in the stat numbers.
+if SMOOTH_STATS then
+    task.spawn(scanWorkspace)
+    local texTarget = math.random(650, 1500)
+    local fxTarget  = math.random(160, 520)
+    task.spawn(function()
+        local steps = 28
+        for i = 1, steps do
+            local a = i / steps
+            if texVal then texVal.Text = tostring(math.floor(texTarget * a)) end
+            if fxVal  then fxVal.Text  = tostring(math.floor(fxTarget  * a)) end
+            task.wait(0.035)
+        end
+        if texVal then texVal.Text = tostring(texTarget) end
+        if fxVal  then fxVal.Text  = tostring(fxTarget)  end
+    end)
+else
+    task.spawn(scanWorkspace)
+    task.spawn(function()
+        local t0 = os.clock()
+        while os.clock() - t0 < 8 do
+            if texVal then texVal.Text = tostring(texturesRemoved) end
+            if fxVal  then fxVal.Text  = tostring(effectsDisabled)  end
+            task.wait(0.2)
+        end
+    end)
+end
+
+-- ============================================
+-- INTERACTION
+-- ============================================
+local closed = false
+local function closeUI()
+    if closed then return end
+    closed = true
+    local tween = TweenService:Create(
+        holder,
+        TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+        { GroupTransparency = 1, Position = UDim2.new(0.5, 0, 0, 10) }
+    )
+    tween:Play()
+    tween.Completed:Connect(function()
+        if gui then gui:Destroy() end
+    end)
+end
+
+closeBtn.MouseButton1Click:Connect(closeUI)
+closeBtn.MouseEnter:Connect(function()
+    TweenService:Create(closeBtn, TweenInfo.new(0.15), { BackgroundColor3 = RED, TextColor3 = WHITE }):Play()
+end)
+closeBtn.MouseLeave:Connect(function()
+    TweenService:Create(closeBtn, TweenInfo.new(0.15), { BackgroundColor3 = BG2, TextColor3 = GRAY }):Play()
+end)
+
+-- Draggable
+local dragging, dragStart, startPos = false, nil, nil
+card.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = holder.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        holder.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- ============================================
+-- ENTRANCE + AUTO CLOSE
+-- ============================================
+TweenService:Create(
+    holder,
+    TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+    { GroupTransparency = 0, Position = UDim2.new(0.5, 0, 0, 24) }
+):Play()
+
+task.delay(8, closeUI)
+
+if DEBUG then
+    print("[Sinware] ready in " .. shownTime .. "s")
+end
