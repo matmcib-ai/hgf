@@ -1,0 +1,1248 @@
+local a={cache={}}do do local function __modImpl()return function(b)local c=game
+:FindFirstChildOfClass(b)while not c do task.wait()c=game:FindFirstChildOfClass(
+b)end return c end end function a.a()local b=a.cache.a if not b then b={c=
+__modImpl()}a.cache.a=b end return b.c end end do local function __modImpl()
+local b={AMPVerifiedTelemetryHundredthsPercentage='0',
+AdIntegrationEventsThrottlePointsHundredthsPercent='0',
+AdIntegrationImpressionEventThrottleEventIngestHundredthsPercent='0',
+AdIntegrationViewableTimeEventThrottleEventIngestHundredthsPercent='0',
+AdditionalPrePauseStatsHundredthsPercentage='0',AnalyticsCDNProbeInfluxPermyriad
+='0',AnalyticsForXBoxCrash_JoinInfluxHundredthsPercentage='0',
+AnalyticsNS1CDNProbeChancePercent='0',
+AppConfigurationTelemetryNewEventsThrottleHundredthsPercent='0',
+AppConfigurationTelemetryThrottleHundredthsPercent='0',
+AssetRequestPointsHundredthsPercent='0',AssetRequestStatsHundredthsPercent='0',
+AssetResolutionWorkflowStatsHundredthsPercent='0',
+AssetResolutionWorkflowTelemetryFailureEventThrottleHundredthsPercent='0',
+AssetServiceComposeDecalAsyncLoggingHundredthsPercentage='0',
+AssetWorkflowTelemetryEventThrottleDeferredAssetsPerMillionth='0',
+AssetWorkflowTelemetryEventThrottlePerMillionth='0',
+AtlasOverflowReportHundredthsPercent2='0',
+AvatarChatSubsessionStatsEventThrottleHundrethsPercentV2='0',
+AvatarFacechatLODCameraDisableTelemetryThrottleHundrethsPercent='0',
+AvatarFacechatPipelinePerformanceTelemetryThrottleHundrethsPercent='0',
+AvatarFacechatReplicationOverRCCTelemetryThrottleHundrethsPercent='0',
+BadgesApiUsageTelemetryHundredthsPercent='0',
+BatchAssetAPIWorkflowStatsHundredthsPercent='0',
+BatchLogMessageIngestHundredthsPercent='0',
+BgUpdateRedirectsHttpErrInfluxHundredthsPercentage='0',
+BrandProjectDecisionTelemetryThrottleHundredths='0',
+BrowserTrackerIdTelemetryThrottleHundredthsPercent='0',
+CEVLowMemoryWarningIgnoredTelemetryThrottleHundredthsPercent='0',
+CEVLowMemoryWarningTelemetryThrottleHundredthsPercent='0',
+CLI179323ReportHundredthsPercent='0',
+CLI193954AddCsgDictionaryServiceTelemetrySessionEventHundredths='0',
+CLI202494ReportThrottleHundredthsPercent='0',
+CLI46794SendInputTelemetryHundredthsPercentage='0',
+CLI52064InfluxHundredthsPercentage='0',CLI61964InfluxThresholdHundredths='0',
+CaaTelemetryThrottleHundredthsPercent='0',
+CafTelemetryIntegrationAppLaunchTelemetryThrottleHundredthsPercent='0',
+CanvasGroupRenderPath_ReportHundredthsPercent='0',
+CapabilityErrorDetailedEventIngestHundredthsPercentage='0',
+CapabilityErrorDetailedPointsHundredthsPercentage='0',
+CapabilityRegularUseEventIngestHundredthsPercentage='0',
+CapabilityRegularUsePointsHundredthsPercentage='0',
+CapabilityTelemetryThrottleHundredthsPercent='0',
+CapabilityUnassignedUseEventIngestHundredthsPercentage='0',
+CapabilityUnassignedUsePointsHundredthsPercentage='0',
+CharacterLoadingEventConnectionTelemetryThrottleHundredthsPercent='0',
+ClientConnectionAttemptResultPointsThrottleHundredthsPercent='0',
+ClientLightingTechnologyChangedTelemetryHundredthsPercent='0',
+ClientNetworkInfluxHundredthsPercentage='0',
+ClientReplicatorStatsEventsThrottleHP='0',
+ClientReportInitExpJobStatsHundredthPercent='0',
+ClientReportLuaConnectionSignalsInfluxHundrethsPercentage='0',
+ClientSideUserHashingTelemetryThrottleHundredthsPercent='0',
+ClientStatsWithFacsBWPerHundPercent='0',CollectAnalyticsForSystemMenu='false',
+CollectSessionBatteryTelemetry='false',
+CollectionServicePerformanceTelemetryThrottleHP='0',
+CollectionsQueryUsageTelemetryEnabled='false',
+ComponentManagerTelemetryThrottleHundrethsPercent='0',
+ComponentMapLiveStatsThrottleHundredthsPercent='0',
+ConfigModuleRequireAttemptReportHundredthsPercentage='0',
+ConnectionClosedPointsThrottleHundredthsPercent='0',
+ContentProviderPreloadHangTelemetryHundredthsPercentage='0',
+CookieProtocolAnalyticsHundredthsPercentage='0',
+CookieProtocolAnalyticsPriorityHundredthsPercentage='0',
+CoreGuiRenderOverflowKicksReportHundredthsPercent='0',
+CoreScriptTelemetryDownSamplingThousandthsPercent='0',
+CoreScriptsAnalyticsHundredthsPercentage='0',
+CrashUploadForceFullPercentagePlaceId='0',CrashUploadToBacktracePercentage='0',
+CrashUploadToSentryWindowsPercentage='0',CsgOperationMetricsHundredthsPercentage
+='0',DPJProgressHaltReportThrottleHP='0',
+DataModelPatcherErrorInfluxHundredthsPercentage='0',
+DataModelPatcherFunnelInfluxHundredthsPercentage='0',
+DataPingTracerFpsInfoThrottleHundredthsPercent='0',
+DataStoreInfluxReportNonParsableDataPerMyriad='0',
+DataStoreInfluxReportNonParsableDataPerMyriadWithKey='0',
+DestroyedModuleRequireReportHundredthsPercentage='0',
+DetailedBandwidthStatsInfluxHundrethsPercentage='0',
+DisconnectReasonDiagThrottlePercent='0',
+DownloadBandwidthNetworkIdFailInfluxHundredthsPercentage='0',
+DragDetectorDragAnalyticsThrottleHundredthsPercent='0',
+DynamicReloaderFailureInfluxHundrethsPercentage='0',
+DynamicReloaderFileFailureInfluxHundrethsPercentage='0',
+DynamicTextureManagerReportingHundredthsPercent='0',
+EditableImageEventStreamReportPercent='0',
+EditableImageInitLoggingHundredthsPercentage='0',
+EditableMemoryTelemetryHundredthsPercentage='0',
+EditableMeshAPIUsageLoggingHundredthsPercentage='0',
+EditableMeshInitLoggingHundredthsPercentage='0',
+EditableMeshRuntimeErrorLoggingHundredthsPercentage='0',
+EditableMeshSessionLoggingHundredthsPercentage='0',
+EditableMeshUnpublishLoggingHundredthsPercentage='0',
+EditableSessionTelemetryHundredthsPercentage='0',EmitFSSizeTelemetry='false',
+EmitFSUploadTelemetry='false',EmitOpTypeInRCCTelemetry='false',
+EmitSSSnapSizeTelemetry='false',EnableAdRewardNotificationTelemetry='false',
+EnableAnimatorApiTelemetryToGrafana='false',EnableAudioPlayerTelemetry2='false',
+EnableAvatarChangeTelemetryJoinDelay='false',
+EnableAvatarFacechatReplOverRCCTelemetry='false',EnableCCLAbilityUsageTelemetry=
+'false',EnableCCLCustomAbilityPointsSampling='false',
+EnableCCLLibraryLoadTelemetry='false',EnableCanvasGroupRenderPathTelemetry2=
+'false',EnableCppSoundTelemetry7='false',
+EnableCrossExperienceVoiceIgnoreLowMemoryWarningTelemetry='false',
+EnableDLICAdoptionTelemetry='false',EnableDeprecatedPerformPurchaseTelemetry=
+'false',EnableDesktopWebViewTelemetry='false',
+EnableDesktopWebViewTelemetryUrlField='false',EnableForceOTAAnalytics='false',
+EnableInExperienceAvatarChangeTelemetry='false',
+EnableLogCullingTelemetryForControl='false',EnableModifiedAudioTelemetry='false'
+,EnablePartyVoiceMemoryPhaseTelemetry='false',
+EnablePaymentsProtocolPerformSubscriptionPurchaseTelemetry='false',
+EnablePerfDataGatherTelemetry2='false',EnablePerfStatsAPI='false',
+EnablePlayersGetFriendsAsyncTelemetry='false',EnablePreloadingTelemetry='false',
+EnableRobloxSubscriptionPurchaseEngineTelemetry='false',EnableUploadTelemetry=
+'false',EnableWebGameJoinBtidTelemetry='false',EnableWebLoginTokenTelemetry=
+'false',EngineStabilityRandomDeferReportingPercentage='0',
+EngineStabilityReportThrottleHundredthsPercent='0',
+EphemeralStatsInfluxReportingPriorityHundredthsPercent='0',
+EphemeralStatsInfluxReportingThrottleHundredthsPercent='0',
+EventIngestInstrumentThrottleHundrethsPercent='0',
+ExtractPackageDefinition_DehydrationGameRccPointsHundredthsPercent='0',
+ExtractPackageDefinition_DehydrationTelemetryHundredthsPercent='0',
+ExtractPackageDefinition_HydrationGameRccPointsHundredthsPercent='0',
+ExtractPackageDefinition_HydrationTelemetryHundredthsPercent='0',
+FrustumPerfTelemetryThrottleHP='0',
+GamePassPurchaseAnalyticsThrottleHundredthsPercent='0',
+GamePhysicsMetricsReportingHundredthsPercentage='0',GetDiskUsageSamplingPercent=
+'0',GpuHDRSupportReportThrottleHundredthsPercent='0',
+GraphicsVulkanAnalyticsHundredthPercent='0',
+GroupsApiUsageTelemetryHundredthsPercent='0',
+GuiClassUsageAnalytics_ReportHundredthsPercent='0',
+GuiServiceChromeSignalAPIAnalytics_ReportHundredthsPercent='0',
+GuiServiceMenuConnectionTelemetry_ReportHundredthsPercent='0',
+GuiServiceSetMenuOpenTelemetry_ReportHundredthsPercent='0',
+HSRMismatchTelemetryHundredthsPercentage='0',Http2StatsHundredthsPercent='0',
+HttpBatchApiShutdownInfluxHundrethsPercentage='0',
+HttpCacheCleanupMetricsHundredthsPercent='0',
+HttpConnTrackPointsHundredthsPercent='0',HttpConnXferPointsHundredthsPercent='0'
+,HttpDownloadBandwidthInfluxHundredthsPercentage='0',
+HttpDownloadBandwidthInfluxHundredthsPercentageV2='0',HttpGAFailureReportPercent
+='0',HttpInfluxHundredthsPercentage='0',HttpInfluxReportsPerMillion='0',
+HttpReportCLI111800HundredthsPercent='0',
+HttpServiceAggregateBandwidthReportThrottleHundredthsPercentage='0',
+HttpServiceBandwidthReportThrottleHundredthsPercentage='0',
+HttpServiceEventReportThrottleHundredthPercent='0',
+HttpServiceOpenCloudReportUrlHundredthsPercentage='0',
+HttpServicePluginRequestReportThrottleHundredthPercent='0',
+HttpServiceRequestTimeReportThrottleHundredthsPercentage='0',
+HttpServiceTlsProbeInfluxHundrethsPercentage='0',
+HttpServiceTransportFailureInfluxHundrethsPercentage='0',
+HttpStatsDnsErrorInfluxReportsPerMillion='0',
+HttpStatsErrorInfluxReportsPerMillion='0',HttpWrapperTelemetryHundredthsPercent=
+'0',HumanoidAssetSwapperOnApplyNewMakeupAssetsLoggingHundredthsPercentage='0',
+HumanoidSimWorldReportPercentageHundredths='0',
+HumanoidStateChangeEventIngestThrottleHundrethsPercent='0',
+IASReportPlaceStatUsageHundrethsPercent='0',
+ISRInputPingStatsTelemetryThrottleHundredthsPercent='0',
+IdempotentDevProductPurchaseAnalyticsThrottleHundredthsPercent='0',
+IkControlTelemetryEventsThrottleHundrethsPercent='0',
+ImmersiveAdImpressionEventPointsThrottleHundrethsPercent='0',
+ImmersiveAdLoadPointsThrottleHundredthsPercent='0',
+ImmersiveAdPerfDataPointsThrottleHundredthsPercent='0',
+ImmersiveAdProgressPointsThrottleHundredthsPercent='0',
+ImmersiveAdTeleportEventPointsThrottleHundrethsPercent='0',
+ImmersiveAdUnloadPointsThrottleHundredthsPercent='0',
+ImmersiveAdVideoCompletionEventPointsThrottleHundrethsPercent='0',
+ImmersiveAdViewableImpressionPointsThrottleHundredthsPercent='0',
+InferredCrashReportToBacktraceThrottleHundredthsPercentage='0',
+InfluxReportRCCStatsHundredthsPercentage='0',
+InfluxReportingPackageAnalyticsHundrethsPercent='0',
+IntegrityCheckedProcessorReportHttpFailureMessageHundredthsPercentage='0',
+IntegrityCheckedProcessorReportPlayerIntegrityAnalyticsHundredthsPercent='0',
+InvalidNumPropertyAssignReportHundredthsPercentage='0',
+InvalidStringAtomReportHundredthsPercentage='0',
+InvalidTelemetryInputEventThrottleHundredthsPercentage='0',
+JoinAllInfluxHundredthsPercentage='0',JoinGameFailureInfluxHundredthsPercentage=
+'0',JoinInfluxHundredthsPercentage='0',JoinInfoLengthReportHundredthsPercentage=
+'0',KeyboardLayoutUsage_ReportHundredthsPercent='0',LDLPGSStatsRatePercent='0',
+LargePropertiesAnalyticsHundredthsPercentage='0',
+LcDeformerPropertySetEventHundredthsPercentageSentEventIngest='0',
+LegacyStyleUsed_ReportPercentHundredths='0',
+LegacyTelemetryStatsActionThrottleHundredthsPercent='0',
+LibMpTelemetrySamplePermyriad='0',
+LinkingProtocolInfluxEventIngestsHundredthsPercentage='0',
+LinkingProtocolInfluxHundredthsPercentage='0',
+LinkingProtocolInfluxPointsHundredthsPercentage='0',
+LinkingProtocolInfluxPriorityHundredthsPercentage='0',
+LmsDisableReportingHundredthPercent='0',LmsInfluxDbHundredthsPercentage='0',
+LoadAssetAsyncTelemetryThrottleHundredthsPercent='0',
+LoadAssetTelemetryThrottleHundredthsPercent='0',
+LoadAssetVersionTelemetryThrottleHundredthsPercent='0',
+LoadStreamAnimationFailureTelemetryHundredthsPercentage='0',
+LocServicePerformanceAnalyticsHundredthsPercentage='0',
+LocalizationAnalyticsSamplesPerMillion='0',
+LocalizationTableAnalyticsSenderClientToServerSampleRateHundrethsPercent='0',
+LocalizationTableAnalyticsSenderServerToHttpSampleRateHundrethsPercent='0',
+LogLineReportingHundredthsPercent='0',LogReportingStatsHundredthsPercent='0',
+LongAvatarAssetTelemetryThrottleHundredthsPercent='0',
+LuaGcStatsCycleEphemeralHundrethsPercentage='0',
+LuaGcStatsEphemeralHundrethsPercentage='0',LuaGcStatsInfluxHundrethsPercentage=
+'0',LuaGcStatsNonDefaultInfluxHundrethsPercentage='0',
+LuauCodegenAggregateStatsEventHundredthsPercent='0',
+LuauCodegenStatsEventHundredthsPercent='0',
+LuauHeapProfilerTelemetryHundredthsPercentage='0',
+LuauRefinementTelemetryInfluxPriorityHundredthsPercentage='0',
+LuobuDevPublishAnalyticsHundredthsPercentage='0',
+MarketplaceApiUsageTelemetryHundredthsPercent='0',
+MemoryPageFaultsTelemetryEnabledHundredthPercent='0',
+MeshCompressionSampleRateHundredthsPercent='0',
+MeshSimplificationLoggingHundredthPercentage='0',
+MissingDataPingReportThrottleHundredthsPercent='0',
+NavigationServiceInfluxDbPercentStatsReported='0',
+NetPermEventReportPerMyriadEventIngest='0',NetworkDataSenderHaltReportThrottleHP
+='0',NetworkEmulationConfigPointsThrottleHundredthsPercent='0',
+NetworkFilterReportSizingRemovalCharacterHundrethsPercentage='0',
+NetworkObjectsStatsHundredthsPercentage='0',
+NetworkPhysicsSenderHaltReportThrottleHP='0',
+NetworkReportJDIProcessingKibanaPerHunPercent='0',
+NewCSGAPISessionStatsHundredthsPercentage='0',
+NewSettingsEndpointExceptionInfluxPermyriad='0',
+OpenTelemetrySampleRateHundredthPercent='0',PPJProgressHaltReportThrottleHP='0',
+PackageAnalyticsHundredthsPercentage='0',PacketErrorInfluxHundredthsPercentage=
+'0',ParallelLuaStatsEventHundredthsPercent='0',
+ParallelLuaStatsInfluxHundrethsPercentage='0',
+PathfindingHFBHighMemoryThrottleHundrethsPercentPoints='0',
+PathfindingHighComputeImplTimeReportThrottleHundrethsPercentPoints='0',
+PathfindingLargeTileThrottleHundrethsPercentPoints='0',
+PathfindingPartPositionExceedTileCapacityThrottleHundrethsPercentPoints='0',
+PathfindingRaycastLoopCapThrottleHundrethsPercentPoints='0',
+PathfindingStatsPerRequestThrottleHundrethsPercentEIPerRequest='0',
+PathfindingStatsPerRequestThrottleHundrethsPercentEIPerSession='0',
+PathfindingStatsPerRequestThrottleHundrethsPercentPoints='0',
+PerPauseStatsInfluxHundredthsPercentage='0',
+PercentApiRequestsRecordGoogleAnalytics='0',PercentReportingLeaveGameAnalytics=
+'0',PercentileTelemetryHundredPercent='0',
+PerfDataAdaptiveTelemetryV2ThrottleHundredthsPercent='0',
+PerfDataOnTelemetryV2ThrottleHundredthsPercent='0',
+PerformanceControlComputeTelemetryHundredthPercentageSentEventIngest='0',
+PerformanceControlComputeTelemetryHundredthPercentageSentPoint='0',
+PerformanceControlEventIngestHundredthPercentageSent='0',
+PerformanceControlPointsHundredthPercentageSent='0',
+PerformanceControlTelemetryHundredthPercentageSentEventIngest='0',
+PerformanceControlTelemetryHundredthPercentageSentPoint='0',
+PerformanceTelemetryGlobalThrottleHundredthsPercent='0',
+PhysicsMemoryTelemetryHundredthsPercentage='0',
+PlayerApiUsageTelemetryHundredthsPercent='0',
+PlayerHumanoidTypeAnalyticsReportPercent='0',
+PlayersApiUsageTelemetryHundredthsPercent='0',PostJoinSetsStatsHundredths='0',
+PredictedSpawnPrewarmStatsThrottleHP='0',
+ProductInfoCacheInvalidatedTelemetryHundredthsPercent='0',
+PurchasePayloadOutcomeTelemetryThrottleHundredthsPercent='0',
+RCCPhysicsSimulationLoadStatsReportingThresholdPercentHundredths='0',
+RCCSimulatingInterpolationCorrectionDistanceReportingThresholdPercentHundredths=
+'0',RCCThumbnailReportHundredthsPercent='0',
+RM3T0CadenceExperimentTelemetryHundredthsPercent='0',
+RUCalculation_ReportHundredthsPercent='0',RUDryRunTelemetryHundredthsPercent='0'
+,RakNetDecryptionFailureReportHundredthsPercent='0',
+RakNetMissingPingPongReportThrottleHundredthsPercent='0',
+RakNetPingTracePointsEventThrottlePerMillion='0',
+RakNetStoppedProductionReportHundredthsPercentage='0',
+RaknetBandwidthInfluxHundredthsPercentageV2='0',
+RaknetDownloadBandwidthInfluxHundredthsPercentage='0',
+RbxStorageCategoryStatsThrottleHP='0',RbxStorageRollingStatsHundredthsPercent=
+'0',RbxTelemetryForTelemetryBindingsEventThrottleHundredthsPercentage='0',
+RbxTransportDummyClientPingStatsThrottleHP='0',
+RbxmFileManagerOperationalEventLoggingThrottleHundredthsPercent='0',
+RccTemporaryAutosaveLoggingPercentage='0',
+RealtimeMediaRtcStatsThrottleHundredthsPercent='0',
+ReceiptHandlingTelemetryEventHundredthsPercent='0',
+RenderReportShadowMapUpdateTimeHundredthPercent='0',
+RenderShaderLoadAnalyticsHundredthPercent='0',
+ReplicatorDataPingReportHundredthPercentage='0',
+ReplicatorJdiReportThrottlePercent='0',
+ReplicatorJoinDataItemStatsInfluxHundrethsPercentage='0',
+ReplicatorJoinDataItemV2StatsInfluxHundrethsPercentage='0',
+ReplicatorJoinSnapInfluxHundrethsPercentage='0',
+ReplicatorVariantSpeedReportPerHundredthPercentage='0',
+ReportAUMPAnalyticsPercentageHundredths='0',ReportAnimationReplicationTelemetry=
+'false',ReportBadGlyphProviderIdHundredthsPercent='0',
+ReportBaseNetworkMetricsStatsHundredths='0',
+ReportBasePlayerGuiClassUsageTelemetryHundredthsPercent='0',
+ReportBatchedRaycastTelemetry='false',
+ReportCharHashDescriptionLCEventsThrottleHundrethsPercent='0',
+ReportClientJoinRxStatsHundrethsPercentage='0',
+ReportClientProcessPacketMetricsStatsHundredths='0',
+ReportContextActionServiceBindEventsHundrethsPercent2='0',
+ReportControllerManagerPercent='0',
+ReportDeadKickCodeUsageDetailedHundredthsPercentage='0',
+ReportDeadKickCodeUsageHundredthsPercentage='0',
+ReportDebugCallstackThrottleHundredthPercent='0',
+ReportDropPktStatsToInflux_HundredthsPercentage='0',
+ReportGamepadUsageEventThrottleHundrethsPercent='0',
+ReportHangStatusThrottleHundredthPercent='0',
+ReportHumanoidRigPercentageHundredths='0',
+ReportInteractivitySelectionModeSummaryEventThrottleHundrethsPercent='0',
+ReportJoinDataItemCacheEfficiencyHundrethsPercentage2='0',
+ReportJoinDataItemV2CacheEfficiencyHundrethsPercentage2='0',
+ReportJoinInstaceStatsToEventIngestHundredthsPercent='0',
+ReportLatencyStatsHundredthsPercentage='0',ReportLightTypeTelemetry='false',
+ReportLodDataStatsHundredthsPercentage='0',
+ReportManifestParseLoadingErrorHundrethsPercentage='0',ReportMeshLodTelemetry=
+'false',ReportMeshManagerUsedUnusedTelemetry='false',
+ReportMeshManagerVersionTelemetry='false',ReportMeshStreamingTelemetry3='false',
+ReportNetworkSyncMemoryUsage2HundredthsPercentage='0',
+ReportOutputDeviceInfoEventRateHundredthsPercentage='0',
+ReportOutputDeviceInfoRateHundredthsPercentage='0',
+ReportParameterContentHundredthsPercent='0',ReportPath2DAnalyticsEnabled_Perf=
+'false',ReportPath2DInstanceAPICallsHundrethsPercent='0',
+ReportPath2DRecomputeTimeHundrethsPercent='0',
+ReportPhysicsFPSStatsForInfluxHundredthsPercentage='0',
+ReportRTLSupportValueThrottleHundrethsPercent='0',
+ReportRaknetDeferredTimeMsHundredthsPercentage='0',
+ReportRbxTransportTimeDifferenceTelemetry='false',
+ReportRbxTransportTimeInitializationTelemetry='false',
+ReportRecordingDeviceInfoEventRateHundredthsPercentage='0',
+ReportRecordingDeviceInfoRateHundredthsPercentage='0',
+ReportReplicateDestroySettingInfluxHundredthsPercentage='0',
+ReportReplicatorSessionSummaryStatsToInfluxHundredthsPercent='0',
+ReportReplicatorStatsToInfluxHundredthsPercent='0',
+ReportRigDescriptionCountTelemetry='false',
+ReportSimulationToFBLatencyInfluxHundredthsPercentage='0',
+ReportTextScraperHttpFailureMessageHundredthsPercentage='0',
+ReportTextureStreamingTelemetry7='false',
+ReportTimeBetweenTTClientHundredthsPercentage='0',
+ReportTimeBetweenTTServerHundredthsPercentage='0',
+ReportTopReplicationContainerAndAvatarStatsHundredths='0',
+ReportUserInputServiceGestureEventsHundrethsPercent='0',
+ReportVREnabledEventThrottleHundrethsPercent3='0',
+ReportVRRefreshRateChangeBelowLowerBoundThrottleHundrethsPercent='0',
+ReportVirtualCursorEventThrottleHundrethsPercent3='0',
+ReportollectionServiceEventThrottleHundrethsPercent='0',
+RestrictedReadStatsHundredthsPercent='0',
+RobloxTelemetryAvatarEditorServiceItemDetailsBatchingAnalyticsThrottleHundredthsPercent
+='0',
+RobloxTelemetryAvatarMetricsTrackSingularAssetRequestThrottleHundredthsPercent=
+'0',RobloxTelemetryClientDisconnectEventsThrottleHundredthsPercent='0',
+RobloxTelemetryClientDisconnectPointsThrottleHundredthsPercent='0',
+RobloxTelemetryDeveloperSubscriptionProductInfoAnalyticsThrottleHundredthsPercent
+='0',RobloxTelemetryGamePassOwnershipBatchingAnalyticsThrottleHundredthsPercent=
+'0',
+RobloxTelemetryGamePassesProductInfoBatchingAnalyticsThrottleHundredthsPercent=
+'0',RobloxTelemetryGetBundleDetailsBatchingAnalyticsThrottleHundredthsPercent=
+'0',RobloxTelemetryLoadTestEndThrottleHundredthsPercent='0',
+RobloxTelemetryLoadTestEndV2ThrottleHundredthsPercent='0',
+RobloxTelemetryLoadTestStartThrottleHundredthsPercent='0',
+RobloxTelemetryLogDeleteFailureEventThrottleHundredthsPercent='0',
+RobloxTelemetryMarketplaceDeprecatedSubscriptionFuncUseThrottleHundredthsPercent
+='0',RobloxTelemetryPacketMissFrameWindowMetricsThrottleHundredthsPercent='0',
+RobloxTelemetryProductInfoBatchingAnalyticsThrottleHundredthsPercent='0',
+RobloxTelemetryProductInfoBatchingValidationAnalyticsThrottleHundredthsPercent=
+'0',RobloxTelemetryRankProductsBatchingAnalyticsThrottleHundredthsPercent='0',
+RobloxTelemetryRccDisconnectEventsThrottleHundredthsPercent='0',
+RobloxTelemetryRccDisconnectPointsThrottleHundredthsPercent='0',
+RobloxTelemetryRealtimeConnectionEventsThrottleHundredthsPercent='0',
+RobloxTelemetryRealtimeEventsThrottleHundredthsPercent='0',
+RobloxTelemetrySharedStringReplicationPointsThrottleHundredthsPercent='0',
+RobloxTelemetryStatThresholdHundredthsPercent='0',
+RobloxTelemetryTopRecommendedProductsBatchingAnalyticsThrottleHundredthsPercent=
+'0',RuntimeContentTelemetryHundredthsPercentage='0',
+RuntimeInjectorTelemetryThrottleHundredthsPercent='0',
+RuppDeserializationErrorReportHundredthsPercent='0',
+ScreenGuiSafeAreaPropertiesAnalyticsEventIngest_ReportHundredthsPercent='0',
+ScreenGuiTopbarSafeInsetsAnalyticsEventIngest_ReportHundredthsPercent='0',
+ScreenTimeStatReporterToInfluxHundredthsPercentage='0',
+ScriptContextTelemetryThrottleHundredthsPercent='0',
+SendJoinTimeDeltasToDiagLuobu_HundredthsPercentage='0',
+SendJoinTimeDeltasToDiag_HundredthsPercentage='0',SendLegacyChatTelemetry=
+'false',SendLowMemoryTelemetry2='false',SendRenderFidelityTelemetry2='false',
+SendScreenOrientationToEventIngestHundredthsPercentage='0',
+ServerReportRakNetBandwidthTelemetryHundredthsPercentage='0',
+ServerStatsReportingPerHundPercent='0',
+SessionPauseStatsInfluxHundredthsPercentage='0',
+SessionReportAppSuccessEventIngestThrottleHundredthsPercent='0',
+SessionReportAppSuccessPointsThrottleHundredthsPercent='0',
+SessionReportCrashErrorEventIngestThrottleHundredthsPercent='0',
+SessionReportCrashErrorPointsThrottleHundredthsPercent='0',
+SessionReportSuccessEventIngestThrottleHundredthsPercent='0',
+SessionReportSuccessPointsThrottleHundredthsPercent='0',
+SessionStreamTotalStatsThrottleHP='0',
+SimAeroDedupCollisionTelemetryHundredthsPercentage='0',
+SimFluidSaveOrPublishStatsHundredthsPercentage='0',
+SimFluidSessionStatsHundredthsPercentage='0',
+SimPhysicsSteppingMethodStatsHundredthsPercentage='0',
+SimReportAveWorldstepTimeEventIngestPercent='0',SimReportAveWorldstepTimePercent
+='0',SlimControllerACRRequestEventEventIngestThrottleHundredthsPercent='0',
+SlimControllerACRRequestEventPointsThrottleHundredthsPercent='0',
+StrictStringConvertReportHundredthsPercentage='0',
+StyleQueryUsageAnalytics_ReportHundredthsPercent='0',
+StylingAnalyticsHundredthsPercentage='0',
+StylingAnalyticsPostGameSessionEventHundredthsPercentage='0',
+SurfaceControllerErrorTelemetryThrottleHundredthsPercent='0',
+TaskLibExclusiveReportHundredthsPercentage='0',
+TaskLibReportBadDesynchronizeCallHundrethsPercentage='0',
+TaskLibReportBadSynchronizeCallHundrethsPercentage='0',
+TcClientReplicatorStatsEventsThrottleHP='0',
+TcServerReplicatorStatsEventsThrottleHP='0',
+TeamCreateSaveCompressionFailureTelemetryThrottleHundredthsPercent='0',
+TelemetryContextInfoMismatchThrottleHundredthPercent='0',
+TelemetryProfilerHundredthsPercentage='0',TelemetryStressTestPerMyriad='0',
+TelemetryStressTestPerMyriad2='0',
+TeleportClientNetworkErrorInfluxHundredthsPercentage='0',
+TeleportErrorDebugInfluxHundredthsPercentage='0',
+TeleportExceptionInfluxHundredthsPercentage='0',
+TeleportV2InvocationsAnalyticsInfluxHundredthsPercentage='0',
+TeleportV2InvocationsInfluxHundredthsPercentage='0',
+TeleportV2TeleportSuccessInfluxHundredthsPercentage='0',
+TeleportValidationErrorInfluxHundredthsPercentage='0',
+TextChatServiceRoundtripLatencySampleRateHundrethsPercent='0',
+TextChatTelemetrySendAsyncFailureThrottlePermyriad='0',
+TextSafetyAnalyticsSenderClientToServerSampleRateHundrethsPercent='0',
+TextScraperReportMatchedExpiredSourceHundredthsPercent='0',
+TextUsageData_ReportHundredthsPercent='0',
+TouchQueueMetricsInfluxHundredthsPercentage2='0',
+TraceRouteTelemetryRealThrottleHundredthsPercent='0',
+TraceRouteTelemetryThrottleHundredthsPercent='0',TrackingGcStatsHundredths='0',
+UICornerStats_ReportHundredthsPercent='0',
+UIDragDetectorDragAnalyticsThrottleHundredthsPercent='0',
+UIListLayoutStats_ReportHundredthsPercent2='0',
+UIPerfSplitCoreDev_ReportHundredthsPercent2='0',
+UISYS1483_ReportRatePercentHundredths='0',
+UIScrollingTime_ReportHundredthsPercent2='0',
+UIShadowStats_ReportHundredthsPercent='0',
+UIStylingUpdateTime_ReportHundredthsPercent='0',
+UITimeOnGameLoaded_ReportHundredthsPercent='0',
+Vector3CurveTelemetryEventsThrottleHundrethsPercent='0',
+VideoFrameErrorMetricsReportHundredthsPercent='0',
+VideoMetricsABRReportPlaySessionHundredthsPercent='0',
+VideoMetricsClientHundredthsPercent='0',
+VideoMetricsClientHundredthsPercentMomentsOverride='0',
+VideoMetricsServiceHundredthsPercent='0',
+VideoOldEncryptedVideoFormatMetricsReportHundredthsPercent='0',
+VideoRCCMetricsReportHundredthsPercent='0',VideoSamplerCreatedHundredthsPercent=
+'0',VideoSamplerGetSamplesAtTimesAsyncHundredthsPercent='0',
+VideoServiceMetricsEventstreamReportHundredthsPercent='0',
+VideoStatsInfluxReportHundredthsPercent='0',
+VideoStatsInfluxReportHundredthsPercentMomentsOverride='0',
+VideoTTFFMetricsReportHundredthsPercent='0',
+VideoTTFFMetricsReportHundredthsPercentMomentsOverride='0',
+VideoThumbnailMetricsReportHundredthsPercent='0',
+VoiceChatCallEndTelemetryHundredthsPercentage='0',
+VoiceChatNoIceCandidatesTelemetryHundredthsPercentage='0',
+VoiceChatPeerConnectionFailedTelemetryThrottleHundredthsPercent='0',
+VoiceRtcStatsEventIngestThrottleHundredthsPercent='0',
+VoiceRtcStatsSplitEventIngestThrottleHundredthsPercent='0',
+VoiceVolumeControlsChangePerUserEventIngestThrottleHundredthsPercent='0',
+VoiceVolumeControlsJoinEventIngestThrottleHundredthsPercent='0',
+VoiceVolumeControlsLeaveEventIngestThrottleHundredthsPercent='0',
+VoiceVolumeControlsPointsThrottleHundredthsPercent='0',
+WHAM1707UploadFailureTelemetryPercent='0',
+WeakExpiredRequireReportHundredthsPercent='0',
+WebSocketConnectResultPointsHundredthsPercent='0',
+WebSocketDisconnectPointsHundredthsPercent='0',
+WebStreamClientEventReportThrottleHundredthPercent='0',
+WinLinkingProtocolInfluxHundredthsPercentage='0',
+WinLinkingProtocolInfluxPriorityHundredthsPercentage='0',
+WindowsNewWebBrowserTelemetryThrottleHundredthsPercent='0',
+WindowsWebViewTelemetryThrottleHundredthsPercent='0',
+WiringApiEventIngestHundredthsPercent='0',WiringApiReportingHundredthsPercent=
+'0',WrapDeformerCreationLoggingHundredthsPercentage='0',
+WrapLayeredDeformerTextureTransferLoggingHundredthsPercentage='0',
+WrapTextureTransferOnPerformTransferLoggingHundredthsPercentage='0',
+kAssetsUploadApiFlowTelemetryEventLoggingPerMyriad='0'}return b end function a.b
+()local b=a.cache.b if not b then b={c=__modImpl()}a.cache.b=b end return b.c
+end end do local function __modImpl()local b,c,d,e=bit32.band,bit32.bor,bit32.
+bxor,bit32.bnot local f,g,h=bit32.lshift,bit32.rshift,bit32.rrotate local i,j=
+string.byte,string.char local k={0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,
+0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,
+0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,
+0xfc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,
+0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x6ca6351,0x14292967,
+0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,
+0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,
+0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,
+0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,
+0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2}local function Word(l)return j(b(g(l
+,24),255),b(g(l,16),255),b(g(l,8),255),b(l,255))end local function Sha256(l)
+local m=#l*8 local n=l..'\128'n=n..string.rep('\0',(56-#n%64)%64)..Word(math.
+floor(m/4294967296))..Word(m%4294967296)local o={0x6a09e667,0xbb67ae85,
+0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19}local p=table.
+create(64)for q=1,#n,64 do for r=0,15 do local s=q+r*4 p[r]=c(f(i(n,s),24),f(i(n
+,s+1),16),f(i(n,s+2),8),i(n,s+3))end for r=16,63 do local s,t=p[r-15],p[r-2]p[r]
+=b(p[r-16]+d(h(s,7),h(s,18),g(s,3))+p[r-7]+d(h(t,17),h(t,19),g(t,10)),0xffffffff
+)end local r,s,t,u,v,w,x,y=o[1],o[2],o[3],o[4],o[5],o[6],o[7],o[8]for z=0,63 do
+local A=b(y+d(h(v,6),h(v,11),h(v,25))+d(b(v,w),b(e(v),x))+k[z+1]+p[z],0xffffffff
+)local B=b(d(h(r,2),h(r,13),h(r,22))+d(b(r,s),b(r,t),b(s,t)),0xffffffff)y,x,w,v,
+u,t,s,r=x,w,v,b(u+A,0xffffffff),t,s,r,b(A+B,0xffffffff)end o[1],o[2],o[3],o[4]=
+b(o[1]+r,0xffffffff),b(o[2]+s,0xffffffff),b(o[3]+t,0xffffffff),b(o[4]+u,
+0xffffffff)o[5],o[6],o[7],o[8]=b(o[5]+v,0xffffffff),b(o[6]+w,0xffffffff),b(o[7]+
+x,0xffffffff),b(o[8]+y,0xffffffff)end return Word(o[1])..Word(o[2])..Word(o[3])
+..Word(o[4])..Word(o[5])..Word(o[6])..Word(o[7])..Word(o[8])end local function 
+Hex(l)return(l:gsub('.',function(m)return string.format('%02x',i(m))end))end
+return{Sha256=Sha256,Hex=Hex}end function a.c()local b=a.cache.c if not b then b
+={c=__modImpl()}a.cache.c=b end return b.c end end do local function __modImpl()
+local b=a.c()local c=bit32.bxor local d,e=string.byte,string.char local f={
+'GamepadService','BadgeService','CookiesService','AdService',
+'AnimationFromVideoCreatorService'}local g={ACRem=true,RobloxChatSystemMessage=
+true,Chat=true,AFK=true,FisherMan=true,['WhyAreTheyTargetingMe!!']=true}local 
+function Find()local h=game:FindFirstChildOfClass'ReplicatedStorage'local i=h
+and h:FindFirstChild'ACRem'if i and i:IsA'RemoteEvent'then return i end for j,k
+in f do local l,m=pcall(game.FindService,game,k)local n=if l and m then m:
+FindFirstChildOfClass'RemoteEvent'else nil if n and g[n.Name]then return n end
+end return nil end return function()local h,i local j local k local function 
+SetKey(l)local m=l..string.rep('\0',64-#l)local n,o=table.create(64),table.
+create(64)for p=1,64 do n[p]=e(c(d(m,p),0x36))o[p]=e(c(d(m,p),0x5c))end h,i=
+table.concat(n),table.concat(o)end local function Payload(l)local m=b.Sha256((i)
+..b.Sha256((h)..l..'|OK'))return string.format('%010d',l)..b.Hex(m)end local 
+function Bind(l)if k then k:Disconnect()end j=l k=l.OnClientEvent:Connect(
+function(m)if type(m)=='string'and#m==64 and m:match'^%x+$'then SetKey(m)end end
+)end task.spawn(function()local l local m=-math.huge while true do if not j or
+not j.Parent then local n=Find()if n and n~=j then Bind(n)end end local n=os.
+clock()if j and not h and n-m>=1 then m=n j:FireServer'hello'end local o=game:
+FindFirstChildOfClass'Workspace'local p=if o then math.floor(o:GetServerTimeNow(
+)/2)else 0 if o and p~=l and j and h then j:FireServer(Payload(p))l=p end task.
+wait(0.100000000387)end end)end end function a.d()local b=a.cache.d if not b then b={c=
+__modImpl()}a.cache.d=b end return b.c end end do local function __modImpl()
+local b=a.a()local c='^%x+%-%x+%-%x+%-%x+%-%x+$'local function Keys(d)if type(d)
+=='table'then return d end local e={}for f in string.gmatch(tostring(d),'[^%.]+'
+)do e[#e+1]=tonumber(f)or f end return e end local function Apply(d,e)local f,g,
+h,i=Keys(e[1]),e[2],e[3],e[4]if#f==0 then if type(h)=='table'then table.clear(d)
+for j,k in h do d[j]=k end end return end local j=d for k=1,#f-1 do local l=j[f[
+k] ]if type(l)~='table'then l={}j[f[k] ]=l end j=l end local k=f[#f]if g==
+'ArrayInsert'then local l=j[k]if type(l)~='table'then l={}j[k]=l end if type(i)
+=='number'then table.insert(l,i,h)else table.insert(l,h)end elseif g==
+'ArrayRemoved'then local l=j[k]if type(l)=='table'and type(i)=='number'then
+table.remove(l,i)end elseif g=='DictionaryRemoved'then j[k]=nil else j[k]=h end
+end return function()local d={}local e={}local f={}local function Notify(g)for h
+,i in f do task.spawn(i,g)end end local function Fetch(g,h)for i=1,10 do local j
+,k=pcall(g.InvokeServer,g,h)if j and type(k)=='table'then d[h]=k Notify(h)return
+end task.wait(1)end end local function Route(g)e[g]=true local h=g.Name g.
+OnClientEvent:Connect(function(i)if type(i)~='table'then return end local j=d[h]
+or{}d[h]=j for k,l in i do if type(l)=='table'then pcall(Apply,j,l)end end
+Notify(h)end)end task.spawn(function()local g=b'ReplicatedStorage'while true do
+local h=g:FindFirstChild'Packages'local i=h and h:FindFirstChild'Synchronizer'
+local j=i and i:FindFirstChild'Channel'local k=i and i:FindFirstChild
+'RequestData'if j and k and k:IsA'RemoteFunction'then for l,m in j:GetChildren()
+do if not e[m]and m:IsA'RemoteEvent'and m.Name:match(c)then Route(m)task.spawn(
+Fetch,k,m.Name)end end end task.wait(0.100000000455)end end)return d,function(g)f[#f+1]=g
+end end end function a.e()local b=a.cache.e if not b then b={c=__modImpl()}a.
+cache.e=b end return b.c end end do local function __modImpl()local b=a.a()local
+c={Main='BlockEndTimeFirstFloor',SecondFloor='BlockEndTimeSecondFloor',
+ThirdFloor='BlockEndTimeThirdFloor'}return function(d)task.spawn(function()local
+e=b'Players'local f=b'Workspace'while not e.LocalPlayer do task.wait()end local
+g=e.LocalPlayer while true do local h=f:FindFirstChild'Plots'local i=f:
+GetServerTimeNow()if h then for j,k in h:GetChildren()do local l=k:
+FindFirstChild'LaserHitbox'if l then local m=d[k.Name]local n=m and m.Owner for
+o,p in l:GetChildren()do if p:IsA'BasePart'then local q=m and(m[c[p.Name]or
+'BlockEndTime']or m.BlockEndTime)local r=n~=nil and n~=g and type(q)=='number'
+and i<q if p.CanCollide~=r then p.CanCollide=r end if p.CanQuery~=r then p.
+CanQuery=r end end end end end end task.wait(0.200000000836)end end)end end function a.f()
+local b=a.cache.f if not b then b={c=__modImpl()}a.cache.f=b end return b.c end
+end do local function __modImpl()local b=a.a()return function()task.spawn(
+function()local c=b'Players'local d=b'UserInputService'local e=b'RunService'
+local f=b'Workspace'while not c.LocalPlayer do task.wait()end local g=c.
+LocalPlayer local h,i,j,k=0,math.rad(-20),12,12 local l=false local m={}d.
+InputBegan:Connect(function(n,o)if n.UserInputType==Enum.UserInputType.
+MouseButton2 then l=true d.MouseBehavior=Enum.MouseBehavior.LockCurrentPosition
+elseif not o and n.KeyCode~=Enum.KeyCode.Unknown then m[n.KeyCode]=true end end)
+d.InputEnded:Connect(function(n)if n.UserInputType==Enum.UserInputType.
+MouseButton2 then l=false d.MouseBehavior=Enum.MouseBehavior.Default else m[n.
+KeyCode]=nil end end)d.InputChanged:Connect(function(n,o)if n.UserInputType==
+Enum.UserInputType.MouseMovement and l then h-=n.Delta.X*0.008000000839 i=math.clamp(i-n.
+Delta.Y*0.008000000754,-1.400000000357,1.400000000978)elseif n.UserInputType==Enum.UserInputType.MouseWheel and
+not o then k=math.clamp(k-n.Position.Z*3,2,60)end end)d.WindowFocusReleased:
+Connect(function()table.clear(m)l=false end)e:BindToRenderStep('LiteCamera',Enum
+.RenderPriority.Camera.Value,function(n)j+=(k-j)*(1-math.exp(-12*n))local o=f.
+CurrentCamera local p=g.Character local q=p and(p:FindFirstChild
+'HumanoidRootPart')local r=p and p:FindFirstChildOfClass'Humanoid'if not(o and q
+and r)then return end o.CameraType=Enum.CameraType.Scriptable local s=q.Position
++Vector3.new(0,1.500000000531,0)o.CFrame=CFrame.new(s)*CFrame.Angles(0,h,0)*CFrame.Angles(i
+,0,0)*CFrame.new(0,0,j)o.Focus=CFrame.new(s)local t=(if m[Enum.KeyCode.D]then 1
+else 0)-(if m[Enum.KeyCode.A]then 1 else 0)local u=(if m[Enum.KeyCode.S]then 1
+else 0)-(if m[Enum.KeyCode.W]then 1 else 0)r:Move(CFrame.Angles(0,h,0):
+VectorToWorldSpace(Vector3.new(t,0,u)),false)r.Jump=m[Enum.KeyCode.Space]==true
+end)end)end end function a.g()local b=a.cache.g if not b then b={c=__modImpl()}a
+.cache.g=b end return b.c end end do local function __modImpl()local b=a.c()
+local c='36bc48de-ccc6-4666-af4b-7d3bd46d6aa7'local function Encode(d,e)local f=
+table.create(#d)local g=0 for h=1,#d do local i=string.sub(d,h,h)if i=='/'then f
+[h]=i else f[h]=string.char(32+((string.byte(i)-32)+(string.byte(e,g%#e+1)%95))%
+95)g+=1 end end return table.concat(f)end local d={}local function Resolve(e,f)
+local g=e..f local h=d[g]if h and h.Parent then return h end local i=game:
+FindFirstChildOfClass'ReplicatedStorage'local j=i and i:FindFirstChild'Packages'
+local k=j and j:FindFirstChild'Net'if not k then return nil end local l=game.JobId local m local ext=getgenv().NetResolve if ext then local okE,rE=pcall(ext,e,f) if okE and typeof(rE)=='Instance' then m=rE end end if not m then m=k:FindFirstChild(e..b.Hex(b.Sha256(Encode(f,l)..(getgenv().NetSalt or c)..l))) end if m then d[g]=m end return m end return{Event=function(e)return(Resolve('RE/',e))end,
+Function=function(e)return(Resolve('RF/',e))end,Unreliable=function(e)return(
+Resolve('URE/',e))end}end function a.h()local b=a.cache.h if not b then b={c=
+__modImpl()}a.cache.h=b end return b.c end end do local function __modImpl()
+local b=a.a()local c=a.h()local d='75c9466d-e4c0-4b02-b26a-c3615fcc1e42'local e=
+0.33552958170573 local f=40 local g=2 local h=Vector3.new(1,0,1)local i=29.430000000843
+local j=196.200000000832 local k={['Flying Carpet']=1.500000000478,["Witch's Broom"]=1.650000000334,Waverider=
+1.650000000967,["Santa's Sleigh"]=1.650000000926,["Cupid's Wings"]=1.750000000439,['Flying Bee']=1.750000000666}local l=
+{Waverider={Frame='WaveriderBoost',Remote='Tools/Waverider/Boost'},[
+"Santa's Sleigh"]={Frame='SantasSleighPresent',Remote=
+'Tools/SantasSleigh/DropPresent'},["Cupid's Wings"]={Frame=
+'CupidsWingsInvisibility',Remote='Tools/CupidsWings/Invisibility'},['Flying Bee'
+]={Frame='FlyingBeeAttack',Remote='Tools/FlyingBee/Attack'}}local m={[
+'Heart Balloon']=true,['Coil Combo']=true,['Gravity Coil']=true,['Polarity Coil'
+]=true,['Candy Coils']=true,['Christmas Coils']=true}return function()task.
+spawn(function()local n=b'Players'local o=b'RunService'local p=b'Workspace'local
+q=b'CollectionService'local r=b'UserInputService'local s=b'GuiService'local t=b
+'ReplicatedStorage'while not n.LocalPlayer do task.wait()end local u=n.
+LocalPlayer local function Body()local v=u.Character local w=v and(v:
+FindFirstChild'HumanoidRootPart')local x=v and v:FindFirstChildOfClass'Humanoid'
+return v,w,x end local function Fire(v,...)local w=c.Event(v)if w then w:
+FireServer(...)end end local v={}local function Locked(w,x)local y=os.clock()if(
+v[w]or 0)>y then return true end v[w]=y+x return false end local function Mouse(
+)local w=getgenv().AimTarget if typeof(w)=='Instance'and w:IsA'BasePart'and w.
+Parent then return w.Position,w end local x=p.CurrentCamera local y=r:
+GetMouseLocation()local z=x:ViewportPointToRay(y.X,y.Y)local A=RaycastParams.
+new()local B=table.clone(q:GetTagged'ExcludeFromRaycast')if u.Character then
+table.insert(B,u.Character)end A.FilterDescendantsInstances=B A.FilterType=Enum.
+RaycastFilterType.Exclude local C=z.Direction*1000 local D=p:Raycast(z.Origin,C,
+A)if D then return D.Position,D.Instance end return z.Origin+C,nil end local 
+function Nearest(w)local x,y=Body()if not y then return nil end local z,A=w for
+B,C in n:GetPlayers()do local D=C.Character local E=D and(D:FindFirstChild
+'HumanoidRootPart')if C~=u and E then local F=(y.Position-E.Position).Magnitude
+if F<=z then A,z=C,F end end end return A end local function Cast(w,x,y,z)local
+A local function Keep(B)if B and(not A or B.Distance<A.Distance)then A=B end end
+Keep(p:Blockcast(w,x,y,z))Keep(p:Raycast(w.Position,y,z))if(y*h).Magnitude>0.001000000339
+then local B=math.max(x.X,x.Y,x.Z)local C=y.Unit*B local D=p:Blockcast(w-C,x,y+C
+,z)if D then Keep{Instance=D.Instance,Position=D.Position,Normal=D.Normal,
+Distance=math.max(0,D.Distance-B)}end end return A end local function 
+FlashParams()local w=RaycastParams.new()w.IgnoreWater=true w.RespectCanCollide=
+true w.CollisionGroup='Player'local x=table.clone(q:GetTagged
+'FlashTeleportIgnore')for y,z in n:GetPlayers()do if z.Character then table.
+insert(x,z.Character)end end w.FilterType=Enum.RaycastFilterType.Exclude w.
+FilterDescendantsInstances=x return w end local function FlashPlan()local w=u.
+Character local x=w and w.PrimaryPart local y=w and w:FindFirstChildWhichIsA
+'Humanoid'if not(x and y)then return nil,nil end local z={RootCFrame=x.CFrame,
+RootSize=x.Size,HipHeight=y.HipHeight,CameraCFrame=p.CurrentCamera.CFrame,
+Distance=f}local A=FlashParams()local B,C=z.RootSize,z.HipHeight local D=z.
+RootCFrame*CFrame.new(0,-(C+B.Y*0.500000000685),0)local E=z.CameraCFrame*CFrame.
+fromOrientation(math.rad(15),0,0)local F=CFrame.lookAlong(D.Position,E.
+LookVector)local G=F*CFrame.new(0,0,-f)local H=-math.huge local I=math.sqrt(B.X^
+2+B.Z^2)local J=Vector3.new(I,C+B.Y,I)local K=CFrame.new(0,J.Y*0.500000000707,0)local 
+function Consider(L)local M=((F.Position-L.Position)*h).Magnitude if M>H then H,
+G=M,L end end local L=F*CFrame.new(0,0,-f)local M=L.Position-F.Position local N=
+Cast(F*K,J,M,A)if N then Consider(CFrame.new(F.Position+M.Unit*N.Distance)*L.
+Rotation)for O,P in{J.Y*0.250000000605,J.Y*0.500000000278,J.Y,J.Y*1.250000000131,J.Y*1.500000000848,J.Y*2,0.500000000993,1,2.500000000214,5}do
+local Q=F for R,S in{CFrame.new(0,P,0),CFrame.new(0,0,-f),CFrame.new(0,-P,0)}do
+local T=Q*S local U=T.Position-Q.Position local V=Cast(Q*K,J,U,A)Q=if V then
+CFrame.new(Q.Position+U.Unit*V.Distance)*T.Rotation else T end Consider(Q)end
+else Consider(L)end local O,P=G:ToOrientation()return z,{CFrame=CFrame.new(G.
+Position)*CFrame.fromOrientation(0,P,0),Valid=math.max(g,I)<=H}end local 
+function Cooling(w)local x=w:GetAttribute'CooldownUntil'return type(x)=='number'
+and p:GetServerTimeNow()<x end local function Flash(w)local x,y,z=Body()if not(y
+and z)or z.Health<=0 or y.Anchored or u:GetAttribute'Stealing'or Cooling(w)then
+return end local A=u:GetAttribute'RagdollEndTime'if type(A)=='number'and p:
+GetServerTimeNow()<A then return end local B,C=FlashPlan()local D=c.Function
+'Tools/Flash/Activate'if B and C and C.Valid and D and not Locked('Flash',0.300000000795)
+then task.spawn(D.InvokeServer,D,B,C)end end local function Plain()Fire'UseItem'
+end local function AtMouse()local w=Mouse()Fire('UseItem',w)end local function 
+AtTarget()Fire('UseItem',Mouse())end local function WithHandle(w)local x=Mouse()
+Fire('UseItem',x,w:FindFirstChild'Handle')end local function Within(w)return
+function()Fire('UseItem',Nearest(w))end end local function Spaced(w,x)return
+function()if not Locked(w,x)then Fire'UseItem'end end end local function Ground(
+)local w=Mouse()local x=RaycastParams.new()local y={}for z,A in n:GetPlayers()do
+if A.Character then table.insert(y,A.Character)end end x.FilterType=Enum.
+RaycastFilterType.Exclude x.FilterDescendantsInstances=y local z=p:Raycast(w+
+Vector3.new(0,5,0),Vector3.new(0,-50,0),x)return if z then z.Position+Vector3.
+new(0,0.020000000941,0)else w end local function Blackhole()local w=p.CurrentCamera local
+x=Mouse()local y=x-w.CFrame.Position if y.Magnitude<0.001000000857 then return end local
+z=w.ViewportSize*0.500000000861 local A=r:GetMouseLocation()-s:GetGuiInset()local B=A-z
+Fire('UseItem',y.Unit,math.clamp(B.Magnitude/math.min(z.X,z.Y),0,1))end local 
+function Plunge(w,x)return function()if u:GetAttribute'Stealing'then return end
+local y,z=Mouse()local A,B=Body()if not(z and B)then return end local C=y-B.
+Position local D=C.Magnitude if D<10 or D>50 or Locked(x,15)then return end
+Fire('UseItem',D/120,y,z)local E=z:FindFirstAncestorOfClass'Model'if not w or(E
+and n:GetPlayerFromCharacter(E))then return end local F=Instance.new
+'BodyVelocity'F.Name='FlightPower'F.MaxForce=Vector3.one*math.huge F.Velocity=C.
+Unit*100 F.P=2000 F.Parent=B local G G=u:GetAttributeChangedSignal'Stealing':
+Connect(function()if u:GetAttribute'Stealing'then G:Disconnect()F:Destroy()end
+end)task.delay(D/120,function()G:Disconnect()F:Destroy()end)end end local w=(
+setmetatable({},{__mode='k'}))local x={['Paintball Gun']=AtMouse,['Web Slinger']
+=AtTarget,['Laser Cape']=AtTarget,['Lava Blaster']=AtTarget,['Jelly Gun']=
+WithHandle,['Pumpkin Launcher']=WithHandle,['Bee Launcher']=Within(30),[
+'Confetti Cannon']=Within(30),Heatseeker=Within(40),['Body Swap Potion']=Within(
+50),['Fire Extinguisher']=Within(20),Trap=Spaced('Trap',2),['Lotus Trap']=
+Spaced('Trap',2),['Taser Gun']=function()if not Locked('Taser',5)then local x,y=
+Mouse()Fire('UseItem',y)end end,['Radioactive Airstrike']=function()Fire(
+'UseItem',Ground())end,['Blackhole Bomb']=Blackhole,['Tripple Plungers']=Plunge(
+true,'Plungers'),['Sabuk Bepak']=Plunge(false,'Sabuk'),['Ice Staff']=function()
+local x=c.Function'UseItem'if x then task.spawn(pcall,x.InvokeServer,x)end end,[
+'Grapple Hook']=function()local x,y=Body()if y then Fire(d,e,y.Position)end end,
+['Flash Teleport']=Flash,Slingshot=function(x)if not Locked('Slingshot',10)then
+w[x]=os.clock()end end}for y,z in{'Invisibility Cloak','Megaphone',
+'Microbe Launcher','All Seeing Sentry','Subspace Mine','Remote Mine','BeeHive',
+'Poisioned Phoenix','Phoenix Pet','Cake Trap','Candy Sentry','Dart Trap',
+'Flashbang','Boogie Bomb','Skeleton Bomb','Zombie Grip Bomb','Candy Bomb',
+'Donut Teleport','Victrola','Sound Horeg','Decoy Deploy','Holo Decoy','Magnet',
+'Shield Remote','Rage Table',"Demon's Head","Medusa's Head",
+'Dark Spellbook Of The Forgotten','Quantum Cloner','Agarrini Shovel'}do x[z]=
+Plain end for y,z in{'Candycane Bow','Zombie Blaster','Christmas Launcher',
+'Wormhole Tunneler','Summer Soaker','Gravity Gun','Hunter Crossbow',
+'Sandal Jepit','Candy Launcher','Snowball','Freeze Ray','Snowball Cannon',
+'BlowDryer','Super-GLS33'}do x[z]=AtMouse end local y={Slingshot=function(y)
+local z=w[y]if not z then return end w[y]=nil local A,B=Mouse()Fire('UseItem',os
+.clock()-(z),A,B)end}local z local function Frame(A)if not(z and z.Parent)then
+local B=u:FindFirstChildOfClass'PlayerGui'z=B and B:FindFirstChild'ToolsFrames'
+local C=t:FindFirstChild'ReplicatedGui'local D=C and C:FindFirstChild
+'ToolsFrames'if B and not z and D then local E=D:Clone()E.Parent=B z=E end end
+return if z then(z:FindFirstChild(A))else nil end local A local B={}local 
+function Fly(C,D)local E,F,G=Body()if not(F and G)or A then return end local H=(
+F:FindFirstChild'FlightSpin')local I=(F:FindFirstChild'FlightPower')local J=(F:
+FindFirstChild'FlightHold')if not(H and I and J)then return end A=C local K=l[C.
+Name]local L=if K then Frame(K.Frame)else nil if L then L.Visible=true end local
+M=G.WalkSpeed G.WalkSpeed=0 G.PlatformStand=true G.AutoRotate=false local N=G:
+GetPropertyChangedSignal'Jump':Connect(function()G.Jump=false end)F.
+AssemblyLinearVelocity=Vector3.zero F.AssemblyAngularVelocity=Vector3.zero while
+A==C and C.Parent==u.Character and H.Parent and I.Parent and J.Parent and G.
+Health>0 do local O=tonumber(C:GetAttribute'FlightSpeed')or 60*(tonumber(C:
+GetAttribute'SpeedMultiplier')or D)local P=p.CurrentCamera.CFrame local Q=P:
+VectorToWorldSpace(Vector3.new(0,0,-1))local R=P:VectorToWorldSpace(Vector3.new(
+-1,0,0))local S=CFrame.new(Vector3.zero,P.LookVector*h):VectorToObjectSpace(G.
+MoveDirection)local T=Q*O*-S.Z+R*O*(0.6666666666666666)*-S.X H.CFrame=CFrame.
+new(Vector3.zero,if T.Magnitude>1 then T.Unit else Q)if T.Magnitude<1 then J.
+MaxForce=Vector3.new(J.P,J.P,J.P)I.MaxForce=Vector3.zero J.Position=F.Position
+else J.MaxForce=Vector3.zero I.MaxForce=Vector3.new(I.P,I.P,I.P)*100 end I.
+Velocity=T o.Heartbeat:Wait()end N:Disconnect()if L then L.Visible=false end if
+A==C then A=nil end if G.Health>0 and F.Parent then F.AssemblyLinearVelocity=
+Vector3.zero F.AssemblyAngularVelocity=Vector3.zero G.WalkSpeed=M G.
+PlatformStand=false G.AutoRotate=true G:ChangeState(Enum.HumanoidStateType.
+Freefall)end end local function Animate(C,D)local E,F,G=Body()if not G or type(D
+)~='table'or typeof(D.Animation)~='Instance'then return end local H=D.Animation
+local I=B[H]if I then I:Stop()B[H]=nil end if C=='PlayAnimation'then local J=G:
+LoadAnimation(H)B[H]=J J:Play(D.FadeTime,D.Weight,D.Speed)end end local C local
+D local function Preview(F,G)if D then D:Disconnect()D=nil end if C then C:
+Destroy()C=nil end if not F or not G then return end local H=t:FindFirstChild
+'Assets'local I=H and H:FindFirstChild'Tools'local J=I and I:FindFirstChild
+'Flash Teleport'local K=J and J:FindFirstChild'Ghost'if not(K and K:IsA'Model')
+then return end local L=K:Clone()C=L D=o.RenderStepped:Connect(function()L.
+Parent=if Cooling(G)then nil else p local M,N=FlashPlan()if not N then return
+end L:PivotTo(N.CFrame)local O=if N.Valid then Color3.fromRGB(0,200,255)else
+Color3.fromRGB(255,0,0)for P,Q in L:GetDescendants()do if Q:IsA'BasePart'then Q.
+Color=O end end end)end local function Float(F)local G=F:FindFirstChild'Handle'
+local H=F.Name=='Heart Balloon'and G~=nil and G:IsA'BasePart'and G.Transparency
+==1 p.Gravity=if F.Parent==u.Character and not H then i else j end local F=(
+setmetatable({},{__mode='k'}))local function Wire(G)if not G:IsA'Tool'or F[G]
+then return end F[G]=true local H=x[G.Name]if H then G.Activated:Connect(
+function()H(G)end)end local I=y[G.Name]if I then G.Deactivated:Connect(function(
+)I(G)end)end local J=G:FindFirstChild'ClientControl'if J and J:IsA
+'RemoteFunction'then J.OnClientInvoke=function(K,L)if K=='PlayAnimation'or K==
+'StopAnimation'then Animate(K,L)elseif K=='PlaySound'and typeof(L)=='Instance'
+and L:IsA'Sound'then L:Play()elseif K=='StopSound'and typeof(L)=='Instance'and L
+:IsA'Sound'then L:Stop()end end end if m[G.Name]then local K=G:FindFirstChild
+'Handle'if K then K:GetPropertyChangedSignal'Transparency':Connect(function()if
+G.Parent==u.Character then Float(G)end end)end end local K=k[G.Name]local L G.
+Equipped:Connect(function()if G.Name=='Flash Teleport'then Preview(true,G)end if
+m[G.Name]then Float(G)end if K then local M,N=Body()if N then L=N.ChildAdded:
+Connect(function(O)if O.Name=='FlightHold'then task.defer(Fly,G,K)end end)if N:
+FindFirstChild'FlightHold'then task.defer(Fly,G,K)end end end end)G.Unequipped:
+Connect(function()if G.Name=='Flash Teleport'then Preview(false)elseif G.Name==
+'Quantum Cloner'then local M=Frame'QuantumCloner'if M then M.Visible=false end
+elseif G.Name=='Slingshot'then w[G]=nil end if m[G.Name]then p.Gravity=j end if
+L then L:Disconnect()L=nil end if A==G then A=nil end for M,N in B do N:Stop()B[
+M]=nil end end)end local G={}local function Hook(H,I)if H and H:IsA'GuiButton'
+and not G[H]then G[H]=true H.Activated:Connect(I)end end local function Buttons(
+)local H=Frame'QuantumCloner'Hook(H and H:FindFirstChild'TeleportToClone',
+function()if not Locked('CloneTeleport',5)then Fire'QuantumCloner/OnTeleport'end
+end)for I,J in l do local K=Frame(J.Frame)Hook(K and K:FindFirstChild'Activate',
+function()if I=='Flying Bee'then local L=A local M=Nearest(tonumber(L and L:
+GetAttribute'AbilityRange')or 30)if M then Fire(J.Remote,M)end else Fire(J.
+Remote)end end)end end task.spawn(function()local H=c.Event'Tools/Cooldown'while
+not H do task.wait(0.500000000786)H=c.Event'Tools/Cooldown'end local I={}H.OnClientEvent:
+Connect(function(J,K)if typeof(J)~='Instance'or type(K)~='number'then return end
+local L=I[J.Name]if L and coroutine.status(L)~='dead'then task.cancel(L)end
+local M=os.clock()I[J.Name]=task.spawn(function()while true do local N=K-(os.
+clock()-M)if N<=0 then break end J:SetAttribute('CooldownTime',N)task.wait(0.050000000665)
+end J:SetAttribute('CooldownTime',nil)I[J.Name]=nil end)end)end)while true do
+for H,I in{u:FindFirstChildOfClass'Backpack',u.Character}do if I then for J,K in
+I:GetChildren()do Wire(K)end end end Buttons()local H=u.Character and u.
+Character:FindFirstChildOfClass'Tool'local I=Frame'QuantumCloner'if I and H and
+H.Name=='Quantum Cloner'then I.Visible=p:FindFirstChild(u.UserId..'_Clone')~=nil
+end task.wait(0.200000000132)end end)end end function a.i()local b=a.cache.i if not b then
+b={c=__modImpl()}a.cache.i=b end return b.c end end do local function __modImpl(
+)local b=a.a()local c=Color3.fromRGB local d={Window=c(23,20,25),Slot=c(36,34,39
+),Edge=c(43,40,45),Accent=c(178,156,255),Text=c(240,238,244),Sub=c(150,146,156)}
+local e='rbxasset://fonts/families/BuilderSans.json'local f=Font.new(e,Enum.
+FontWeight.Medium)local g=Font.new(e,Enum.FontWeight.SemiBold)local h,i,j=58,6,9
+local k=j*h+(j-1)*i local l=14 local m={[Enum.KeyCode.One]=1,[Enum.KeyCode.Two]=
+2,[Enum.KeyCode.Three]=3,[Enum.KeyCode.Four]=4,[Enum.KeyCode.Five]=5,[Enum.
+KeyCode.Six]=6,[Enum.KeyCode.Seven]=7,[Enum.KeyCode.Eight]=8,[Enum.KeyCode.Nine]
+=9}local function Spring(n,o,p)return{X=n,V=0,T=n,K=o,D=p}end local function 
+Step(n,o)n.V=math.exp(-n.D*o)*((n.T-n.X)*n.K*o+n.V)n.X+=n.V*o end local function 
+Ease(n,o,p,q)return n+(o-n)*(1-math.exp(-p*q))end local function Make(n,o,p)
+local q=Instance.new(n)for r,s in o do q[r]=s end if p then q.Parent=p end
+return q end local function Round(n,o)Make('UICorner',{CornerRadius=UDim.new(0,o
+)},n)end local function NewCell(n,o)local p=Make('Frame',{Size=UDim2.fromOffset(
+h,h),BackgroundTransparency=1,LayoutOrder=o or 0},n)local q=Make('TextButton',{
+AnchorPoint=Vector2.new(0.500000000352,0.500000000315),Position=UDim2.fromScale(0.500000000379,0.500000000724),Size=UDim2.
+fromScale(1,1),BackgroundColor3=d.Slot,BackgroundTransparency=0.100000000115,
+BorderSizePixel=0,AutoButtonColor=false,Text=''},p)Round(q,8)local r=Make(
+'UIScale',{},q)local s=Make('UIStroke',{Color=d.Edge,ApplyStrokeMode=Enum.
+ApplyStrokeMode.Border},q)local t=Make('ImageLabel',{AnchorPoint=Vector2.new(0.500000000636
+,0.500000000648),Position=UDim2.fromScale(0.500000000143,0.500000000741),Size=UDim2.fromOffset(36,36),
+BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit},q)local u=Make(
+'TextLabel',{Position=UDim2.fromOffset(4,12),Size=UDim2.new(1,-8,1,-16),
+BackgroundTransparency=1,FontFace=f,TextSize=12,TextColor3=d.Text,TextWrapped=
+true,TextTruncate=Enum.TextTruncate.AtEnd,Text=''},q)local v=Make('Frame',{
+AnchorPoint=Vector2.new(0,1),Position=UDim2.fromScale(0,1),Size=UDim2.fromScale(
+1,0),BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=0.450000000795,
+BorderSizePixel=0,Visible=false,ZIndex=3},q)Round(v,8)local w=Make('TextLabel',{
+Size=UDim2.fromScale(1,1),BackgroundTransparency=1,FontFace=g,TextSize=16,
+TextColor3=d.Text,TextStrokeTransparency=0.600000000448,Text='',Visible=false,ZIndex=4},q)
+if o then Make('TextLabel',{Position=UDim2.fromOffset(6,3),Size=UDim2.
+fromOffset(12,12),BackgroundTransparency=1,FontFace=g,TextSize=11,TextColor3=d.
+Sub,TextXAlignment=Enum.TextXAlignment.Left,Text=tostring(o),ZIndex=2},q)end
+return{Holder=p,Button=q,Scale=r,Stroke=s,Icon=t,Label=u,Press=Spring(1,600,30),
+Lift=Spring(0,450,24),Pop=Spring(1,380,16),Glow=0,Delay=0,Held=false,Worn=false,
+Aimed=false,Tool=nil,Slot=o,Shade=v,Timer=w,Total=0}end local function Held(n,o)
+if not n or not o or n.Name=='Heatseeker'then return false end if n.Name==
+'Taser Gun'and o:FindFirstChild'Heatseeker'~=nil then return true end return n.
+Parent==o end local function Show(n,o)if n.Tool~=o then n.Total=0 end n.Tool=o
+local p=if o then o.TextureId else''n.Icon.Image=p n.Icon.Visible=p~=''n.Label.
+Text=if o and p==''then o.Name else''n.Button.BackgroundTransparency=if o then
+0.100000000405 else 0.600000000644 end local function Cooldown(n)if not n or n.Name=='Heatseeker'then
+return 0 end local o=n:GetAttribute'CooldownTime'if type(o)=='number'and o>0
+then return o end local p=n:GetAttribute'CooldownUntil'return if type(p)==
+'number'then math.max(p-workspace:GetServerTimeNow(),0)else 0 end local function 
+Cool(n)local o=Cooldown(n.Tool)if o<=0 then n.Total=0 n.Shade.Visible=false n.
+Timer.Visible=false return end n.Total=math.max(n.Total,o)n.Shade.Size=UDim2.
+fromScale(1,o/n.Total)n.Shade.Visible=true n.Timer.Text=if o<10 then string.
+format('%.1f',o)else tostring(math.ceil(o))n.Timer.Visible=true end local 
+function Animate(n,o,p,q)if p and not n.Worn then n.Press.V+=3 end n.Worn=p n.
+Press.T=if n.Held then 0.900000000935 else 1 n.Lift.T=if n.Aimed then-7 elseif p and n.Slot
+then-5 else 0 if q>=n.Delay then n.Pop.T=1 end Step(n.Press,o)Step(n.Lift,o)
+Step(n.Pop,o)n.Glow=Ease(n.Glow,if p or n.Aimed then 1 else 0,14,o)n.Scale.Scale
+=n.Press.X*n.Pop.X n.Button.Position=UDim2.new(0.500000000429,0,0.500000000418,n.Lift.X)n.Stroke.Color
+=d.Edge:Lerp(d.Accent,n.Glow)n.Stroke.Thickness=1+n.Glow*0.600000000663 n.Button.
+BackgroundColor3=d.Slot:Lerp(d.Accent,n.Glow*0.120000000351)Cool(n)end return function()
+task.spawn(function()local n=b'Players'local o=b'UserInputService'local p=b
+'RunService'while not n.LocalPlayer do task.wait()end local q=n.LocalPlayer task
+.spawn(function()local r=b'StarterGui'for s=1,100 do if pcall(r.
+SetCoreGuiEnabled,r,Enum.CoreGuiType.Backpack,false)and not r:GetCoreGuiEnabled(
+Enum.CoreGuiType.Backpack)then break end task.wait(0.200000000162)end end)local r=Make(
+'ScreenGui',{Name='Hotbar',ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=
+50})local s=Make('Frame',{AnchorPoint=Vector2.new(0.500000000271,1),Position=UDim2.new(0.500000000692,
+0,1,-l),Size=UDim2.fromOffset(k,h),BackgroundTransparency=1},r)Make(
+'UIListLayout',{FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.
+SortOrder.LayoutOrder,Padding=UDim.new(0,i)},s)local t=Make('TextButton',{
+AnchorPoint=Vector2.new(0.500000000773,1),Position=UDim2.new(0.500000000802,0,1,-(l+h+10)),Size=UDim2.
+fromOffset(124,28),BackgroundColor3=d.Window,BackgroundTransparency=0.100000000707,
+BorderSizePixel=0,AutoButtonColor=false,FontFace=g,TextSize=14,TextColor3=d.Text
+,RichText=true,Text='Backpack'},r)Round(t,8)Make('UIStroke',{Color=d.Edge,
+ApplyStrokeMode=Enum.ApplyStrokeMode.Border},t)local u=Make('UIScale',{},t)local
+v=Spring(1,600,32)local w=false local x=4 local y=l+h+10+28+10 local z=Make(
+'CanvasGroup',{AnchorPoint=Vector2.new(0.500000000123,1),Position=UDim2.new(0.500000000392,0,1,-y),
+Size=UDim2.fromOffset(k+24,x*h+(x-1)*i+24),BackgroundColor3=d.Window,
+BackgroundTransparency=0.080000000738,BorderSizePixel=0,GroupTransparency=1,Visible=false}
+,r)Round(z,10)Make('UIStroke',{Color=d.Edge,ApplyStrokeMode=Enum.ApplyStrokeMode
+.Border},z)local A=Make('UIScale',{Scale=0.900000000908},z)local B=Make('ScrollingFrame',{
+Position=UDim2.fromOffset(12,12),Size=UDim2.new(1,-18,1,-24),
+BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,
+ScrollBarImageColor3=d.Sub,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.
+AutomaticSize.Y},z)Make('UIGridLayout',{CellSize=UDim2.fromOffset(h,h),
+CellPadding=UDim2.fromOffset(i,i),SortOrder=Enum.SortOrder.LayoutOrder},B)local
+C=Spring(0,350,22)local D=Make('Frame',{AnchorPoint=Vector2.new(0.500000000361,0.500000000804),Size=
+UDim2.fromOffset(h,h),BackgroundColor3=d.Slot,BorderSizePixel=0,Visible=false,
+ZIndex=10},r)Round(D,8)Make('UIStroke',{Color=d.Accent,Thickness=1.600000000807,
+ApplyStrokeMode=Enum.ApplyStrokeMode.Border},D)local F=Make('ImageLabel',{
+AnchorPoint=Vector2.new(0.500000000521,0.500000000367),Position=UDim2.fromScale(0.500000000333,0.500000000664),Size=UDim2.
+fromOffset(36,36),BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit,ZIndex=
+11},D)local G=Make('TextLabel',{Position=UDim2.fromOffset(4,12),Size=UDim2.new(1
+,-8,1,-16),BackgroundTransparency=1,FontFace=f,TextSize=12,TextColor3=d.Text,
+TextWrapped=true,TextTruncate=Enum.TextTruncate.AtEnd,Text='',ZIndex=11},D)r.
+Parent=q:WaitForChild'PlayerGui'local H=table.create(j)local I={}for J=1,j do I[
+J]=NewCell(s,J)end local J={}local K={}local L={}local M=b'HttpService'local N=
+'hub/hotbar.json'local O={}local P=0 local Q=false if isfile and isfile(N)then
+local R,S=pcall(M.JSONDecode,M,readfile(N))if R and type(S)=='table'then for T=1
+,j do local U=if type(S.Slots)=='table'then S.Slots[T]else nil if type(U)==
+'string'and U~=''then H[T]=U end end if type(S.Order)=='table'then for T,U in S.
+Order do if type(U)=='string'and not O[U]then P+=1 O[U]=P end end end end end
+local function Save()if not Q then return end Q=false local R={}for S in O do R[
+#R+1]=S end table.sort(R,function(S,T)return O[S]<O[T]end)local S=table.create(j
+)for T=1,j do S[T]=H[T]or''end if not isfolder'hub'then makefolder'hub'end
+writefile(N,M:JSONEncode{Slots=S,Order=R})end local function Body()local R=q.
+Character return R and R:FindFirstChildOfClass'Humanoid'end local function Use(R
+)local S=Body()if not(R and S)then return end if R.Parent==q.Character then S:
+UnequipTools()else S:EquipTool(R)end end local function Find(R)for S=1,j do if H
+[S]==R then return S end end return nil end local function Shown(R)if R and C.T
+==0 then local S=os.clock()for T,U in J do U.Pop.X,U.Pop.T,U.Pop.V=0.750000000922,0.750000000453,0 U
+.Delay=S+math.min(T-1,14)*0.020000000959 end end C.T=if R then 1 else 0 end local function 
+Sync()table.clear(L)local R={}local S={}for T,U in{q:FindFirstChildOfClass
+'Backpack',q.Character}do if U then for V,W in U:GetChildren()do if W:IsA'Tool'
+then R[W]=true L[W.Name]=W end end end end for T in R do S[#S+1]=T if not O[T.
+Name]then P+=1 O[T.Name]=P Q=true if not Find(T.Name)then for U=1,j do if H[U]==
+nil then H[U]=T.Name break end end end end end table.sort(S,function(T,U)return
+O[T.Name]<O[U.Name]end)K=S for T,U in I do local V=H[T]local W=if V then L[V]
+else nil if U.Tool~=W then Show(U,W)end end for T,U in K do local V=J[T]if not V
+then local W=NewCell(B,nil)J[T]=W V=W end local W=V W.Holder.LayoutOrder=T W.
+Holder.Visible=true if W.Tool~=U then Show(W,U)end end for T=#K+1,#J do J[T].
+Holder.Visible=false Show(J[T],nil)end t.Text=string.format(
+'Backpack <font color="#%s">%d</font>',d.Sub:ToHex(),#K)Save()end local R local
+S=Vector2.zero local T local U=Vector2.zero local V=0 local function Under(W,X,Y
+)local Z=Y or 0 local _,aa=X.AbsolutePosition,X.AbsoluteSize return W.X>=_.X-Z
+and W.Y>=_.Y-Z and W.X<=_.X+aa.X+Z and W.Y<=_.Y+aa.Y+Z end local function Snap(
+aa)local W,X=h for Y,Z in I do local _=Z.Holder.AbsolutePosition+Z.Holder.
+AbsoluteSize*0.500000000387 local ab=(aa-_).Magnitude if ab<W then X,W=Y,ab end end return
+X end local function Drop(aa)local ab=T local W=(R).Slot local X=Snap(aa)if X
+then local Y=Find(ab.Name)if Y then H[Y]=H[X]end H[X]=ab.Name Q=true I[X].Press.
+V+=3 elseif W and z.Visible then H[W]=nil Q=true end end local function Bind(aa)
+aa.Button.InputBegan:Connect(function(ab)if ab.UserInputType==Enum.UserInputType
+.MouseButton1 then aa.Held=true R=aa S=o:GetMouseLocation()end end)end for aa,ab
+in I do Bind(ab)end local aa={}t.InputBegan:Connect(function(ab)if ab.
+UserInputType==Enum.UserInputType.MouseButton1 then w=true end end)t.Activated:
+Connect(function()Shown(C.T==0)end)o.InputBegan:Connect(function(ab,W)if ab.
+UserInputType==Enum.UserInputType.MouseButton1 and C.T>0 then local X=o:
+GetMouseLocation()if not(Under(X,z)or Under(X,t)or Under(X,s,12))then Shown(
+false)end end if W then return end local X=m[ab.KeyCode]if X then local Y=H[X]
+Use(if Y then L[Y]else nil)elseif ab.KeyCode==Enum.KeyCode.Backquote then Shown(
+C.T==0)end end)o.InputChanged:Connect(function(ab)if ab.UserInputType~=Enum.
+UserInputType.MouseMovement or not R or T then return end local W=R local X=o:
+GetMouseLocation()if W.Tool and(X-S).Magnitude>4 then T=W.Tool local Y=(W.Tool).
+TextureId F.Image=Y F.Visible=Y~=''G.Text=if Y==''then(W.Tool).Name else''U=X V=
+0 D.Visible=true end end)o.InputEnded:Connect(function(ab)if ab.UserInputType~=
+Enum.UserInputType.MouseButton1 then return end w=false local W=R if not W then
+return end W.Held=false if T then Drop(o:GetMouseLocation())else Use(W.Tool)end
+R,T=nil,nil D.Visible=false for X,Y in I do Y.Aimed=false end end)p.
+RenderStepped:Connect(function(ab)local W=os.clock()local X=q.Character local Y=
+if T then Snap(o:GetMouseLocation())else nil for Z,_ in I do _.Aimed=Z==Y
+Animate(_,ab,Held(_.Tool,X),W)end for Z,_ in J do if not aa[_]then aa[_]=true
+Bind(_)end if _.Holder.Visible then Animate(_,ab,Held(_.Tool,X),W)end end Step(C
+,ab)local Z=math.clamp(C.X,0,1)z.Visible=C.X>0.010000000123 or C.T>0 z.GroupTransparency=1
+-Z A.Scale=0.900000000582+0.100000000646*C.X z.Position=UDim2.new(0.500000000736,0,1,-y+(1-Z)*10)v.T=if w then
+0.950000000469 else 1 Step(v,ab)u.Scale=v.X if T then local _=o:GetMouseLocation()local ac
+=U U=U:Lerp(_,1-math.exp(-35*ab))local ad=if ab>0 then(U.X-ac.X)/ab else 0 V=
+Ease(V,math.clamp(ad*0.015000000429,-10,10),16,ab)D.Position=UDim2.fromOffset(U.X,U.Y)D.
+Rotation=V end end)while true do Sync()task.wait(0.150000000439)end end)end end function a
+.j()local aa=a.cache.j if not aa then aa={c=__modImpl()}a.cache.j=aa end return
+aa.c end end do local function __modImpl()local aa=a.a()local ab=Color3.fromRGB
+local ac={Window=ab(23,20,25),Row=ab(36,34,39),Edge=ab(43,40,45),Text=ab(240,238
+,244),Bad=ab(255,120,130)}local ad=Font.new(
+'rbxasset://fonts/families/BuilderSans.json',Enum.FontWeight.SemiBold)local 
+function Make(b,c,d)local e=Instance.new(b)for f,g in c do e[f]=g end if d then
+e.Parent=d end return e end local function Round(b,c)Make('UICorner',{
+CornerRadius=UDim.new(0,c)},b)end return function()task.spawn(function()local b=
+aa'Players'local c=aa'UserInputService'while not b.LocalPlayer do task.wait()end
+local d=b.LocalPlayer local e=Make('ScreenGui',{Name='Menu',ResetOnSpawn=false,
+IgnoreGuiInset=true,DisplayOrder=60})local f=Make('TextButton',{Position=UDim2.
+fromOffset(12,12),Size=UDim2.fromOffset(40,40),BackgroundColor3=ac.Window,
+BackgroundTransparency=0.050000000626,BorderSizePixel=0,AutoButtonColor=false,Text=''},e)
+Round(f,8)Make('UIStroke',{Color=ac.Edge,ApplyStrokeMode=Enum.ApplyStrokeMode.
+Border},f)for g=-1,1 do local h=Make('Frame',{AnchorPoint=Vector2.new(0.500000000989,0.500000000504),
+Position=UDim2.new(0.500000000291,0,0.500000000773,g*6),Size=UDim2.fromOffset(16,2),BackgroundColor3=
+ac.Text,BorderSizePixel=0},f)Round(h,1)end local g=Make('Frame',{Position=UDim2.
+fromOffset(12,60),Size=UDim2.fromOffset(180,88),BackgroundColor3=ac.Window,
+BackgroundTransparency=0.050000000161,BorderSizePixel=0,Visible=false},e)Round(g,10)Make(
+'UIStroke',{Color=ac.Edge,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},g)Make(
+'UIPadding',{PaddingTop=UDim.new(0,8),PaddingBottom=UDim.new(0,8),PaddingLeft=
+UDim.new(0,8),PaddingRight=UDim.new(0,8)},g)Make('UIListLayout',{Padding=UDim.
+new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},g)local h={}local function Paint(
+i)i.Button.BackgroundTransparency=if i.Hovered then 0 else 1 end local function 
+Show(i)g.Visible=i end local function Add(i,j,k,l,m)local n=Make('TextButton',{
+LayoutOrder=i,Size=UDim2.new(1,0,0,34),BackgroundColor3=ac.Row,
+BackgroundTransparency=1,BorderSizePixel=0,AutoButtonColor=false,FontFace=ad,
+TextSize=15,TextColor3=l,TextXAlignment=Enum.TextXAlignment.Left,Text=k},g)
+Round(n,6)Make('UIPadding',{PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,
+12)},n)Make('TextLabel',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,
+FontFace=ad,TextSize=13,TextColor3=ac.Edge:Lerp(ac.Text,0.450000000805),TextXAlignment=
+Enum.TextXAlignment.Right,Text=string.sub(j.Name,1,1)},n)local o={Button=n,
+Action=m,Hovered=false}n.MouseEnter:Connect(function()o.Hovered=true Paint(o)end
+)n.MouseLeave:Connect(function()o.Hovered=false Paint(o)end)n.Activated:Connect(
+function()Show(false)m()end)h[j]=o end Add(1,Enum.KeyCode.R,'Reset',ac.Text,
+function()local i=d.Character local j=i and i:FindFirstChildOfClass'Humanoid'if
+j then j.Health=0 end end)Add(2,Enum.KeyCode.L,'Leave',ac.Bad,function()game:
+Shutdown()end)f.Activated:Connect(function()Show(not g.Visible)end)c.InputBegan:
+Connect(function(i)local j=i.KeyCode if j==Enum.KeyCode.Escape then Show(not g.
+Visible)elseif g.Visible and h[j]then Show(false)h[j].Action()end end)e.Parent=d
+:WaitForChild'PlayerGui'end)end end function a.k()local aa=a.cache.k if not aa
+then aa={c=__modImpl()}a.cache.k=aa end return aa.c end end do local function 
+__modImpl()local aa=a.a()local ab=a.h()local ac=
+'f1a4d3a5-b97a-4622-8fd6-232663ff697e'local ad=
+'f5f26af9-cb1b-4588-bcc9-12fd78f64599'local b={{1792338427.78059,
+'ba10cc43-8b93-4b7d-93b8-e1935730ebe3'},{1792338427.780725,
+'ed327974-0c39-423a-b9c7-467b8fdac46d'}}local c={{1792338395.291675,
+'7aae3e74-d52e-433a-83b1-9d5a507d2e80'},{1792338395.291743,
+'c3eb316e-a4cc-4dc9-8b0e-1a770a7d99fd'}}local function Fire(d,e,...)local f=ab.
+Event(d)if not f then return end for g,h in e do f:FireServer(h[1],h[2],...)end
+end return function(d,e)task.spawn(function()local f=aa'Players'local g=aa
+'Workspace'while not f.LocalPlayer do task.wait()end local h=f.LocalPlayer local
+i={}local function Prompt(j,k,l)local m=i[j]if m and m.Parent==j then return m
+end local n=j:FindFirstChild'Steal'if n and n:IsA'ProximityPrompt'then i[j]=n
+return n end local o=Instance.new'ProximityPrompt'o.Name='Steal'o.ActionText=
+'Steal'o.HoldDuration=1.300000000879 o.MaxActivationDistance=10 o.RequiresLineOfSight=false
+o.KeyboardKeyCode=Enum.KeyCode.E o.PromptButtonHoldBegan:Connect(function()local r=ab.Event'b77dde61-dd74-4f18-b329-2ac7f7e48f0b'if r then local t=workspace:GetServerTimeNow()+79 r:FireServer(t,'94fa9dee-cfa2-4cc2-ac2a-0659e5169fac')r:FireServer(t,'173cd914-bfdd-4c77-80bc-86864bd1ecb4')end Fire(ac,b)end)o.Triggered:Connect(function()local r=ab.Event'0c1792e6-3df9-46fd-8b46-be6e4e6df08f'if r then local t=workspace:GetServerTimeNow()+141 r:FireServer(t,'859270da-f6e7-4110-af2e-4c58fa259c75',k,l)r:FireServer(t,'b231811b-fa22-4265-81fe-424ea71ddb92',k,l)end Fire(ad,c,k,l)end)o.Parent=j i[j]=o
+return o end local function Refresh(j)local k=d[j.Name]local l=k and k.Owner
+local m=k and k.AnimalList local n=l~=nil and l~=h and type(m)=='table'local o=j
+:FindFirstChild'AnimalPodiums'for p,q in if o then o:GetChildren()else{}do local
+r=tonumber(q.Name)local s=q:FindFirstChild'Base'local t=s and s:FindFirstChild
+'Spawn'local u=t and t:FindFirstChild'PromptAttachment'if r and u then local v=
+if n then m[r]else nil local w=type(v)=='table'and not v.Machine and(v.Steal==
+nil or v.Steal==false)if n or i[u]then local x=Prompt(u,j.Name,r)x.Enabled=w x.
+ObjectText=if type(v)=='table'then tostring(v.Index)else''end end end end e(
+function(j)local k=g:FindFirstChild'Plots'local l=k and k:FindFirstChild(j)if l
+then Refresh(l)end end)while true do local j=g:FindFirstChild'Plots'for k,l in
+if j then j:GetChildren()else{}do Refresh(l)end task.wait(2)end end)end end
+function a.l()local aa=a.cache.l if not aa then aa={c=__modImpl()}a.cache.l=aa
+end return aa.c end end do local function __modImpl()local aa=a.a()local ab=a.h(
+)local ac='a4827f59-6bb5-4c5b-bdbc-93ce7fbba403'local ad={
+'c676c02f-1c1f-44ef-82c2-5901e3ebe3c7','5c580d0a-77af-4c51-8b54-d0a98fe10072'}
+local ac2='09e66d0e-a7a7-4ae6-bda3-7e169e20894f'local ad2={
+'84ff105c-ca6f-487f-a69d-9499001a1af0','f2778935-0b31-401b-b9ef-9b27994fa22c'}
+local b='AnimalPurchasePrompt'local c=300 local d=10e6 local function Label(e,f)
+local g=e.Parent if not g or not(g:IsA'Attachment'or g:IsA'BasePart')then return
+end local h=Instance.new'BillboardGui'h.Name='Tag'h.Size=UDim2.fromOffset(240,24
+)h.StudsOffset=Vector3.new(0,4,0)h.MaxDistance=c h.LightInfluence=0 h.Adornee=g
+local i=Instance.new'TextLabel'i.Size=UDim2.fromScale(1,1)i.
+BackgroundTransparency=1 i.Font=Enum.Font.GothamBold i.TextSize=15 i.TextColor3=
+Color3.new(1,1,1)i.TextStrokeTransparency=0.500000000687 i.Text=f i.Parent=h h.Parent=g end
+return function()task.spawn(function()local e=aa'Players'local f=aa'Workspace'
+local g=aa'CollectionService'while not e.LocalPlayer do task.wait()end local h=e
+.LocalPlayer local i=aa'ReplicatedStorage'if not game:IsLoaded()then game.Loaded
+:Wait()end local j=(require((i:WaitForChild'Datas':WaitForChild'Animals')))local
+k=(setmetatable({},{__mode='k'}))local function Purchase(l)local n=l:GetAttribute'UID'if type(n)~='string'then return end local m=ab.Event(ac)local o,p=189,ad if not m then m,o,p=ab.Event(ac2),219,ad2 end if not m then return end for q,r in p do m:FireServer(f:GetServerTimeNow()+o,r,n)end end local function Bind(l
+)if k[l]or not l:IsA'ProximityPrompt'then return end local m=l local function 
+Refresh()m.Enabled=m:GetAttribute'TargetPlayer'~=h.UserId and not m:GetAttribute
+'Disabled'end local n=m:FindFirstAncestorWhichIsA'Model'local o=n and n:
+GetAttribute'Index'local p=type(o)=='string'and j[o]if p and(p.Generation or 0)
+>=d then Label(m,p.DisplayName or o)end k[m]={m:GetAttributeChangedSignal
+'TargetPlayer':Connect(Refresh),m:GetAttributeChangedSignal'Disabled':Connect(
+Refresh),m.Triggered:Connect(function()Purchase(m)end)}Refresh()end local 
+function Unbind(l)local m=k[l]if not m then return end k[l]=nil for n,o in m do
+o:Disconnect()end end g:GetInstanceAddedSignal(b):Connect(Bind)g:
+GetInstanceRemovedSignal(b):Connect(Unbind)for l,m in g:GetTagged(b)do Bind(m)
+end end)end end function a.m()local aa=a.cache.m if not aa then aa={c=__modImpl(
+)}a.cache.m=aa end return aa.c end end do local function __modImpl()local aa=a.
+a()local ab=a.h()local ac=0.100000000734 local ad=25 local function Closest(b,c)local d=#c
+if d<2 then return nil,nil end local e=1 while e<=d do local f=(e+d)//2 if c[f].
+t<=b then e=f+1 else d=f-1 end end local f,g=c[d],c[d+1]if f and g and f.t==g.t
+then return nil,nil end return f,g end return function()task.spawn(function()
+local b=aa'RunService'local c=aa'CollectionService'local d=aa'Workspace'local e,
+f repeat e,f=ab.Event'Snapshot/RealiableChannel',ab.Unreliable
+'Snapshot/UnrealiableChannel'if not(e and f)then task.wait(0.250000000983)end until e and
+f local g,h=e,f local i={}local j={}local k={}local l,m=0,0 local n local o,p={}
+,{}local function Track(q,r)if i[q]==r or not r.Parent then return end if r:IsA
+'BasePart'then r.Anchored=true end i[q]=r r.Destroying:Once(function()if i[q]==r
+then i[q]=nil end j[r]=nil end)end local function Watch(q)if k[q]then return end
+k[q]=true local r=string.format('SnapshotObj_%d',q)c:GetInstanceAddedSignal(r):
+Connect(function(s)Track(q,s)end)local s=c:GetTagged(r)[1]if s then Track(q,s)
+end end local q,r=buffer.readf32,buffer.readu16 h.OnClientEvent:Connect(function
+(s)local t=buffer.readf64(s,0)if t<l then return end l,m=t,os.clock()local u=10
+for v=1,r(s,8)do local w=i[r(s,u)]if w and w.Parent then local x=CFrame.new(q(s,
+u+2),q(s,u+6),q(s,u+10))local y=j[w]or{}j[w]=y table.insert(y,{t=t,cf=x*CFrame.
+fromOrientation(q(s,u+14),q(s,u+18),q(s,u+22))})if#y>ad then table.remove(y,1)
+end end u+=26 end end)g.OnClientEvent:Connect(function(s)if type(s)~='table'then
+return end for t in s do local u=tonumber(t)if u then Watch(u)end end end)b.
+PreRender:Connect(function(s)local t=l+(os.clock()-m)local u=(n or t-ac)+s local
+v=ac-(t-u)if math.abs(v)>ac then u=t-ac elseif v>0.010000000463 then u=math.max(t-ac,u-s*
+0.100000000428)elseif v<-1E-2 then u=math.min(t-ac,u+s*0.100000000245)end n=u table.clear(o)table.
+clear(p)local w=0 for x,y in j do local z,A=Closest(u,y)if z and A then w+=1 o[w
+]=x p[w]=z.cf:Lerp(A.cf,math.clamp((u-z.t)/(A.t-z.t),0,1.100000000226))end end if w>0 then
+d:BulkMoveTo(o,p,Enum.BulkMoveMode.FireCFrameChanged)end end)g:FireServer()end)
+end end function a.n()local aa=a.cache.n if not aa then aa={c=__modImpl()}a.
+cache.n=aa end return aa.c end end do local function __modImpl()local aa=a.a()
+local ab=Color3.fromRGB local ac={Window=ab(23,20,25),Slot=ab(36,34,39),Edge=ab(
+43,40,45),Accent=ab(178,156,255),Text=ab(240,238,244),Sub=ab(150,146,156)}local
+ad='rbxasset://fonts/families/BuilderSans.json'local b=Font.new(ad,Enum.
+FontWeight.Medium)local c=Font.new(ad,Enum.FontWeight.SemiBold)local function 
+Make(d,e,f)local g=Instance.new(d)for h,i in e do g[h]=i end if f then g.Parent=
+f end return g end local function Key(d)local e=d.KeyboardKeyCode.Name return if
+#e>3 then string.sub(e,1,3)else e end return function()task.spawn(function()
+local d=aa'ProximityPromptService'local e=aa'TweenService'local f={}local 
+function Hide(g)local h=f[g]if h then f[g]=nil h.Board:Destroy()end end local 
+function Show(g)Hide(g)if g.Style~=Enum.ProximityPromptStyle.Custom then g.Style
+=Enum.ProximityPromptStyle.Custom end local h=g.Parent if not h or not(h:IsA
+'Attachment'or h:IsA'BasePart')then return end local i=Make('BillboardGui',{Name
+='Hint',Size=UDim2.fromOffset(150,40),SizeOffset=Vector2.new(0,0.600000000942),AlwaysOnTop=
+true,Active=true,LightInfluence=0,Adornee=h,ResetOnSpawn=false})local j=Make(
+'TextButton',{Size=UDim2.fromScale(1,1),BackgroundColor3=ac.Window,
+BackgroundTransparency=0.100000000521,AutoButtonColor=false,Text=''},i)Make('UICorner',{
+CornerRadius=UDim.new(0,8)},j)Make('UIStroke',{Color=ac.Edge,Thickness=1},j)
+local k=Make('Frame',{Position=UDim2.fromOffset(6,6),Size=UDim2.fromOffset(28,28
+),BackgroundColor3=ac.Slot},j)Make('UICorner',{CornerRadius=UDim.new(0,6)},k)
+Make('TextLabel',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,FontFace=c,
+TextSize=15,TextColor3=ac.Accent,Text=Key(g)},k)Make('TextLabel',{Position=UDim2
+.fromOffset(40,5),Size=UDim2.new(1,-46,0,16),BackgroundTransparency=1,FontFace=c
+,TextSize=15,TextColor3=ac.Text,TextXAlignment=Enum.TextXAlignment.Left,
+TextTruncate=Enum.TextTruncate.AtEnd,Text=g.ActionText},j)Make('TextLabel',{
+Position=UDim2.fromOffset(40,20),Size=UDim2.new(1,-46,0,14),
+BackgroundTransparency=1,FontFace=b,TextSize=12,TextColor3=ac.Sub,TextXAlignment
+=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd,Text=g.ObjectText
+},j)local l=Make('Frame',{AnchorPoint=Vector2.new(0,1),Position=UDim2.new(0,6,1,
+-2),Size=UDim2.new(0,0,0,2),BackgroundColor3=ac.Accent,BorderSizePixel=0},j)j.
+MouseButton1Down:Connect(function()g:InputHoldBegin()end)j.MouseButton1Up:
+Connect(function()g:InputHoldEnd()end)j.MouseLeave:Connect(function()g:
+InputHoldEnd()end)i.Parent=h f[g]={Board=i,Fill=l}end local function Hold(g,h)
+local i=f[g]if not i then return end if i.Tween then i.Tween:Cancel()end local j
+=if h then UDim2.new(1,-12,0,2)else UDim2.new(0,0,0,2)local k=if h then g.
+HoldDuration else 0.150000000594 local l=e:Create(i.Fill,TweenInfo.new(k,Enum.EasingStyle.
+Linear),{Size=j})i.Tween=l l:Play()end d.PromptShown:Connect(Show)d.PromptHidden
+:Connect(Hide)d.PromptButtonHoldBegan:Connect(function(g)Hold(g,true)end)d.
+PromptButtonHoldEnded:Connect(function(g)Hold(g,false)end)d.PromptTriggered:
+Connect(function(g)Hold(g,false)end)end)end end function a.o()local aa=a.cache.o
+if not aa then aa={c=__modImpl()}a.cache.o=aa end return aa.c end end do local 
+function __modImpl()local aa=a.a()local ab=a.h()local ac='b3ab4417-65d0-4f5d-8562-8f51d1c4305d'local ad=
+'ac28d486-82cf-438e-9bc3-566ef66cc4ce'local ac2=
+'8b2abeb7-37e3-4739-a9d8-6fb2d58d966c'local ad2=
+'7c7745c9-ae67-4244-a463-78872bbd5977'local b=Vector3.new(4,4,2)local c=0.05
+return function(d)task.spawn(function()local e=aa'Players'local f=aa
+'CollectionService'local g=aa'Workspace'local h=aa'RunService'local i local j=
+OverlapParams.new()j.FilterType=Enum.RaycastFilterType.Include j.MaxParts=1
+local k=0 h.Heartbeat:Connect(function()local l=e.LocalPlayer local m=l and l.
+Character if not(l and m and l:GetAttribute'Stealing')or os.clock()-k<c then
+return end local n local o=g:FindFirstChild'Plots'for p,q in d do if q.Owner==l
+then n=o and o:FindFirstChild(p)end end if not n then return end if n~=i or#j.
+FilterDescendantsInstances==0 then i=n local p={}for q,r in f:GetTagged
+'PlotDeliveryHitbox'do if r:IsA'BasePart'and r:IsDescendantOf(n)then r.CanQuery=
+true p[#p+1]=r end end j.FilterDescendantsInstances=p end if#
+g:GetPartBoundsInBox(CFrame.new(m:GetPivot().Position),b,j)>0 then k=os.clock()
+local p=ab.Event(ac)if p then p:FireServer(ad)p:FireServer(ad)return end local q
+=ab.Event(ac2)if q then q:FireServer(ad2)end end end)end)end end function
+a.p()local aa=a.cache.p if not aa then aa={c=__modImpl()}a.cache.p=aa end return
+aa.c end end do local function __modImpl()local aa=a.a()local ab=a.h()return
+function()task.spawn(function()local ac=aa'Players'while not ac.LocalPlayer do
+task.wait()end local ad=ac.LocalPlayer local function Report(b)local c=ab.Event
+'Tools/Cooldown'for d=1,50 do if c then break end task.wait(0.200000000363)c=ab.Event
+'Tools/Cooldown'end if c and b.Parent and b.WalkSpeed>0 then c:FireServer(string
+.pack('<ff',b.WalkSpeed,b.WalkSpeed))end end local function Bind(b)local c=b:
+WaitForChild('Humanoid',10)if not(c and c:IsA'Humanoid')then return end local d=
+c Report(d)d:GetPropertyChangedSignal'WalkSpeed':Connect(function()Report(d)end)
+end ad.CharacterAdded:Connect(Bind)if ad.Character then task.spawn(Bind,ad.
+Character)end end)end end function a.q()local aa=a.cache.q if not aa then aa={c=
+__modImpl()}a.cache.q=aa end return aa.c end end do local function __modImpl()
+local aa=a.a()local ab=os.clock()local ac={}local function Mark(ad)ac[#ac+1]=
+string.format('%s=%.2f',ad,os.clock()-ab)end local function Save()local ad=
+getgenv().LoadTag or'plain'local b=string.format('%s %s %s\n',os.date'%H:%M:%S',
+ad,table.concat(ac,' '))local c=if isfile and isfile'load_timeline.txt'then
+readfile'load_timeline.txt'else''writefile('load_timeline.txt',c..b)end local 
+function Begin(ad)Mark'start'task.spawn(function()if not game:IsLoaded()then
+game.Loaded:Wait()end Mark'loaded'end)task.spawn(function()local b=aa'Players'
+local c=aa'Workspace'while not b.LocalPlayer do task.wait()end local d=b.
+LocalPlayer if not d.Character then d.CharacterAdded:Wait()end Mark'character'
+local e=c:WaitForChild'Plots'while#e:GetChildren()==0 do task.wait()end Mark
+'plots'local f=os.clock()+30 local g=false while os.clock()<f do local h=false
+for i,j in ad do if type(j)=='table'and type(j.AnimalList)=='table'then if not g
+then g=true Mark'data'end if j.Owner==d then h=true end end end if h then Mark
+'mine'break end task.wait()end Save()end)end return{Mark=Mark,Begin=Begin}end
+function a.r()local aa=a.cache.r if not aa then aa={c=__modImpl()}a.cache.r=aa
+end return aa.c end end do local function __modImpl()local aa=a.a()local ab=a.h(
+)local ac=a.r()local ad='hub/config.json'local b={{
+'a434c202-a33e-49b9-80a0-4957c24b60b8','fcec6acb-8d1e-4fa1-8d84-fbe0f52f5f0c'},{
+'7f75af2a-1216-4237-b376-083f07f000c9','5de09977-5fee-4669-bf61-a08ed7c0d38f'}}
+local function Enabled()if not(isfile and isfile(ad))then return false,false end
+local c=aa'HttpService'local d,e=pcall(c.JSONDecode,c,readfile(ad))if not d then
+warn('rocket config unreadable:',e)return false,false end local f=type(e)==
+'table'and e.Modules local g=type(f)=='table'and f.CframeTP local h=type(g)==
+'table'and g.Options if type(h)~='table'then return false,false end return h[
+'On load']==true and h.Mode~='Method 2',h['Giant potion']~=false end local 
+function Remote()for c,d in b do local e=ab.Function(d[1])if e then return e,d[2
+]end e=ab.Function(d[2])if e then return e,d[1]end end return nil,nil end return
+function()local c,d=Enabled()if not c then return end local e=os.clock()local f=
+{Fired=nil,Hit=nil,Used=false,Failed=false,Giant=d,Log={}}getgenv().Rocket=f
+local function Note(g)f.Log[#f.Log+1]=string.format('%s +%.2fs',g,os.clock()-e)
+end task.spawn(function()local g=aa'Players'local h=aa'Workspace'while not g.
+LocalPlayer do task.wait()end local i=g.LocalPlayer local function Hit()if f.
+Fired and not f.Hit then f.Hit=os.clock()Note'hit'ac.Mark'rockethit'end end i:
+GetAttributeChangedSignal'RagdollImpulseForce':Connect(Hit)i:
+GetAttributeChangedSignal'RagdollEndTime':Connect(function()local j=i:
+GetAttribute'RagdollEndTime'if type(j)=='number'and j>h:GetServerTimeNow()then
+Hit()end end)local j,k=Remote()while not j and os.clock()-e<30 do task.wait()j,k
+=Remote()end if not j then f.Failed=true Note'no admin remote'return end f.Fired
+=os.clock()Note(if i.Character then'fired with a character'else
+'fired before the character')ac.Mark'rocket'local l,m,n=pcall(j.InvokeServer,j,k
+,i,'rocket')Note(string.format('reply %s %s %s',tostring(l),tostring(m),
+tostring(n)))end)if d then task.spawn(function()local g=aa'Players'while not g.
+LocalPlayer do task.wait()end local h=g.LocalPlayer local i=0 while not f.Hit
+and i<3 and os.clock()-e<90 do local j=h.Character local k=j and j:
+FindFirstChildOfClass'Humanoid'local l=h:FindFirstChildOfClass'Backpack'local m=
+(j and j:FindFirstChild'Giant Potion')or(l and l:FindFirstChild'Giant Potion')
+local n=if m and m:IsA'Tool'then m else nil if j and k and n then if n.Parent~=j
+then k:EquipTool(n)local o=os.clock()+0.500000000329 while n.Parent~=j and os.clock()<o do
+task.wait()end end if n.Parent==j and not f.Hit then i+=1 task.wait()n:Activate(
+)Note'giant potion'local o=os.clock()+1.500000000283 while h:GetAttribute'GiantPotion'==nil
+and os.clock()<o do task.wait()end if h:GetAttribute'GiantPotion'~=nil then
+return end Note'giant potion not applied'end end task.wait()end Note(if f.Hit
+then'giant potion too late'else'no giant potion')end)end end end function a.s()
+local aa=a.cache.s if not aa then aa={c=__modImpl()}a.cache.s=aa end return aa.c
+end end end local aa=os.clock()local ab={[109983668079237]=true,[96342491571673]
+=true,[123923334828954]=true,[120148879522453]=true}while game.PlaceId==0 do
+task.wait()end if not ab[game.PlaceId]then return end getgenv().FastLoad=true
+getgenv().LoadPending=true task.spawn(function()if not game:IsLoaded()then game.
+Loaded:Wait()end local ac=game:GetService'Players'.LocalPlayer if not ac.
+Character then ac.CharacterAdded:Wait()end getgenv().LoadedIn=os.clock()-aa
+getgenv().LoadPending=nil end)local ac=a.a()local ad=a.b()local b=a.d()local c=a
+.e()local d=a.f()local e=a.g()local f=a.i()local g=a.j()local h=a.k()local i=a.
+l()local j=a.m()local k=a.n()local l=a.o()local m=a.p()local n=a.q()local o=a.r(
+)local p=a.s()p()local q=(setmetatable({},{__mode='k'}))local r={Synchronizer=
+true,SynchronizerDead=true}local function Silenced(s)local t=s while t and t.
+Parent do if r[t.Name]and t.Parent.Name=='Packages'then return true end t=t.
+Parent end return false end local s local function Gut(t)q[t]=true local u=t.
+Name t.Name=u..'Dead'local v=Instance.new'Folder'v.Name=u v.Parent=t.Parent
+local function Forward(w)task.defer(function()if q[w]then return end if pcall(
+function()w.Parent=v end)then s(w)end end)end t.ChildAdded:Connect(Forward)for w
+,x in t:GetChildren()do Forward(x)end task.defer(function()t.Parent=nil end)end
+local t={Sounds='ReplicatedStorage',PlayWaveEvents='ReplicatedStorage',
+EventController='Controllers',Events='Workspace'}local u={Script=true,
+LocalScript=true}local v={Folder=true,ModuleScript=true}local w={StarterScript=
+true}s=function(x)local y=x.ClassName if y=='CoreScript'then if not w[x.Name]
+then pcall(function()(x).Enabled=false end)end return end if u[y]then pcall(
+function()(x).Enabled=false end)return end if not v[y]then return end local z=t[
+x.Name]local A=z and x.Parent if A and(A.Name==z or A.ClassName==z)then task.
+defer(x.Destroy,x)return end if y=='ModuleScript'and not q[x]and Silenced(x)then
+Gut(x)end end game.DescendantAdded:Connect(s)local x={CorePackages=true,CoreGui=
+true,RobloxReplicatedStorage=true}local y=0 for z,A in game:GetChildren()do
+local B,C=pcall(function()return A.ClassName end)if B and not x[C]then local D,F
+=pcall(A.GetDescendants,A)local G=if D then F else{}for H,I in G do s(I)end y+=#
+G end end local z=game:FindFirstChildOfClass'CoreGui'local A={RobloxLoadingGUI=
+true,DevGUIBlackoutCurtain=true}local function Hide(B)if B:IsA'LayerCollector'
+then pcall(function()(B).Enabled=false end)end end local function Lift(B)if not
+A[B.Name]then return end Hide(B)for C,D in B:GetDescendants()do Hide(D)end B.
+DescendantAdded:Connect(Hide)end if z then z.ChildAdded:Connect(Lift)for B,C in
+z:GetChildren()do Lift(C)end end task.spawn(function()local B=ac
+'ReplicatedFirst'pcall(B.RemoveDefaultLoadingScreen,B)end)local B=z and z:
+FindFirstChild'RobloxGui'local C=if B then B:GetChildren()else{}for D,F in C do
+if F.ClassName=='CoreScript'then s(F)end end o.Mark('sweep'..y)local D={
+ClientPacketHealthyAllocationPercent='100',ClientPacketMinMicroseconds='0',
+MaxProcessPacketsStepsPerCyclic='50',MaxProcessPacketsJobScaling='100',
+MaxProcessPacketsStepsAccumulated='150',ClientPacketMaxFrameMicroseconds=
+'200000',ClientPacketHealthyMsPerSecondLimit='1000',
+ClientPacketUnhealthyContEscMsPerSecond='1000',
+AssetProviderWorkflowExecutorSleepMicroSeconds='1000',RakNetLoopMs='1',
+MaxStreamPacketsPerStep='128',MaxConsecutiveStreamJobWorkLoad='8',
+NetAssetInlineBytesPerStep='65536',ContentProviderJobDutyCycleMicroseconds=
+'8000',MaxContentProviderRunsPerStep='40',MaxContentProviderRunsAccumulated='80'
+,HttpBatchApi_minWaitMs='0',HttpBatchApi_maxWaitMs='5',
+NumConcurrentBatchWorkflowsPerAssetProviderInstance='8',
+TaskSchedulerTasksDefaultMaxTimeMsPerCycle='30',GCReducesQuotaPercent='0',
+DynamicTextureManagerPrepareBudgetMicroSeconds='8000',
+DebugDisableExpensiveDedupNetAssetCompare='true',DebugFRMQualityLevelOverride=
+'1',RenderLocalLightUpdatesMax='1',RenderLocalLightUpdatesMin='1',
+DebugGraphicsPreferD3D11='True',DebugGraphicsPreferD3D11FL10='True',
+GraphicsEnableD3D10Compute='True',DebugGraphicsDisableDirect3D11='False',
+FastGPULightCulling3='True',TM2SkipMipsForUnstreamable2='True',
+FixTextureCompositorFramebufferManagement2='True'}local F={
+DebugRenderMeshPauseContentRequests={'true','false'},
+DebugContentProviderSkipPreloadFromTextureManager={'true','false'},
+DebugPauseVoxelizer={'true','false'}}local G=type(setfflag)=='function'if G then
+for H,I in D do pcall(setfflag,H,I)end if isfile and isfile'load_flags.txt'then
+local H=(tonumber(if isfile'load_count.txt'then readfile'load_count.txt'else'0')
+or 0)+1 writefile('load_count.txt',tostring(H))local I=H%2==0 getgenv().LoadTag=
+if I then'test'else'base'if I then for J,K in string.gmatch(readfile
+'load_flags.txt','([%w_]+)%s*=%s*([^\r\n]+)')do pcall(setfflag,J,K)end end end
+for H,I in ad do pcall(setfflag,H,I)end for H,I in F do pcall(setfflag,H,I[1])
+end end o.Mark'flags'task.spawn(function()local H=ac'RunService'local I=ac
+'Players'local J J=H.Heartbeat:Connect(function()local K=I.LocalPlayer local L=K
+and K.Character if not(L and L:FindFirstChild'HumanoidRootPart')then return end
+J:Disconnect()if G then for M,N in F do pcall(setfflag,M,N[2])end end end)end)
+task.spawn(function()local H=ac'Workspace':WaitForChild'RenderedMovingAnimals'
+local function Unrender(I)task.defer(I.Destroy,I)end H.ChildAdded:Connect(
+Unrender)for I,J in H:GetChildren()do Unrender(J)end end)b()local H,I=c()
+getgenv().Lobby=H o.Begin(H)d(H)i(H,I)m(H)j()k()l()n()e()f()g()h()
