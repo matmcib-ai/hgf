@@ -1,0 +1,439 @@
+-- Els UTILITY
+-- Theme
+do
+local TS = game:GetService("TweenService")
+local T = {}
+local C = {
+bg=Color3.fromRGB(15,15,19), bg2=Color3.fromRGB(22,22,28),
+row=Color3.fromRGB(25,25,32), rowHover=Color3.fromRGB(33,33,42), rowSel=Color3.fromRGB(38,22,62),
+line=Color3.fromRGB(44,44,56), txt=Color3.fromRGB(238,238,244), dim=Color3.fromRGB(128,128,144),
+acc=Color3.fromRGB(123,19,149), acc2=Color3.fromRGB(27,111,179), green=Color3.fromRGB(60,225,120),
+red=Color3.fromRGB(235,85,95),
+}
+T.C = C
+local WHITE = Color3.new(1,1,1)
+function T.hex(c) return string.format("#%02X%02X%02X",math.floor(c.R*255+0.5),math.floor(c.G*255+0.5),math.floor(c.B*255+0.5)) end
+function T.tween(o,t,props)
+pcall(function() TS:Create(o,TweenInfo.new(t,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),props):Play() end)
+end
+function T.corner(o,r) local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,r or 8); c.Parent=o; return c end
+function T.stroke(o,color,thick,trans)
+local s=Instance.new("UIStroke"); s.Color=color or C.line; s.Thickness=thick or 1; s.Transparency=trans or 0
+s.ApplyStrokeMode=Enum.ApplyStrokeMode.Border; s.Parent=o; return s
+end
+function T.label(parent,props)
+local t=Instance.new("TextLabel"); t.BackgroundTransparency=1; t.BorderSizePixel=0
+t.Font=Enum.Font.GothamBold; t.TextSize=12; t.TextColor3=C.txt; t.TextXAlignment=Enum.TextXAlignment.Left
+for k,v in pairs(props or {}) do t[k]=v end
+t.Parent=parent; return t
+end
+function T.window(f)
+f.BackgroundColor3=C.bg; f.BorderSizePixel=0
+T.corner(f,12); T.stroke(f,C.line,1)
+local gr=Instance.new("UIGradient"); gr.Rotation=90
+gr.Color=ColorSequence.new(WHITE,Color3.fromRGB(200,200,210)); gr.Parent=f
+return f
+end
+function T.accent(parent,pos,size)
+local b=Instance.new("Frame"); b.Name="Accent"; b.BorderSizePixel=0; b.BackgroundColor3=WHITE
+b.Position=pos; b.Size=size; T.corner(b,1)
+local gr=Instance.new("UIGradient"); gr.Color=ColorSequence.new(C.acc,C.acc2); gr.Parent=b
+b.Parent=parent; return b
+end
+function T.title(parent,text,x,y,h)
+local dot=Instance.new("Frame"); dot.Name="Dot"; dot.Size=UDim2.fromOffset(8,8)
+dot.Position=UDim2.fromOffset(x,y+math.floor(h/2)-4); dot.BackgroundColor3=C.acc; dot.BorderSizePixel=0
+T.corner(dot,4); dot.Parent=parent
+return T.label(parent,{Name="Title",Position=UDim2.fromOffset(x+14,y),Size=UDim2.new(1,-(x+14)-40,0,h),Text=text,TextSize=13})
+end
+local base, hov = setmetatable({},{__mode="k"}), setmetatable({},{__mode="k"})
+local function lit(c) return c:Lerp(WHITE,0.06) end
+function T.setBase(b,col)
+base[b]=col
+T.tween(b,0.12,{BackgroundColor3=hov[b] and lit(col) or col})
+end
+function T.button(b,variant)
+b.AutoButtonColor=false; b.BorderSizePixel=0; b.Font=Enum.Font.GothamBold; b.TextSize=12
+b.TextColor3=(variant=="danger") and C.red or C.txt
+T.corner(b,8)
+local s=T.stroke(b,(variant=="primary") and C.acc or C.line,1,(variant=="primary") and 0.2 or 0); s.Name="ThemeStroke"
+local col=(variant=="primary") and C.rowSel or C.row
+base[b]=col; b.BackgroundColor3=col
+b.MouseEnter:Connect(function() hov[b]=true; T.tween(b,0.12,{BackgroundColor3=lit(base[b] or col)}) end)
+b.MouseLeave:Connect(function() hov[b]=false; T.tween(b,0.12,{BackgroundColor3=base[b] or col}) end)
+return b
+end
+function T.toggle(b,on,text)
+T.setBase(b,on and C.rowSel or C.row)
+local s=b:FindFirstChild("ThemeStroke")
+if s then s.Color=on and C.acc or C.line; s.Transparency=on and 0.15 or 0 end
+if text then
+b.RichText=true
+b.Text=text.."   <font color=\""..T.hex(on and C.green or C.dim).."\">"..(on and "ON" or "OFF").."</font>"
+end
+end
+function T.input(tb)
+tb.BackgroundColor3=C.bg2; tb.BorderSizePixel=0; tb.TextColor3=C.txt; tb.PlaceholderColor3=C.dim
+T.corner(tb,8); T.stroke(tb,C.line,1)
+local p=Instance.new("UIPadding"); p.PaddingLeft=UDim.new(0,8); p.PaddingRight=UDim.new(0,8)
+p.PaddingTop=UDim.new(0,4); p.PaddingBottom=UDim.new(0,4); p.Parent=tb
+return tb
+end
+_G.Els_Theme = T
+end
+-- Keybinds
+do
+local UIS = game:GetService("UserInputService")
+local HS = game:GetService("HttpService")
+local FILE = "Els_Keybinds.json"
+local function letterKey(ch)
+for _, kc in ipairs(Enum.KeyCode:GetEnumItems()) do
+if #kc.Name == 1 and kc.Name:match("%u") then
+local ok, s = pcall(UIS.GetStringForKeyCode, UIS, kc)
+if ok and type(s) == "string" and s:upper() == ch then return kc.Name end
+end
+end
+return ch
+end
+local DEFS = {
+{ id = "Clone",       label = "Auto Clone",     key = "V" },
+{ id = "CarpetSpeed", label = "Carpet Speed",   key = letterKey("Q") },
+{ id = "Drop",        label = "Drop Brainrot",  key = "R" },
+{ id = "Kick",        label = "Kick",           key = "Y" },
+{ id = "Rejoin",      label = "Rejoin",         key = "Slash" },
+{ id = "Exec",        label = "AJ (script)",    key = "J" },
+}
+local binds = {}
+for _, d in ipairs(DEFS) do binds[d.id] = d.key end
+local function validKey(name)
+if name == "None" then return true end
+if type(name) ~= "string" then return false end
+local ok, kc = pcall(function() return Enum.KeyCode[name] end)
+return ok and kc ~= nil
+end
+pcall(function()
+if isfile and readfile and isfile(FILE) then
+local d = HS:JSONDecode(readfile(FILE))
+if type(d) == "table" then
+for id, k in pairs(d) do
+if binds[id] ~= nil and validKey(k) then binds[id] = k end
+end
+end
+end
+end)
+local function save()
+pcall(function() if writefile then writefile(FILE, HS:JSONEncode(binds)) end end)
+end
+local listeners = {}
+local function changed() for _, f in ipairs(listeners) do pcall(f) end end
+_G.Els_KeyCapturing = false
+_G.Els_KeybindDefs = DEFS
+_G.Els_Keybinds = binds
+_G.Els_KeyIs = function(id, kc)
+local k = binds[id]
+return k ~= nil and k ~= "None" and kc ~= nil and kc.Name == k
+end
+_G.Els_KeyText = function(id)
+local k = binds[id]
+if not k or k == "None" then return "-" end
+local ok, kc = pcall(function() return Enum.KeyCode[k] end)
+if ok and kc then
+local ok2, s = pcall(UIS.GetStringForKeyCode, UIS, kc)
+if ok2 and type(s) == "string" and s:match("%S") then return s:upper() end
+end
+return k
+end
+_G.Els_SetKeybind = function(id, k)
+if binds[id] == nil or not validKey(k) then return end
+if k ~= "None" then
+for other, v in pairs(binds) do
+if other ~= id and v == k then binds[other] = "None" end
+end
+end
+binds[id] = k
+save(); changed()
+end
+_G.Els_ResetKeybinds = function()
+for _, d in ipairs(DEFS) do binds[d.id] = d.key end
+save(); changed()
+end
+_G.Els_OnKeybindChanged = function(f) listeners[#listeners + 1] = f end
+end
+-- Rejoin bypass: removes TeleportGuard
+do
+local RF = game:GetService("ReplicatedFirst")
+local function nuke(inst)
+if inst.Name == "TeleportGuard" then pcall(function() inst:Destroy() end) end
+end
+for _, v in ipairs(RF:GetChildren()) do nuke(v) end
+RF.ChildAdded:Connect(nuke)
+end
+-- UTILITY panel
+task.spawn(function()
+task.wait(3)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TS = game:GetService("TeleportService")
+local UIS = game:GetService("UserInputService")
+local HS = game:GetService("HttpService")
+local LP = Players.LocalPlayer
+local pg = LP:FindFirstChild("PlayerGui") or LP:WaitForChild("PlayerGui", 8)
+if not pg then return end
+local PS_PLACE_ID = 109983668079237
+local PS_CODE_FILE   = "Els_PSCode.json"
+local KICK_STATE_FILE = "Els_KickState.json"
+local UTIL_POS_FILE  = "Els_UtilPos.json"
+local PS_LINK_CODE = "57963013835087486111896053246959"
+pcall(function()
+if isfile and readfile and isfile(PS_CODE_FILE) then
+local d = HS:JSONDecode(readfile(PS_CODE_FILE))
+if type(d)=="table" and type(d.code)=="string" and #d.code>0 then PS_LINK_CODE=d.code end
+end
+end)
+local autoKickOn = false
+pcall(function()
+if isfile and readfile and isfile(KICK_STATE_FILE) then
+local d = HS:JSONDecode(readfile(KICK_STATE_FILE))
+if type(d)=="table" and d.on==true then autoKickOn=true end
+end
+end)
+local function saveKickState() pcall(function() writefile(KICK_STATE_FILE, HS:JSONEncode({on=autoKickOn})) end) end
+local autoKickFired, kickConn = false, nil
+local function joinPS()
+if not pcall(function() game:GetService("ExperienceService"):LaunchExperience({ placeId = PS_PLACE_ID, linkCode = PS_LINK_CODE }) end) then
+pcall(function() LP:Kick("") end)
+end
+end
+local function startAutoKick()
+if kickConn then return end
+autoKickFired = false
+local pgui = LP:FindFirstChild("PlayerGui"); if not pgui then return end
+kickConn = pgui.DescendantAdded:Connect(function(gui)
+if not autoKickOn or autoKickFired then return end
+local txt = (gui:IsA("TextLabel") or gui:IsA("TextButton")) and gui.Text
+if txt and string.find(txt, "You stole") then autoKickFired = true; joinPS() end
+end)
+end
+local function stopAutoKick() if kickConn then pcall(function() kickConn:Disconnect() end); kickConn = nil end end
+local function kickError() pcall(function() LP:Kick("") end) end
+_G.Els_KickError = kickError
+_G.Els_JoinPS = joinPS
+local wfConns, wfActive = {}, false
+local function stopWF() wfActive=false; for _,c in ipairs(wfConns) do if typeof(c)=="RBXScriptConnection" then c:Disconnect() end end; wfConns={} end
+local function doDrop()
+if wfActive then return end
+wfActive = true
+local ch = LP.Character; if not ch then wfActive=false; return end
+local rr = ch:FindFirstChild("HumanoidRootPart")
+for _,o in pairs(workspace.CurrentCamera:GetChildren()) do if o.Name=="HumanoidRootPart" then rr=o; break end end
+if not rr then wfActive=false; return end
+table.insert(wfConns, RunService.Stepped:Connect(function()
+if not wfActive then return end
+for _,p in ipairs(Players:GetPlayers()) do
+if p ~= LP and p.Character then for _,pt in ipairs(p.Character:GetChildren()) do if pt:IsA("BasePart") then pt.CanCollide=false end end end
+end
+end))
+task.spawn(function()
+while wfActive do
+RunService.Heartbeat:Wait(); if not rr or not rr.Parent then break end
+local v=rr.Velocity; rr.Velocity=v*10000+Vector3.new(0,10000,0)
+RunService.RenderStepped:Wait(); if rr then rr.Velocity=v end
+RunService.Stepped:Wait(); if rr then rr.Velocity=v+Vector3.new(0,0.1,0) end
+end
+end)
+task.delay(0.4, stopWF)
+end
+_G.Els_DropBrainrot = doDrop
+local function rejoin() pcall(function() TS:Teleport(game.PlaceId, LP) end) end
+local EXEC_FILE = "Els_Exec.lua"
+local function execLoad()
+if type(_G.Els_ExecScript)=="string" then return _G.Els_ExecScript end
+local ok, src = pcall(function() return readfile(EXEC_FILE) end)
+if ok and type(src)=="string" then _G.Els_ExecScript=src; return src end
+return ""
+end
+local function doExec()
+local src = execLoad()
+if type(src)=="string" and #src>0 then
+task.spawn(function() local fn,err=loadstring(src); if fn then pcall(fn) else warn("[AJ] "..tostring(err)) end end)
+end
+end
+local T = _G.Els_Theme
+local C = T.C
+local old = pg:FindFirstChild("ElsUtilSquare"); if old then old:Destroy() end
+local g = Instance.new("ScreenGui"); g.Name="ElsUtilSquare"; g.ResetOnSpawn=false; g.IgnoreGuiInset=true; g.Parent=pg
+local panel = Instance.new("Frame")
+panel.Size=UDim2.fromOffset(250,0); panel.AutomaticSize=Enum.AutomaticSize.Y
+local _loadedPos
+pcall(function()
+if isfile and readfile and isfile(UTIL_POS_FILE) then
+local d = HS:JSONDecode(readfile(UTIL_POS_FILE))
+if type(d)=="table" and tonumber(d.x) and tonumber(d.y) then _loadedPos = UDim2.fromOffset(tonumber(d.x), tonumber(d.y)) end
+end
+end)
+panel.Position = _loadedPos or UDim2.new(0,16,0.5,-125)
+T.window(panel); panel.Active=true; panel.Draggable=true; panel.Parent=g
+do
+local _saveQ = false
+panel:GetPropertyChangedSignal("Position"):Connect(function()
+if _saveQ then return end
+_saveQ = true
+task.delay(0.6, function()
+_saveQ = false
+pcall(function()
+local ap = panel.AbsolutePosition
+writefile(UTIL_POS_FILE, HS:JSONEncode({ x = math.floor(ap.X), y = math.floor(ap.Y) }))
+end)
+end)
+end)
+end
+local lay=Instance.new("UIListLayout", panel); lay.Padding=UDim.new(0,7)
+local pad=Instance.new("UIPadding", panel); pad.PaddingTop=UDim.new(0,10); pad.PaddingBottom=UDim.new(0,12); pad.PaddingLeft=UDim.new(0,10); pad.PaddingRight=UDim.new(0,10)
+local title=Instance.new("Frame", panel); title.Size=UDim2.new(1,0,0,24); title.BackgroundTransparency=1
+T.accent(title, UDim2.new(0,2,0,-10), UDim2.new(1,-4,0,2))
+local titleLbl=T.title(title, "UTILITY", 4, 0, 24)
+local tag=T.label(title,{Name="Tag",Size=UDim2.fromOffset(80,24),Text="@els0x",Font=Enum.Font.GothamMedium,TextSize=10,TextColor3=C.dim})
+local function placeTag() tag.Position=UDim2.fromOffset(titleLbl.Position.X.Offset+titleLbl.TextBounds.X+6,1) end
+titleLbl:GetPropertyChangedSignal("TextBounds"):Connect(placeTag); placeTag()
+local function style(b) return T.button(b) end
+local row1=Instance.new("Frame", panel); row1.Size=UDim2.new(1,0,0,32); row1.BackgroundTransparency=1
+local bAuto=style(Instance.new("TextButton", row1)); bAuto.Size=UDim2.new(1,-40,1,0); bAuto.Position=UDim2.fromOffset(0,0)
+local bEye=style(Instance.new("TextButton", row1)); bEye.Size=UDim2.fromOffset(32,32); bEye.Position=UDim2.new(1,-32,0,0); bEye.Text="👁"; bEye.TextColor3=C.dim
+local function paintAuto() T.toggle(bAuto, autoKickOn, "Auto kick") end
+local function toggleKick() autoKickOn=not autoKickOn; if autoKickOn then startAutoKick() else stopAutoKick() end; saveKickState(); paintAuto() end
+paintAuto()
+if autoKickOn then startAutoKick() end
+bAuto.MouseButton1Click:Connect(toggleKick)
+bAuto.MouseButton2Click:Connect(toggleKick)
+local edPS=Instance.new("Frame"); edPS.Size=UDim2.fromOffset(320,118); edPS.Position=UDim2.new(0,276,0.5,-59)
+T.window(edPS); edPS.Visible=false; edPS.Active=true; edPS.Draggable=true; edPS.Parent=g
+T.accent(edPS, UDim2.fromOffset(12,0), UDim2.new(1,-24,0,2))
+T.title(edPS, "PS LINK CODE", 12, 8, 20)
+local boxPS=Instance.new("TextBox", edPS); boxPS.Size=UDim2.new(1,-20,0,30); boxPS.Position=UDim2.fromOffset(10,36)
+T.input(boxPS); boxPS.Font=Enum.Font.Code; boxPS.TextSize=11
+boxPS.TextXAlignment=Enum.TextXAlignment.Left; boxPS.ClearTextOnFocus=false; boxPS.PlaceholderText="Private server link code"; boxPS.Text=PS_LINK_CODE
+local bSavePS=T.button(Instance.new("TextButton", edPS),"primary"); bSavePS.Size=UDim2.new(0.5,-14,0,30); bSavePS.Position=UDim2.new(0,10,1,-40); bSavePS.Text="Save"
+local bClosePS=T.button(Instance.new("TextButton", edPS)); bClosePS.Size=UDim2.new(0.5,-14,0,30); bClosePS.Position=UDim2.new(0.5,4,1,-40); bClosePS.Text="Close"
+bSavePS.MouseButton1Click:Connect(function()
+local code = boxPS.Text
+if type(code)=="string" and #code>0 then
+PS_LINK_CODE = code
+pcall(function() writefile(PS_CODE_FILE, HS:JSONEncode({code=code})) end)
+bSavePS.Text="✓ Saved"; task.delay(1.5, function() bSavePS.Text="Save" end)
+end
+end)
+bClosePS.MouseButton1Click:Connect(function() edPS.Visible=false end)
+bEye.MouseButton1Click:Connect(function() boxPS.Text=PS_LINK_CODE; edPS.Visible=not edPS.Visible end)
+local bRejoin=style(Instance.new("TextButton", panel)); bRejoin.Size=UDim2.new(1,0,0,32); bRejoin.Text="Rejoin"
+bRejoin.MouseButton1Click:Connect(rejoin)
+local bKick=T.button(Instance.new("TextButton", panel),"danger"); bKick.Size=UDim2.new(1,0,0,32); bKick.Text="KICK"
+bKick.MouseButton1Click:Connect(kickError)
+local row4=Instance.new("Frame", panel); row4.Size=UDim2.new(1,0,0,32); row4.BackgroundTransparency=1
+local bAJ=style(Instance.new("TextButton", row4)); bAJ.Size=UDim2.new(1,-40,1,0); bAJ.Position=UDim2.fromOffset(0,0); bAJ.Text="AJ"
+bAJ.MouseButton1Click:Connect(doExec)
+local bGear=style(Instance.new("TextButton", row4)); bGear.Size=UDim2.fromOffset(32,32); bGear.Position=UDim2.new(1,-32,0,0); bGear.Text="SET"; bGear.TextSize=10; bGear.TextColor3=C.dim
+local ed=Instance.new("Frame"); ed.Size=UDim2.fromOffset(360,260); ed.Position=UDim2.new(0,276,0.5,-130)
+T.window(ed); ed.Visible=false; ed.Active=true; ed.Draggable=true; ed.Parent=g
+T.accent(ed, UDim2.fromOffset(12,0), UDim2.new(1,-24,0,2))
+T.title(ed, "AJ SCRIPT", 12, 8, 20)
+local box=Instance.new("TextBox", ed); box.Size=UDim2.new(1,-20,1,-86); box.Position=UDim2.fromOffset(10,36)
+T.input(box); box.Font=Enum.Font.Code; box.TextSize=11
+box.TextXAlignment=Enum.TextXAlignment.Left; box.TextYAlignment=Enum.TextYAlignment.Top; box.ClearTextOnFocus=false; box.MultiLine=true; box.TextWrapped=true
+box.PlaceholderText="-- paste your script (AJ button / J key runs it)"; box.Text=""
+local bSave=T.button(Instance.new("TextButton", ed),"primary"); bSave.Size=UDim2.new(0.5,-14,0,32); bSave.Position=UDim2.new(0,10,1,-42); bSave.Text="Save"
+local bClose=T.button(Instance.new("TextButton", ed)); bClose.Size=UDim2.new(0.5,-14,0,32); bClose.Position=UDim2.new(0.5,4,1,-42); bClose.Text="Close"
+bSave.MouseButton1Click:Connect(function()
+_G.Els_ExecScript=box.Text; pcall(function() writefile(EXEC_FILE, box.Text) end)
+bSave.Text="✓ Saved"; task.delay(1.5, function() bSave.Text="Save" end)
+end)
+bClose.MouseButton1Click:Connect(function() ed.Visible=false end)
+bGear.MouseButton1Click:Connect(function() box.Text=execLoad(); ed.Visible=not ed.Visible end)
+local bKeys=T.button(Instance.new("TextButton", title))
+bKeys.Size=UDim2.fromOffset(24,24); bKeys.Position=UDim2.new(1,-24,0,0)
+bKeys.Text="⚙"; bKeys.TextSize=14; bKeys.TextColor3=C.dim
+local SHOWN = { Exec = true, Kick = true, Rejoin = true }
+local DEFS = {}
+for _, d in ipairs(_G.Els_KeybindDefs or {}) do if SHOWN[d.id] then DEFS[#DEFS+1] = d end end
+local KB_W, KB_TOP, KB_GAP = 250, 52, 34
+local footY = KB_TOP + #DEFS*KB_GAP + 2
+local kb=Instance.new("Frame"); kb.Size=UDim2.fromOffset(KB_W, footY + 30 + 12)
+T.window(kb); kb.Visible=false; kb.Active=true; kb.Draggable=true; kb.Parent=g
+T.accent(kb, UDim2.fromOffset(12,0), UDim2.new(1,-24,0,2))
+T.title(kb, "KEYBINDS", 12, 8, 20)
+T.label(kb,{Position=UDim2.fromOffset(12,30),Size=UDim2.new(1,-24,0,14),Font=Enum.Font.GothamMedium,TextSize=10,TextColor3=C.dim,
+Text="Click + key  •  Esc: cancel  •  Backspace: none"})
+local keyBtns, listening = {}, nil
+local function paintKeys()
+local txt = _G.Els_KeyText
+for id, b in pairs(keyBtns) do
+if listening == id then
+b.Text="..."; T.toggle(b, true)
+else
+b.Text=txt and txt(id) or "?"; T.toggle(b, false)
+end
+end
+end
+local function stopListen()
+listening=nil
+task.delay(0.05, function() if not listening then _G.Els_KeyCapturing=false end end)
+paintKeys()
+end
+for i, d in ipairs(DEFS) do
+local row=Instance.new("Frame", kb); row.Size=UDim2.new(1,-24,0,28); row.Position=UDim2.fromOffset(12, KB_TOP+(i-1)*KB_GAP)
+row.BackgroundTransparency=1
+T.label(row,{Size=UDim2.new(1,-90,1,0),Text=d.label,Font=Enum.Font.GothamMedium,TextSize=12})
+local kbtn=T.button(Instance.new("TextButton", row)); kbtn.Size=UDim2.fromOffset(80,28); kbtn.Position=UDim2.new(1,-80,0,0)
+keyBtns[d.id]=kbtn
+kbtn.MouseButton1Click:Connect(function()
+if listening==d.id then stopListen(); return end
+listening=d.id; _G.Els_KeyCapturing=true; paintKeys()
+end)
+end
+local bDef=T.button(Instance.new("TextButton", kb)); bDef.Size=UDim2.new(0.5,-16,0,30); bDef.Position=UDim2.fromOffset(12, footY); bDef.Text="Defaults"
+local bKbClose=T.button(Instance.new("TextButton", kb)); bKbClose.Size=UDim2.new(0.5,-16,0,30); bKbClose.Position=UDim2.new(0.5,4,0,footY); bKbClose.Text="Close"
+bDef.MouseButton1Click:Connect(function()
+if listening then stopListen() end
+for _, d in ipairs(DEFS) do if _G.Els_SetKeybind then _G.Els_SetKeybind(d.id, d.key) end end
+end)
+bKbClose.MouseButton1Click:Connect(function() if listening then stopListen() end; kb.Visible=false end)
+bKeys.MouseButton1Click:Connect(function()
+if kb.Visible then
+if listening then stopListen() end
+kb.Visible=false
+return
+end
+local ap, as = panel.AbsolutePosition, panel.AbsoluteSize
+local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920,1080)
+local x = ap.X + as.X + 10
+if x + KB_W > vp.X then x = math.max(0, ap.X - KB_W - 10) end
+kb.Position=UDim2.fromOffset(x, ap.Y)
+paintKeys()
+kb.Visible=true
+end)
+UIS.InputBegan:Connect(function(input)
+if not listening then return end
+if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+local kc, id = input.KeyCode, listening
+if kc == Enum.KeyCode.Escape or kc == Enum.KeyCode.Unknown then
+elseif kc == Enum.KeyCode.Backspace or kc == Enum.KeyCode.Delete then
+if _G.Els_SetKeybind then _G.Els_SetKeybind(id, "None") end
+else
+if _G.Els_SetKeybind then _G.Els_SetKeybind(id, kc.Name) end
+end
+stopListen()
+end)
+if _G.Els_OnKeybindChanged then _G.Els_OnKeybindChanged(paintKeys) end
+paintKeys()
+UIS.InputBegan:Connect(function(input, gpe)
+if gpe or _G.Els_KeyCapturing then return end
+if UIS:GetFocusedTextBox() then return end
+if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+local is = _G.Els_KeyIs
+if type(is) ~= "function" then return end
+local kc = input.KeyCode
+if is("Drop", kc) then task.spawn(doDrop)
+elseif is("Rejoin", kc) then task.spawn(rejoin)
+elseif is("Kick", kc) then task.spawn(kickError)
+elseif is("Exec", kc) then task.spawn(doExec) end
+end)
+end)
